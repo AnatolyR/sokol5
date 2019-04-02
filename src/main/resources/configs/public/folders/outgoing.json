@@ -1,0 +1,5 @@
+{
+  "id": "outgoing",
+  "name": "Исходящие",
+  "fields": ["id", "title", "registrationDate", "externalSigner"]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "incoming",
+  "name": "Входящие",
+  "fields": [
+    "documentNumber",
+    {
+      "key": "title1",
+      "label": "Заголовок"
+    },
+    "status",
+    "documentType",
+    "documentTitle",
+    "registrationDate"]
+}
