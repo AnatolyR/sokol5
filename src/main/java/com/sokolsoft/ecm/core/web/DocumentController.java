@@ -26,4 +26,10 @@ public class DocumentController {
     public Document save(@RequestBody Document document) {
         return documentService.save(document);
     }
+
+    @PostMapping("createDocument/{documentType}")
+    public String createDocument(@PathVariable("documentType") String documentType) {
+        UUID documentId = documentService.createDocument(documentType);
+        return documentId.toString();
+    }
 }

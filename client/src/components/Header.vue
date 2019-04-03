@@ -13,7 +13,7 @@
                     <b-nav-item exact-active-class="active" to="/">Папки</b-nav-item>
 
                     <b-nav-item-dropdown text="Создать" right>
-                        <b-dropdown-item href="#">Входящий</b-dropdown-item>
+                        <b-dropdown-item @click="createIncoming" href="#">Входящий</b-dropdown-item>
                         <b-dropdown-item href="#">Исходящий</b-dropdown-item>
                         <b-dropdown-item href="#">Внутренний</b-dropdown-item>
                         <b-dropdown-item href="#">Договор</b-dropdown-item>
@@ -44,6 +44,7 @@
 <script>
     import { mapState } from 'vuex';
     import { userService } from "../services/user.service";
+    import axios from "axios";
 
     export default {
         name: "s-header",
@@ -62,6 +63,10 @@
         methods: {
             logout() {
                 userService.logout();
+            },
+            createIncoming() {
+                axios.post('/api/createDocument/Входящий', {})
+                    .then((res) => this.$router.push(`/document/${res.data}`));
             }
         }
     }

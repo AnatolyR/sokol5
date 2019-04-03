@@ -73,7 +73,7 @@ public class EcmApplication {
             http
                     .csrf().disable()
                     .authorizeRequests()
-                    .antMatchers("/document**", "/document/**", "/config**", "/folders/**")
+                    .antMatchers("/document**", "/document/**", "/createDocument/**", "/config**", "/folders/**")
                     .permitAll()
                     .and()
                     .authorizeRequests()

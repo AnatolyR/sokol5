@@ -1,10 +1,10 @@
 <template>
     <div class="s-document-container">
         <div v-if="errorMessage" class="">
-            <b-alert show dismissible variant="danger">{{errorMessage}}</b-alert>
+            <b-alert show variant="danger">{{errorMessage}}</b-alert>
         </div>
         <div v-if="successMessage" class="">
-            <b-alert :show="3" dismissible variant="success">{{successMessage}}</b-alert>
+            <b-alert show variant="success">{{successMessage}}</b-alert>
         </div>
         <div v-if="loading" class="">
             <b-spinner variant="secondary" label="Загрузка..." />
@@ -22,7 +22,7 @@
 
 
             <!-- HEADER -->
-            <h5 class="s-document-header">{{document.documentType}} № {{document.documentNumber}} от {{document.registrationDate}} ({{document.documentKind}})</h5>
+            <h5 class="s-document-header">{{document.documentType}} № {{document.documentNumber}} от {{document.registrationDateStr}} ({{document.documentKind}})</h5>
             <h4 class="s-document-subheader">{{document.title}}</h4>
             <span class="s-document-status">Статус: {{document.status}}</span>
 
@@ -76,28 +76,8 @@
                 </li>
             </ul>
 
-
-            <b-form v-if="tab === 'attributes'" class="s-document-form">
-                <b-form-group
-                        label="Заголовок"
-                        label-for="titleInput">
-                    <b-form-input
-                            id="titleInput"
-                            type="email"
-                            v-model="document.title"
-                            required :readonly="!editMode" :plaintext="!editMode"  />
-                </b-form-group>
-
-                <b-form-group label="Вид документа" label-for="exampleInput2">
-                    <b-form-input
-                            v-if="!editMode"
-                            id="documentKindInput"
-                            v-model="document.documentKind"
-                            required :readonly="!editMode" :plaintext="!editMode"  />
-                    <s-select v-if="editMode" id="documentKindInput" :config="testSelectConfig" @value="(val) => document.documentKind=val" :value="document.documentKind"></s-select>
-                </b-form-group>
-
-            </b-form>
+            <!-- FORM -->
+            <s-document-form ref="attributesForm" v-if="tab === 'attributes'" @formState="(val) => this.formState = val" :edit-mode="editMode" v-model="document"/>
 
             <div v-if="tab === 'attaches'">
                 Вложения
@@ -157,53 +137,11 @@
 <script>
     import axios from "axios";
     import SSelect from "../components/Select";
+    import SDocumentForm from "../components/DocumentForm";
 
     export default {
-        components: {SSelect},
+        components: {SSelect, SDocumentForm},
         mounted() {
-            this.testSelectConfig = {
-                maxItems: 1,
-                //plugins: ['remove_button'],
-                valueField: 'title',
-                labelField: 'title',
-                searchField: 'title',
-                preload: true,
-                options: [{title: 'Акт'},
-                    {title: 'Апелляционная жалоба'},
-                    {title: 'Жалоба'},
-                    {title: 'Запрос'},
-                    {title: 'Заявка'},
-                    {title: 'Извещение'},
-                    {title: 'Исковое заявление'},
-                    {title: 'Исполнительный лист'},
-                    {title: 'Кассационная жалоба'},
-                    {title: 'Определение'},
-                    {title: 'Ответ на запрос'},
-                    {title: 'Отчет'},
-                    {title: 'Письмо'},
-                    {title: 'Повестка'},
-                    {title: 'Поручение'},
-                    {title: 'Постановление'},
-                    {title: 'Предписание'},
-                    {title: 'Представление'},
-                    {title: 'Предупреждение'},
-                    {title: 'Претензия'},
-                    {title: 'Приглашение'},
-                    {title: 'Приговор суда'},
-                    {title: 'Приказ'},
-                    {title: 'Протокол'},
-                    {title: 'Распоряжение'},
-                    {title: 'Решение'},
-                    {title: 'Справка'},
-                    {title: 'Судебная повестка'},
-                    {title: 'Телеграмма'},
-                    {title: 'Телефонограмма'},
-                    {title: 'Требование'},
-                    {title: 'Уведомление'},
-                    {title: 'Указ'},
-                    {title: 'Указание Минтранса'}],
-            };
-
             this.loadDocument();
         },
         props: [
@@ -222,10 +160,20 @@
                 this.editMode = true;
             },
             cancel() {
+                this.errorMessage = null;
                 this.document = JSON.parse(this.documentBackup);
                 this.editMode = false;
             },
             save() {
+                this.errorMessage = null;
+                if (
+                    this.$refs.attributesForm && this.$refs.attributesForm.getFormState() === false
+                ) {
+                    this.errorMessage = "Некорректно заполненные поля";
+                    return;
+                } else {
+                    this.errorMessage = null;
+                }
                 this.editMode = false;
 
                 const document = JSON.parse(JSON.stringify(this.document));
@@ -233,6 +181,7 @@
 
                 axios.post('/api/document', document).then(() => {
                     this.successMessage = 'Документ сохранен';
+                    setTimeout(() => this.successMessage = null, 3000);
                     this.loadDocument();
                 }).catch((err) => {
                     console.log('err', err);
@@ -240,13 +189,17 @@
                 });
             },
             loadDocument() {
+                this.errorMessage = null;
                 this.loading = true;
                 axios.get(`/api/document/${this.documentId}`).then((response) => {
                     const document = response.data;
 
                     try {
-                        const registrationDate = new Date(Date.parse(document.registrationDate)).toLocaleDateString("ru-RU");
-                        document.registrationDate = registrationDate;
+                        const registrationDate = Date.parse(document.registrationDate);
+                        if (!isNaN(registrationDate)) {
+                            const registrationDateStr = new Date().toLocaleDateString("ru-RU");
+                            document.registrationDateStr = registrationDateStr;
+                        }
                     } catch (e) {
 
                     }
@@ -287,11 +240,11 @@
                 tab: 'attributes',
                 editMode: false,
 
-                testSelectConfig: null,
-
                 attachesCount: 1,
                 processCount: 2,
-                linksCount: 3
+                linksCount: 3,
+
+                formState: null
             }
         }
     }

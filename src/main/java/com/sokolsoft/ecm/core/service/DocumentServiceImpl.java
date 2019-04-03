@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,5 +35,19 @@ public class DocumentServiceImpl implements DocumentService {
         Document oldDocument = documentRepository.getOne(document.getId());
         BeanUtils.copyProperties(document, oldDocument, Utils.getNullPropertyNames(document));
         return documentRepository.save(oldDocument);
+    }
+
+    @Override
+    public UUID createDocument(String documentType) {
+        Document document = new Document();
+        UUID id = UUID.randomUUID();
+        document.setId(id);
+        document.setTitle("Новый документ");
+        document.setStatus("Черновик");
+        document.setDocumentType(documentType);
+        document.setCreateDate(Instant.now());
+        documentRepository.save(document);
+
+        return id;
     }
 }

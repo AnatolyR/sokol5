@@ -12,4 +12,6 @@ public interface DocumentService {
 
 
     Document save(Document document);
+
+    UUID createDocument(String documentType);
 }
