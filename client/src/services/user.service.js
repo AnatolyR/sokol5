@@ -1,3 +1,4 @@
+import axios from 'axios';
 import store from '../store';
 import { router } from '../router';
 
@@ -7,15 +8,44 @@ export const userService = {
 };
 
 function login(username, password) {
-    if (username === "admin" && password === "admin") {
-        store.dispatch("setUser", {name: username}).then(() => {
-            router.push({ path: '/' });
+    // if (username === "admin" && password === "admin") {
+    //     store.dispatch("setUser", {name: username}).then(() => {
+    //         router.push({ path: '/' });
+    //     });
+    // }
+
+    var bodyFormData = new FormData();
+    bodyFormData.set('j_username', username);
+    bodyFormData.set('j_password', password);
+        // '&remember-me=' +
+        // credentials.rememberMe +
+        bodyFormData.set('submit', 'Login');
+    const headers = {};
+
+    // return new Promise((resolve, reject) => {
+    return axios.post('/api/authentication', bodyFormData, {
+            maxRedirects: 0
         });
-    }
+            // .then((res) => {
+            //     console.log("login res", res);
+            //     resolve();
+            // }).catch((err) => {
+            //     console.log("login err", err);
+            //     reject();
+            // });
+    // });
 }
 
 function logout() {
-    store.dispatch("setUser", null).then(() => {
-        location.href = "/";
+    axios.get('/api/logout', {
+        maxRedirects: 0
+    }).then((res) => {
+        store.dispatch("setUser", null).then(() => {
+            location.href = "/";
+        });
+    }).catch((err) => {
+        store.dispatch("setUser", null).then(() => {
+            location.href = "/";
+        });
     });
 }

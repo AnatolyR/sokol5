@@ -1,16 +1,19 @@
 <template>
     <div>
         <form @submit.prevent="handleSubmit" class="form-signin">
+            <div v-if="errorMessage" class="">
+                <b-alert show variant="danger">{{errorMessage}}</b-alert>
+            </div>
             <h1 class="h3 mb-3 font-weight-normal">Вход</h1>
             <label for="inputUser" class="sr-only">Имя пользователя</label>
             <input v-model="user" id="inputUser" class="form-control" placeholder="Имя пользователя" required autofocus>
             <label for="inputPassword" class="sr-only">Пароль</label>
             <input v-model="password" type="password" id="inputPassword" class="form-control" placeholder="Пароль" required>
-            <div class="checkbox mb-3">
-                <label>
-                    <input type="checkbox" value="remember-me"> Запомнить
-                </label>
-            </div>
+            <!--<div class="checkbox mb-3">-->
+                <!--<label>-->
+                    <!--<input type="checkbox" value="remember-me"> Запомнить-->
+                <!--</label>-->
+            <!--</div>-->
             <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
         </form>
     </div>
@@ -53,15 +56,32 @@
     import { userService } from "../services/user.service";
 
     export default {
+        props: [
+            'backUrl'
+        ],
         data() {
             return {
                 user: null,
-                password: null
+                password: null,
+                errorMessage: null
             }
         },
         methods: {
             handleSubmit () {
-                userService.login(this.user, this.password);
+                userService.login(this.user, this.password).then(() => {
+                    const url = this.$route.query['url'];
+                    if (url) {
+                        this.$router.push(url);
+                    } else {
+                        this.$router.push("/");
+                    }
+                }).catch((err) => {
+                    if (err.response.status === 401) {
+                        this.errorMessage = "Не верное имя пользователя или пароль";
+                    } else {
+                        this.$router.push('/error');
+                    }
+                });
             }
         }
     }

@@ -9,7 +9,7 @@
         <div v-if="loading" class="">
             <b-spinner variant="secondary" label="Загрузка..." />
         </div>
-        <div v-if="!loading" class="">
+        <div v-if="!loading && document" class="">
             <!-- BUTTONS -->
             <div class="s-document-button-bar">
                 <b-button v-if="openedFromFolder" size="sm" variant="light" @click="$router.go(-1)"><font-awesome-icon icon="angle-left" /> Назад</b-button>
@@ -210,8 +210,11 @@
                     this.loading = false;
                 }).catch((error) => {
                     this.loading = false;
-                    console.log(error);
-                    this.errorMessage = 'Не удается загрузить данные';
+                    if (error.response.status === 401) {
+                        this.$root.$router.push({path: "/login", query: {url: `/document/${this.documentId}`}});
+                    } else {
+                        this.errorMessage = 'Не удается загрузить данные';
+                    }
                 });
             },
             showAttributes() {

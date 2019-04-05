@@ -49,15 +49,15 @@
     export default {
         name: "s-header",
         computed: {
-            // ...mapState({
-            //     loggedIn: 'user',
-            //     user: 'user'
-            // })
+            ...mapState({
+                loggedIn: 'user',
+                user: 'user'
+            })
         },
         data() {
             return {
-                loggedIn: true,
-                user: {name: "admin"}
+                // loggedIn: true,
+                // user: {name: "admin"}
             }
         },
         methods: {

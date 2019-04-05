@@ -6,9 +6,12 @@ import Document from './views/Document.vue'
 import Dictionaries from './views/Dictionaries.vue'
 import Reports from './views/Reports.vue'
 import Search from './views/Search.vue'
+import Error from './views/Error.vue'
 
 import Login from './views/Login.vue'
 import store from './store'
+
+import axios from 'axios'
 
 Vue.use(Router);
 
@@ -43,6 +46,11 @@ export const router = new Router({
             name: 'search',
             component: Search
         },
+        {
+            path: '/error',
+            name: 'error',
+            component: Error
+        },
         // {
         //     path: '/about',
         //     name: 'about',
@@ -54,20 +62,36 @@ export const router = new Router({
         {
             path: '/login',
             name: 'login',
-            component: Login
+            component: Login,
+            props: true
         }
     ]
 });
 
 router.beforeEach((to, from, next) => {
     // redirect to login page if not logged in and trying to access a restricted page
-    const publicPages = ['/login', '/register'];
+    const publicPages = ['/login'];
     const authRequired = !publicPages.includes(to.path);
     const loggedIn = store.state.user;
 
-    // if (authRequired && !loggedIn) {
-    //     return next('/login');
-    // }
-
-    next();
+    if (authRequired) {
+        if (!loggedIn) {
+            axios.get('/api/currentUser').then((res) => {
+                const user = res.data;
+                store.dispatch("setUser", user).then(() => {
+                    next();
+                });
+            }).catch((err) => {
+                if (err.response.status === 401) {
+                    next('/login');
+                } else {
+                    next('/error');
+                }
+            });
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
 });
