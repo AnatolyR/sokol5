@@ -152,6 +152,11 @@
                 return this.$route.meta.openedFromFolder === true;
             }
         },
+        watch: {
+            documentId () {
+                this.loadDocument();
+            }
+        },
         methods: {
             goBack() {
                 this.$router.go(-1);
