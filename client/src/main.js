@@ -10,6 +10,7 @@ import 'selectize/dist/css/selectize.bootstrap3.css'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import axios from 'axios'
 
 library.add(faAngleLeft);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
@@ -26,3 +27,13 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app');
+
+axios.interceptors.response.use(function (response) {
+    return response;
+}, function (error) {
+    if (401 === error.response.status && error.config.url !== '/api/authentication') {
+        store.dispatch("setUser", null);
+    } else {
+        return Promise.reject(error);
+    }
+});

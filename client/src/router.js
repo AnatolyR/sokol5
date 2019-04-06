@@ -74,24 +74,11 @@ router.beforeEach((to, from, next) => {
     const authRequired = !publicPages.includes(to.path);
     const loggedIn = store.state.user;
 
-    if (authRequired) {
-        if (!loggedIn) {
-            axios.get('/api/currentUser').then((res) => {
-                const user = res.data;
-                store.dispatch("setUser", user).then(() => {
-                    next();
-                });
-            }).catch((err) => {
-                if (err.response.status === 401) {
-                    next('/login');
-                } else {
-                    next('/error');
-                }
-            });
-        } else {
-            next();
-        }
-    } else {
-        next();
+    if (authRequired && !loggedIn) {
+        axios.get('/api/currentUser').then((res) => {
+            const user = res.data;
+            store.dispatch("setUser", user);
+        });
     }
+    next();
 });

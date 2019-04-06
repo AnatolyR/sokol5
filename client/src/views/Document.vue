@@ -210,11 +210,7 @@
                     this.loading = false;
                 }).catch((error) => {
                     this.loading = false;
-                    if (error.response.status === 401) {
-                        this.$root.$router.push({path: "/login", query: {url: `/document/${this.documentId}`}});
-                    } else {
-                        this.errorMessage = 'Не удается загрузить данные';
-                    }
+                    this.errorMessage = 'Не удается загрузить данные';
                 });
             },
             showAttributes() {
