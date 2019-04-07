@@ -17,7 +17,6 @@ public class Document implements Serializable {
     @Id
     private UUID id;
 
-
     private UUID addressee;
 
     private String addresseeTitle;
@@ -59,7 +58,9 @@ public class Document implements Serializable {
 
     private String registrar;
 
-    private String externalOrganization;
+    private UUID externalOrganization;
+
+    private String externalOrganizationTitle;
 
     private String documentNumber;
 
@@ -227,12 +228,20 @@ public class Document implements Serializable {
         this.registrar = registrar;
     }
 
-    public String getExternalOrganization() {
+    public UUID getExternalOrganization() {
         return externalOrganization;
     }
 
-    public void setExternalOrganization(String externalOrganization) {
+    public void setExternalOrganization(UUID externalOrganization) {
         this.externalOrganization = externalOrganization;
+    }
+
+    public String getExternalOrganizationTitle() {
+        return externalOrganizationTitle;
+    }
+
+    public void setExternalOrganizationTitle(String externalOrganizationTitle) {
+        this.externalOrganizationTitle = externalOrganizationTitle;
     }
 
     public String getDocumentNumber() {

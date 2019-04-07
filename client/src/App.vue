@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <s-header></s-header>
-    <b-modal v-if="!loggedIn" :visible="true" id="modal-1" title="Вход">
+    <b-modal v-if="!loggedIn" :visible="true" id="modal-1" title="Вход" @hide="handleHide">
       <!--<p class="my-4">Hello from modal!</p>-->
 
       <form @submit.prevent="handleSubmit" class="form-signin">
@@ -83,11 +83,16 @@ a .nav-link.router-link-exact-active {
         }
       },
       methods: {
+          handleHide(e) {
+              e.preventDefault();
+          },
           handleSubmit () {
               userService.login(this.user, this.password).then(() => {
                   axios.get('/api/currentUser').then((res) => {
                       const user = res.data;
                       store.dispatch("setUser", user);
+                      this.user = null;
+                      this.password = null;
                   }).catch((err) => {
                       console.log(err);
                   });

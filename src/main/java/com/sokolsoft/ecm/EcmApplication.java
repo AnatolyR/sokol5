@@ -46,6 +46,12 @@ public class EcmApplication {
         d1.setAddresseeTitle("Петров И. И., зам. д.");
         d1.setAddresseeCopies(Arrays.asList(UUID.fromString("ce45b799-86da-489a-9ada-7d0567963847"), UUID.fromString("710fc8a3-78a5-4459-b38f-6dbcfbaf416b")));
         d1.setAddresseeCopiesTitles(Arrays.asList("Шишкин И. П., гл. инж.", "Звякин В. В., бух."));
+        d1.setExternalOrganization(UUID.randomUUID());
+        d1.setExternalOrganizationTitle("Агенство дизайна Алита, ООО");
+        d1.setExternalExecutor("Кирилченко И. П.");
+        d1.setExternalSigner("Васин И. Ю.");
+        d1.setExternalNumber("0012");
+        d1.setExternalDate(Instant.parse("2019-02-14T00:00:00.00Z"));
 
         documents.add(d1);
 
@@ -72,6 +78,7 @@ public class EcmApplication {
 
 
         context.getBean(DocumentRepository.class).saveAll(documents);
+        context.getBean(DemoData.class).uploadData();
     }
 
     @Configuration
