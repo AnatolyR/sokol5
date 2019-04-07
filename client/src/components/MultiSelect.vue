@@ -11,7 +11,7 @@
     }
 
     export default {
-        name: "s-select",
+        name: "s-multi-select",
         mounted() {
             if (this.created) {
                 return;
@@ -19,7 +19,10 @@
 
             const config = {...this.config};
             if (this.value) {
-                config.options = [{id: this.value, title: this.valueTitle}];
+                config.options = [];
+                for (let i = 0; i < this.value.length; i++) {
+                    config.options.push({id: this.value[i], title: this.valueTitle[i]});
+                }
             }
 
             var $select = $(this.$refs["select"]).selectize(config);

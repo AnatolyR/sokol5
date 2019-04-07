@@ -179,7 +179,6 @@
                 } else {
                     this.errorMessage = null;
                 }
-                this.editMode = false;
 
                 const document = JSON.parse(JSON.stringify(this.document));
                 document.registrationDate = null;
@@ -194,6 +193,7 @@
                 });
             },
             loadDocument() {
+                this.editMode = false;
                 this.errorMessage = null;
                 this.loading = true;
                 axios.get(`/api/document/${this.documentId}`).then((response) => {

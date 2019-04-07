@@ -45,7 +45,8 @@
                             v-model="document.addresseeTitle"
                             required :readonly="!editMode" :plaintext="!editMode"  />
                     <s-select v-if="editMode" id="addresseeInput" :config="addresseeSelectConfig"
-                              @value="(val) => document.addressee=val" :value="document.addressee"></s-select>
+                              @value="(val) => document.addressee=val" :value="document.addressee"
+                              :valueTitle="document.addresseeTitle"></s-select>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -54,10 +55,13 @@
                 label="Адресаты (копии)"
                 label-for="addresseeCopiesInput">
             <b-form-input
+                    v-if="!editMode"
                     id="addresseeCopiesInput"
-                    :state="state('addresseeCopies')"
-                    v-model="document.addresseeCopiesTitles"
+                    v-model="document.addresseeCopiesTitles.join()"
                     required :readonly="!editMode" :plaintext="!editMode"  />
+            <s-multi-select v-if="editMode" id="addresseeCopiesInput" :config="addresseeCopiesSelectConfig"
+                      @value="(val) => document.addresseeCopies=val" :value="document.addresseeCopies"
+                      :valueTitle="document.addresseeCopiesTitles"></s-multi-select>
         </b-form-group>
 
         <div class="s-document-block-delimiter"></div>
@@ -271,10 +275,11 @@
 
 <script>
     import SSelect from "../components/Select";
+    import SMultiSelect from "../components/MultiSelect";
     import axios from 'axios';
 
     export default {
-        components: {SSelect},
+        components: {SSelect, SMultiSelect},
 
         mounted() {
             this.testSelectConfig = {
@@ -355,6 +360,27 @@
                     labelField: 'title',
                     searchField: 'title',
                     preload: true,
+                    load(query, callback) {
+                        if (!query.length) {
+                            return callback();
+                        }
+                        axios.get(`/api/users/search/userByTitle?title=%25${query}%25`).then((res) => {
+                            const users = res.data._embedded.users;
+                            callback(users);
+                        }).catch(() => {
+                            callback();
+                        })
+                    }
+                },
+
+                addresseeCopiesSelectConfig: {
+                    maxItems: 100,
+                    plugins: ['restore_on_backspace', 'remove_button'],
+                    valueField: 'id',
+                    labelField: 'title',
+                    searchField: 'title',
+                    create: false,
+                    closeAfterSelect: true,
                     load(query, callback) {
                         if (!query.length) {
                             return callback();

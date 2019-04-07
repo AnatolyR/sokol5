@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,6 +52,16 @@ public class DocumentServiceImpl implements DocumentService {
             User addressee = userRepository.getOne(addresseeId);
             document.setAddresseeTitle(addressee.getTitle());
         }
+
+        List<UUID> addresseeCopiesIds = document.getAddresseeCopies();
+        List<String> addresseeCopiesTitles = new ArrayList<>();
+        for (UUID addresseeCopyId : addresseeCopiesIds) {
+            if (addresseeCopyId != null) {
+                User addressee = userRepository.getOne(addresseeCopyId);
+                addresseeCopiesTitles.add(addressee.getTitle());
+            }
+        }
+        document.setAddresseeCopiesTitles(addresseeCopiesTitles);
     }
 
     @Override
