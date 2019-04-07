@@ -1,11 +1,14 @@
 package com.sokolsoft.ecm;
 
 import com.sokolsoft.ecm.core.model.Document;
+import com.sokolsoft.ecm.core.model.User;
 import com.sokolsoft.ecm.core.repository.DocumentRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -42,8 +45,8 @@ public class EcmApplication {
         d1.setRegistrationDate(Instant.parse("2019-03-03T00:00:00.00Z"));
         d1.setDocumentNumber("131");
         d1.setStatus("На рассмотрении");
-        d1.setAddressee(UUID.fromString("f48cc6f9-7f14-4f80-ab48-dbb909a44e0b"));
-        d1.setAddresseeTitle("Петров И. И., зам. д.");
+        d1.setAddressee(UUID.fromString("722b151c-f9d7-4222-b541-cfc554695510"));
+        d1.setAddresseeTitle("Ивашов В. Н.");
         d1.setAddresseeCopies(Arrays.asList(UUID.fromString("ce45b799-86da-489a-9ada-7d0567963847"), UUID.fromString("710fc8a3-78a5-4459-b38f-6dbcfbaf416b")));
         d1.setAddresseeCopiesTitles(Arrays.asList("Шишкин И. П., гл. инж.", "Звякин В. В., бух."));
         d1.setExternalOrganization(UUID.randomUUID());
@@ -150,6 +153,13 @@ public class EcmApplication {
 
         public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
             response.sendError(401, "Authentication failed");
+        }
+    }
+
+    @Configuration
+    protected static class RepositoryRest implements RepositoryRestConfigurer {
+        public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
+            config.exposeIdsFor(User.class);
         }
     }
 }

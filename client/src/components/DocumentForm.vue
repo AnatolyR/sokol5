@@ -40,10 +40,12 @@
                         label="Адресат"
                         label-for="addresseeInput">
                     <b-form-input
+                            v-if="!editMode"
                             id="addresseeInput"
-                            :state="state('addressee')"
                             v-model="document.addresseeTitle"
                             required :readonly="!editMode" :plaintext="!editMode"  />
+                    <s-select v-if="editMode" id="addresseeInput" :config="addresseeSelectConfig"
+                              @value="(val) => document.addressee=val" :value="document.addressee"></s-select>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -269,6 +271,7 @@
 
 <script>
     import SSelect from "../components/Select";
+    import axios from 'axios';
 
     export default {
         components: {SSelect},
@@ -344,7 +347,26 @@
         },
         data() {
             return {
-                testSelectConfig: null
+                testSelectConfig: null,
+                addresseeSelectConfig: {
+                    maxItems: 1,
+                    //plugins: ['remove_button'],
+                    valueField: 'id',
+                    labelField: 'title',
+                    searchField: 'title',
+                    preload: true,
+                    load(query, callback) {
+                        if (!query.length) {
+                            return callback();
+                        }
+                        axios.get(`/api/users/search/userByTitle?title=%25${query}%25`).then((res) => {
+                            const users = res.data._embedded.users;
+                            callback(users);
+                        }).catch(() => {
+                            callback();
+                        })
+                    }
+                }
             }
         }
     }

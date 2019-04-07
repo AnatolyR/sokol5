@@ -2,7 +2,9 @@ package com.sokolsoft.ecm.core.service;
 
 import com.sokolsoft.ecm.core.Utils;
 import com.sokolsoft.ecm.core.model.Document;
+import com.sokolsoft.ecm.core.model.User;
 import com.sokolsoft.ecm.core.repository.DocumentRepository;
+import com.sokolsoft.ecm.core.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +17,12 @@ import java.util.UUID;
 public class DocumentServiceImpl implements DocumentService {
     private DocumentRepository documentRepository;
 
+    private UserRepository userRepository;
+
     @Autowired
-    public DocumentServiceImpl(DocumentRepository documentRepository) {
+    public DocumentServiceImpl(DocumentRepository documentRepository, UserRepository userRepository) {
         this.documentRepository = documentRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -34,7 +39,18 @@ public class DocumentServiceImpl implements DocumentService {
     public Document save(Document document) {
         Document oldDocument = documentRepository.getOne(document.getId());
         BeanUtils.copyProperties(document, oldDocument, Utils.getNullPropertyNames(document));
+
+        fillTitles(oldDocument);
+
         return documentRepository.save(oldDocument);
+    }
+
+    private void fillTitles(Document document) {
+        UUID addresseeId = document.getAddressee();
+        if (addresseeId != null) {
+            User addressee = userRepository.getOne(addresseeId);
+            document.setAddresseeTitle(addressee.getTitle());
+        }
     }
 
     @Override
