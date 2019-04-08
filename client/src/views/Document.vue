@@ -181,8 +181,8 @@
                 }
 
                 const document = JSON.parse(JSON.stringify(this.document));
-                console.log("> DATE", new Date(document.registrationDate));
                 document.registrationDate = new Date(document.registrationDate).toISOString();
+                document.externalDate = new Date(document.externalDate).toISOString();
 
                 axios.post('/api/document', document).then(() => {
                     this.successMessage = 'Документ сохранен';
@@ -206,6 +206,16 @@
                             const registrationDateStr = new Date(registrationDate).toLocaleDateString("ru-RU");
                             document.registrationDate = new Date(registrationDate);
                             document.registrationDateStr = registrationDateStr;
+                        }
+                    } catch (e) {
+
+                    }
+                    try {
+                        const externalDate = Date.parse(document.externalDate);
+                        if (!isNaN(externalDate)) {
+                            const externalDateStr = new Date(externalDate).toLocaleDateString("ru-RU");
+                            document.externalDate = new Date(externalDate);
+                            document.externalDateStr = externalDateStr;
                         }
                     } catch (e) {
 

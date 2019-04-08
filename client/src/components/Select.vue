@@ -25,6 +25,7 @@
             var $select = $(this.$refs["select"]).selectize(config);
             var selectize = $select[0].selectize;
             setTimeout(() => selectize.setValue(this.value), 10);
+            selectize.depends = this.depends;
 
             selectize.on("change", (val) => {
                 if (val !== this.value) {
@@ -42,7 +43,8 @@
         props: [
             'config',
             'value',
-            'valueTitle'
+            'valueTitle',
+            'depends'
         ]
     }
 </script>

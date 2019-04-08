@@ -1,0 +1,19 @@
+GET http://localhost:8080/api/contragents
+Authorization: Basic YWRtaW46YWRtaW4=
+
+###
+
+GET http://localhost:8080/api/contragents/search/userByTitle?title=%А.%
+Authorization: Basic YWRtaW46YWRtaW4=
+
+###
+
+GET http://localhost:8080/api/contragentpersons
+Authorization: Basic YWRtaW46YWRtaW4=
+
+###
+
+GET http://localhost:8080/api/contragentpersons/search/personByTitle?organizationId=60d3fde7-c523-4afb-8a56-e713775a3be1&title=%Кири%
+Authorization: Basic YWRtaW46YWRtaW4=
+
+###

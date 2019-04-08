@@ -70,10 +70,13 @@
                 label="Корреспондент"
                 label-for="externalOrganizationInput">
             <b-form-input
+                    v-if="!editMode"
                     id="externalOrganizationInput"
-                    :state="state('externalOrganization')"
                     v-model="document.externalOrganizationTitle"
                     required :readonly="!editMode" :plaintext="!editMode"  />
+            <s-select v-if="editMode" id="externalOrganizationInput" :config="externalOrganizationConfig"
+                      @value="(val) => document.externalOrganization=val" :value="document.externalOrganization"
+                      :valueTitle="document.externalOrganizationTitle"></s-select>
         </b-form-group>
 
         <b-row>
@@ -82,10 +85,14 @@
                         label="Кем подписано"
                         label-for="externalSignerInput">
                     <b-form-input
+                            v-if="!editMode"
                             id="externalSignerInput"
-                            :state="state('externalSigner')"
                             v-model="document.externalSigner"
                             required :readonly="!editMode" :plaintext="!editMode"  />
+                    <s-select v-if="editMode" id="externalSignerInput" :config="externalOrganizationPersonConfig"
+                              @value="(val) => document.externalSigner=val" :value="document.externalSigner"
+                              :depends="document"
+                              :valueTitle="document.externalSigner"></s-select>
                 </b-form-group>
             </b-col>
             <b-col>
@@ -93,10 +100,14 @@
                         label="Исполнитель"
                         label-for="externalExecutorInput">
                     <b-form-input
-                            id="eexternalExecutorInput"
-                            :state="state('externalExecutor')"
+                            v-if="!editMode"
+                            id="externalExecutorInput"
                             v-model="document.externalExecutor"
                             required :readonly="!editMode" :plaintext="!editMode"  />
+                    <s-select v-if="editMode" id="externalExecutorInput" :config="externalOrganizationPersonConfig"
+                              @value="(val) => document.externalExecutor=val" :value="document.externalExecutor"
+                              :depends="document"
+                              :valueTitle="document.externalExecutor"></s-select>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -118,10 +129,16 @@
                         label="Исходящая дата"
                         label-for="externalDateInput">
                     <b-form-input
+                            v-if="!editMode"
+                            id="externalDateInput"
+                            v-model="document.externalDateStr"
+                            required :readonly="!editMode" :plaintext="!editMode"  />
+                    <date-picker
+                            v-if="editMode"
                             id="externalDateInput"
                             :state="state('externalDate')"
                             v-model="document.externalDate"
-                            required :readonly="!editMode" :plaintext="!editMode"  />
+                            :config="registrationDateConfig"/>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -359,6 +376,7 @@
             }
         },
         data() {
+            const documentData = this.document;
             return {
                 testSelectConfig: null,
                 addresseeSelectConfig: {
@@ -403,7 +421,49 @@
                 },
                 registrationDateConfig: {
                     locale:'ru'
+                },
+
+                externalOrganizationConfig: {
+                    maxItems: 1,
+                    //plugins: ['remove_button'],
+                    valueField: 'id',
+                    labelField: 'title',
+                    searchField: 'title',
+                    preload: true,
+                    load(query, callback) {
+                        if (!query.length) {
+                            return callback();
+                        }
+                        axios.get(`/api/contragents/search/userByTitle?title=%25${query}%25`).then((res) => {
+                            const users = res.data._embedded.contragents;
+                            callback(users);
+                        }).catch(() => {
+                            callback();
+                        })
+                    }
+                },
+
+                externalOrganizationPersonConfig: {
+                    maxItems: 1,
+                    //plugins: ['remove_button'],
+                    valueField: 'title',
+                    labelField: 'title',
+                    searchField: 'title',
+                    preload: true,
+                    create: true,
+                    load(query, callback) {
+                        if (!query.length) {
+                            return callback();
+                        }
+                        axios.get(`/api/contragentpersons/search/personByTitle?organizationId=${this.depends.externalOrganization}&title=%25${query}%25`).then((res) => {
+                            const users = res.data._embedded.contragentPersons;
+                            callback(users);
+                        }).catch(() => {
+                            callback();
+                        })
+                    }
                 }
+
             }
         }
     }

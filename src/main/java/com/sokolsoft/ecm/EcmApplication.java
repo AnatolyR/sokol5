@@ -1,5 +1,6 @@
 package com.sokolsoft.ecm;
 
+import com.sokolsoft.ecm.core.model.Contragent;
 import com.sokolsoft.ecm.core.model.Document;
 import com.sokolsoft.ecm.core.model.User;
 import com.sokolsoft.ecm.core.repository.DocumentRepository;
@@ -45,12 +46,14 @@ public class EcmApplication {
         d1.setRegistrationDate(Instant.parse("2019-03-03T00:00:00.00Z"));
         d1.setDocumentNumber("131");
         d1.setStatus("На рассмотрении");
-        d1.setAddressee(UUID.fromString("722b151c-f9d7-4222-b541-cfc554695510"));
-        d1.setAddresseeTitle("Ивашов В. Н.");
-        d1.setAddresseeCopies(Arrays.asList(UUID.fromString("ce45b799-86da-489a-9ada-7d0567963847"), UUID.fromString("710fc8a3-78a5-4459-b38f-6dbcfbaf416b")));
-        d1.setAddresseeCopiesTitles(Arrays.asList("Шишкин И. П., гл. инж.", "Звякин В. В., бух."));
-        d1.setExternalOrganization(UUID.randomUUID());
-        d1.setExternalOrganizationTitle("Агенство дизайна Алита, ООО");
+        d1.setAddressee(UUID.fromString("9bb42bab-8965-49d2-b134-cec0d1505cc3"));
+        d1.setAddresseeTitle("Ивашова А. Е.");
+
+        d1.setAddresseeCopies(Arrays.asList(UUID.fromString("b1fea135-9e3e-4e41-ad6d-492841868fd5"), UUID.fromString("335938f6-877b-4754-b20e-ea5dc2d4f1b4")));
+        d1.setAddresseeCopiesTitles(Arrays.asList("Агапов Н. В.", "Виноградова А. А."));
+
+        d1.setExternalOrganization(UUID.fromString("60d3fde7-c523-4afb-8a56-e713775a3be1"));
+        d1.setExternalOrganizationTitle("КАПИТАЛ, деловой центр");
         d1.setExternalExecutor("Кирилченко И. П.");
         d1.setExternalSigner("Васин И. Ю.");
         d1.setExternalNumber("0012");
@@ -160,6 +163,7 @@ public class EcmApplication {
     protected static class RepositoryRest implements RepositoryRestConfigurer {
         public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
             config.exposeIdsFor(User.class);
+            config.exposeIdsFor(Contragent.class);
         }
     }
 }

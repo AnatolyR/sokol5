@@ -1,8 +1,12 @@
 package com.sokolsoft.ecm.core.service;
 
 import com.sokolsoft.ecm.core.Utils;
+import com.sokolsoft.ecm.core.model.Contragent;
+import com.sokolsoft.ecm.core.model.ContragentPerson;
 import com.sokolsoft.ecm.core.model.Document;
 import com.sokolsoft.ecm.core.model.User;
+import com.sokolsoft.ecm.core.repository.ContragentPersonRepository;
+import com.sokolsoft.ecm.core.repository.ContragentRepository;
 import com.sokolsoft.ecm.core.repository.DocumentRepository;
 import com.sokolsoft.ecm.core.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
@@ -20,10 +24,18 @@ public class DocumentServiceImpl implements DocumentService {
 
     private UserRepository userRepository;
 
+    private ContragentRepository contragentRepository;
+
+    private ContragentPersonRepository contragentPersonRepository;
+
     @Autowired
-    public DocumentServiceImpl(DocumentRepository documentRepository, UserRepository userRepository) {
+    public DocumentServiceImpl(DocumentRepository documentRepository,
+                               UserRepository userRepository, ContragentRepository contragentRepository,
+                               ContragentPersonRepository contragentPersonRepository) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
+        this.contragentRepository = contragentRepository;
+        this.contragentPersonRepository = contragentPersonRepository;
     }
 
     @Override
@@ -42,8 +54,38 @@ public class DocumentServiceImpl implements DocumentService {
         BeanUtils.copyProperties(document, oldDocument, Utils.getNullPropertyNames(document));
 
         fillTitles(oldDocument);
+        createExternalOrganizationPersons(oldDocument);
 
         return documentRepository.save(oldDocument);
+    }
+
+    private void createExternalOrganizationPersons(Document document) {
+        UUID externalOrganization = document.getExternalOrganization();
+        if (externalOrganization != null) {
+            String externalSigner = document.getExternalSigner();
+            if (externalSigner != null && !externalSigner.isEmpty()) {
+                List<ContragentPerson> signerPersons = contragentPersonRepository.findByOrganizationIdAndTitle(externalOrganization, externalSigner);
+                if (signerPersons.size() == 0) {
+                    ContragentPerson signerPerson = new ContragentPerson();
+                    signerPerson.setId(UUID.randomUUID());
+                    signerPerson.setTitle(externalSigner);
+                    signerPerson.setOrganizationId(externalOrganization);
+                    contragentPersonRepository.save(signerPerson);
+                }
+            }
+
+            String externalExecutor = document.getExternalExecutor();
+            if (externalExecutor != null && !externalExecutor.isEmpty()) {
+                List<ContragentPerson> executorsPersons = contragentPersonRepository.findByOrganizationIdAndTitle(externalOrganization, externalExecutor);
+                if (executorsPersons.size() == 0) {
+                    ContragentPerson executorPerson = new ContragentPerson();
+                    executorPerson.setId(UUID.randomUUID());
+                    executorPerson.setTitle(externalExecutor);
+                    executorPerson.setOrganizationId(externalOrganization);
+                    contragentPersonRepository.save(executorPerson);
+                }
+            }
+        }
     }
 
     private void fillTitles(Document document) {
@@ -62,6 +104,12 @@ public class DocumentServiceImpl implements DocumentService {
             }
         }
         document.setAddresseeCopiesTitles(addresseeCopiesTitles);
+
+        UUID externalOrganizationId = document.getExternalOrganization();
+        if (externalOrganizationId != null) {
+            Contragent externalOrganization = contragentRepository.getOne(externalOrganizationId);
+            document.setExternalOrganizationTitle(externalOrganization.getTitle());
+        }
     }
 
     @Override

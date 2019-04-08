@@ -1,7 +1,9 @@
 package com.sokolsoft.ecm;
 
 import com.sokolsoft.ecm.core.model.Contragent;
+import com.sokolsoft.ecm.core.model.ContragentPerson;
 import com.sokolsoft.ecm.core.model.User;
+import com.sokolsoft.ecm.core.repository.ContragentPersonRepository;
 import com.sokolsoft.ecm.core.repository.ContragentRepository;
 import com.sokolsoft.ecm.core.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,13 @@ public class DemoData {
     
     private UserRepository userRepository;
 
+    private ContragentPersonRepository contragentPersonRepository;
+
     @Autowired
-    public DemoData(ContragentRepository contragentRepository, UserRepository userRepository) {
+    public DemoData(ContragentRepository contragentRepository, UserRepository userRepository, ContragentPersonRepository contragentPersonRepository) {
         this.contragentRepository = contragentRepository;
         this.userRepository = userRepository;
+        this.contragentPersonRepository = contragentPersonRepository;
     }
     
     public void uploadData() {
@@ -53,6 +58,19 @@ public class DemoData {
             list.add(c);
         }
         contragentRepository.saveAll(list);
+
+        ContragentPerson person1 = new ContragentPerson();
+        person1.setId(UUID.fromString("b45b2465-8590-4f09-8d7b-4b2e58683599"));
+        person1.setTitle("Васин И. Ю.");
+        person1.setOrganizationId(UUID.fromString("60d3fde7-c523-4afb-8a56-e713775a3be1"));
+        contragentPersonRepository.save(person1);
+
+        ContragentPerson person2 = new ContragentPerson();
+        person2.setId(UUID.fromString("dde4a9a4-754f-4438-875c-5a6b2d5b0ba0"));
+        person2.setTitle("Кирилченко И. П.");
+        person2.setOrganizationId(UUID.fromString("60d3fde7-c523-4afb-8a56-e713775a3be1"));
+        contragentPersonRepository.save(person2);
+
     }
     
     private void uploadUsers() {
