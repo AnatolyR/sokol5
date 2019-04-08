@@ -7,6 +7,8 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'selectize/dist/css/selectize.bootstrap3.css'
 
+import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css'
+
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'

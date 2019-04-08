@@ -186,10 +186,16 @@
                         label="Дата регистрации"
                         label-for="registrationDateInput">
                     <b-form-input
+                            v-if="!editMode"
+                            id="registrationDateInput"
+                            v-model="document.registrationDateStr"
+                            required :readonly="!editMode" :plaintext="!editMode"  />
+                    <date-picker
+                            v-if="editMode"
                             id="registrationDateInput"
                             :state="state('registrationDate')"
                             v-model="document.registrationDate"
-                            required :readonly="!editMode" :plaintext="!editMode"  />
+                            :config="registrationDateConfig"/>
                 </b-form-group>
             </b-col>
             <b-col>
@@ -278,8 +284,10 @@
     import SMultiSelect from "../components/MultiSelect";
     import axios from 'axios';
 
+    import datePicker from 'vue-bootstrap-datetimepicker';
+
     export default {
-        components: {SSelect, SMultiSelect},
+        components: {SSelect, SMultiSelect, datePicker},
 
         mounted() {
             this.testSelectConfig = {
@@ -392,6 +400,9 @@
                             callback();
                         })
                     }
+                },
+                registrationDateConfig: {
+                    locale:'ru'
                 }
             }
         }
