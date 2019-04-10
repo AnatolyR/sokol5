@@ -44,7 +44,7 @@
                             id="addresseeInput"
                             v-model="document.addresseeTitle"
                             required :readonly="!editMode" :plaintext="!editMode"  />
-                    <s-select v-if="editMode" id="addresseeInput" :config="addresseeSelectConfig"
+                    <s-select v-if="editMode" id="addresseeInput" :config="userSelectConfig"
                               @value="(val) => document.addressee=val" :value="document.addressee"
                               :valueTitle="document.addresseeTitle"></s-select>
                 </b-form-group>
@@ -138,7 +138,7 @@
                             id="externalDateInput"
                             :state="state('externalDate')"
                             v-model="document.externalDate"
-                            :config="registrationDateConfig"/>
+                            :config="dateConfig"/>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -180,6 +180,9 @@
                             :state="state('pageCount')"
                             v-model="document.pageCount"
                             required :readonly="!editMode" :plaintext="!editMode"  />
+                    <b-form-invalid-feedback>
+                        Количество листов должно быть целым числом
+                    </b-form-invalid-feedback>
                 </b-form-group>
             </b-col>
             <b-col>
@@ -191,6 +194,9 @@
                             :state="state('appendixCount')"
                             v-model="document.appendixCount"
                             required :readonly="!editMode" :plaintext="!editMode"  />
+                    <b-form-invalid-feedback>
+                        Количество приложений должно быть целым числом
+                    </b-form-invalid-feedback>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -212,7 +218,7 @@
                             id="registrationDateInput"
                             :state="state('registrationDate')"
                             v-model="document.registrationDate"
-                            :config="registrationDateConfig"/>
+                            :config="dateConfig"/>
                 </b-form-group>
             </b-col>
             <b-col>
@@ -220,10 +226,13 @@
                         label="Регистратор"
                         label-for="registrarInput">
                     <b-form-input
+                            v-if="!editMode"
                             id="registrarInput"
-                            :state="state('registrar')"
-                            v-model="document.registrar"
+                            v-model="document.registrarTitle"
                             required :readonly="!editMode" :plaintext="!editMode"  />
+                    <s-select v-if="editMode" id="registrarInput" :config="userSelectConfig"
+                              @value="(val) => document.registrar=val" :value="document.registrar"
+                              :valueTitle="document.registrarTitle"></s-select>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -234,10 +243,16 @@
                         label="Дата исполнения"
                         label-for="executionDateInput">
                     <b-form-input
+                            v-if="!editMode"
+                            id="executionDateInput"
+                            v-model="document.executionDateStr"
+                            required :readonly="!editMode" :plaintext="!editMode"  />
+                    <date-picker
+                            v-if="editMode"
                             id="executionDateInput"
                             :state="state('executionDate')"
                             v-model="document.executionDate"
-                            required :readonly="!editMode" :plaintext="!editMode"  />
+                            :config="dateConfig"/>
                 </b-form-group>
             </b-col>
             <b-col>
@@ -245,10 +260,13 @@
                         label="Исполнитель"
                         label-for="executorInput">
                     <b-form-input
+                            v-if="!editMode"
                             id="executorInput"
-                            :state="state('executor')"
-                            v-model="document.executor"
+                            v-model="document.executorTitle"
                             required :readonly="!editMode" :plaintext="!editMode"  />
+                    <s-select v-if="editMode" id="executorInput" :config="userSelectConfig"
+                              @value="(val) => document.executor=val" :value="document.executor"
+                              :valueTitle="document.executorTitle"></s-select>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -259,10 +277,13 @@
                         label="Контроллер"
                         label-for="controllerInput">
                     <b-form-input
+                            v-if="!editMode"
                             id="controllerInput"
-                            :state="state('controller')"
-                            v-model="document.controller"
+                            v-model="document.controllerTitle"
                             required :readonly="!editMode" :plaintext="!editMode"  />
+                    <s-select v-if="editMode" id="controllerInput" :config="userSelectConfig"
+                              @value="(val) => document.controller=val" :value="document.controller"
+                              :valueTitle="document.controllerTitle"></s-select>
                 </b-form-group>
             </b-col>
             <b-col>
@@ -372,14 +393,27 @@
                 return !(this.titleState ===  false);
             },
             state(field) {
+                if (field === 'pageCount' && this.document.pageCount) {
+                    if (!(this.isNormalInteger(this.document.pageCount) && this.document.pageCount >= 0)) {
+                        return false;
+                    }
+                }
+                if (field === 'appendixCount' && this.document.appendixCount) {
+                    if (!(this.isNormalInteger(this.document.appendixCount) && this.document.appendixCount >= 0)) {
+                        return false;
+                    }
+                }
                 return null;
+            },
+            isNormalInteger(str) {
+                return /^\+?(0|[1-9]\d*)$/.test(str);
             }
         },
         data() {
             const documentData = this.document;
             return {
                 testSelectConfig: null,
-                addresseeSelectConfig: {
+                userSelectConfig: {
                     maxItems: 1,
                     //plugins: ['remove_button'],
                     valueField: 'id',
@@ -419,7 +453,7 @@
                         })
                     }
                 },
-                registrationDateConfig: {
+                dateConfig: {
                     locale:'ru'
                 },
 

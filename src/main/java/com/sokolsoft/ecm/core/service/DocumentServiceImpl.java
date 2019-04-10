@@ -110,6 +110,24 @@ public class DocumentServiceImpl implements DocumentService {
             Contragent externalOrganization = contragentRepository.getOne(externalOrganizationId);
             document.setExternalOrganizationTitle(externalOrganization.getTitle());
         }
+
+        UUID registrarId = document.getRegistrar();
+        if (registrarId != null) {
+            User registrar = userRepository.getOne(registrarId);
+            document.setRegistrarTitle(registrar.getTitle());
+        }
+
+        UUID executorId = document.getExecutor();
+        if (executorId != null) {
+            User executor = userRepository.getOne(executorId);
+            document.setExecutorTitle(executor.getTitle());
+        }
+
+        UUID controllerId = document.getController();
+        if (controllerId != null) {
+            User controller = userRepository.getOne(controllerId);
+            document.setControllerTitle(controller.getTitle());
+        }
     }
 
     @Override

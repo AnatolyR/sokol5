@@ -56,7 +56,9 @@ public class Document implements Serializable {
 
     private String caseNumber;
 
-    private String registrar;
+    private UUID registrar;
+
+    private String registrarTitle;
 
     private UUID externalOrganization;
 
@@ -68,9 +70,13 @@ public class Document implements Serializable {
 
     private String executionDate;
 
-    private String executor;
+    private UUID executor;
 
-    private String controller;
+    private String executorTitle;
+
+    private UUID controller;
+
+    private String controllerTitle;
 
     private String status;
 
@@ -220,12 +226,20 @@ public class Document implements Serializable {
         this.caseNumber = caseNumber;
     }
 
-    public String getRegistrar() {
+    public UUID getRegistrar() {
         return registrar;
     }
 
-    public void setRegistrar(String registrar) {
+    public void setRegistrar(UUID registrar) {
         this.registrar = registrar;
+    }
+
+    public String getRegistrarTitle() {
+        return registrarTitle;
+    }
+
+    public void setRegistrarTitle(String registrarTitle) {
+        this.registrarTitle = registrarTitle;
     }
 
     public UUID getExternalOrganization() {
@@ -268,20 +282,36 @@ public class Document implements Serializable {
         this.executionDate = executionDate;
     }
 
-    public String getExecutor() {
+    public UUID getExecutor() {
         return executor;
     }
 
-    public void setExecutor(String executor) {
+    public void setExecutor(UUID executor) {
         this.executor = executor;
     }
 
-    public String getController() {
+    public String getExecutorTitle() {
+        return executorTitle;
+    }
+
+    public void setExecutorTitle(String executorTitle) {
+        this.executorTitle = executorTitle;
+    }
+
+    public UUID getController() {
         return controller;
     }
 
-    public void setController(String controller) {
+    public void setController(UUID controller) {
         this.controller = controller;
+    }
+
+    public String getControllerTitle() {
+        return controllerTitle;
+    }
+
+    public void setControllerTitle(String controllerTitle) {
+        this.controllerTitle = controllerTitle;
     }
 
     public String getStatus() {

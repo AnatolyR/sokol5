@@ -4,6 +4,12 @@
     </div>
 </template>
 
+<style>
+    .selectize-dropdown, .selectize-input, .selectize-input input {
+        line-height: unset !important;
+    }
+</style>
+
 <script>
     import $ from 'jquery';
     if (!$().selectize) {
