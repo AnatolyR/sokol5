@@ -28,14 +28,18 @@ public class DocumentServiceImpl implements DocumentService {
 
     private ContragentPersonRepository contragentPersonRepository;
 
+    private UserService userService;
+
     @Autowired
     public DocumentServiceImpl(DocumentRepository documentRepository,
                                UserRepository userRepository, ContragentRepository contragentRepository,
-                               ContragentPersonRepository contragentPersonRepository) {
+                               ContragentPersonRepository contragentPersonRepository,
+                               UserService userService) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
         this.contragentRepository = contragentRepository;
         this.contragentPersonRepository = contragentPersonRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -139,6 +143,12 @@ public class DocumentServiceImpl implements DocumentService {
         document.setStatus("Черновик");
         document.setDocumentType(documentType);
         document.setCreateDate(Instant.now());
+
+        User currentUser = userService.getCurrentUser();
+        document.setCreator(currentUser.getId());
+        document.setCreatorTitle(currentUser.getTitle());
+        document.setCreateDate(Instant.now());
+
         documentRepository.save(document);
 
         return id;

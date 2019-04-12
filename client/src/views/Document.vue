@@ -205,7 +205,9 @@
                 this.errorMessage = null;
                 this.loading = true;
                 axios.get(`/api/document/${this.documentId}`).then((response) => {
-                    const document = response.data;
+                    const document = response.data.document;
+                    const fieldsLevels = response.data.fields;
+                    console.log("levels ", fieldsLevels);
 
                     try {
                         const registrationDate = Date.parse(document.registrationDate);

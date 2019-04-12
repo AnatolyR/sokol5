@@ -1,0 +1,11 @@
+Входящий/Черновик/USER/title=1
+Входящий/Черновик/USER/documentKind=2
+Входящий/Черновик/USER/addressee=3
+Входящий/Черновик/USER/addresseeCopies=2
+Входящий/Черновик/USER/registrationDate=1
+
+Входящий/Черновик/ADMIN/title=3
+Входящий/Черновик/ADMIN/documentKind=3
+Входящий/Черновик/ADMIN/addressee=2
+Входящий/Черновик/ADMIN/addresseeCopies=3
+Входящий/Черновик/ADMIN/registrationDate=3

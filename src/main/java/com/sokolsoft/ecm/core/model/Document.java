@@ -82,6 +82,10 @@ public class Document implements Serializable {
 
     private String documentType;
 
+    private UUID creator;
+
+    private String creatorTitle;
+
     public UUID getId() {
         return id;
     }
@@ -328,5 +332,21 @@ public class Document implements Serializable {
 
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    public UUID getCreator() {
+        return creator;
+    }
+
+    public void setCreator(UUID creator) {
+        this.creator = creator;
+    }
+
+    public String getCreatorTitle() {
+        return creatorTitle;
+    }
+
+    public void setCreatorTitle(String creatorTitle) {
+        this.creatorTitle = creatorTitle;
     }
 }
