@@ -2,12 +2,13 @@
     <b-form class="s-document-form">
         <b-form-group
                 label="Заголовок"
-                label-for="titleInput">
+                label-for="titleInput"
+                v-if="fieldsLevels.title > 0">
             <b-form-input
                     id="titleInput"
-                    :state="titleState"
+                    :state="state('title')"
                     v-model="document.title"
-                    required :readonly="!editMode" :plaintext="!editMode"  />
+                    required :readonly="!editMode || fieldsLevels.title == 1" :plaintext="!editMode || fieldsLevels.title == 1"  />
             <b-form-invalid-feedback>
                 Заголовок не может быть пустой
             </b-form-invalid-feedback>
@@ -15,51 +16,66 @@
 
         <b-form-group
                 label="Комментарий"
-                label-for="commentInput">
+                label-for="commentInput"
+                v-if="fieldsLevels.comment > 0">
             <b-form-input
                     id="commentInput"
                     :state="state('comment')"
                     v-model="document.comment"
-                    required :readonly="!editMode" :plaintext="!editMode"  />
+                    required :readonly="!editMode || fieldsLevels.comment == 1" :plaintext="!editMode || fieldsLevels.comment == 1"  />
         </b-form-group>
 
         <b-row>
             <b-col>
-                <b-form-group label="Вид документа" label-for="exampleInput2">
+                <b-form-group label="Вид документа" label-for="documentKindInput"
+                              v-if="fieldsLevels.documentKind > 0">
                     <b-form-input
-                            v-if="!editMode"
+                            v-if="!editMode || fieldsLevels.documentKind == 1"
                             id="documentKindInput"
                             v-model="document.documentKind"
-                            required :readonly="!editMode" :plaintext="!editMode"  />
-                    <s-select v-if="editMode" id="documentKindInput" :config="testSelectConfig" @value="(val) => document.documentKind=val" :value="document.documentKind"></s-select>
+                            required :readonly="!editMode || fieldsLevels.documentKind == 1" :plaintext="!editMode || fieldsLevels.documentKind == 1"  />
+                    <!--<s-select v-if="editMode && fieldsLevels.documentKind > 1" id="documentKindInput"-->
+                    <s-select v-if="editMode && fieldsLevels.documentKind > 1" id="documentKindInput"
+                              :config="testSelectConfig" @value="(val) => document.documentKind=val"
+                              :value="document.documentKind"
+                              v-bind:class="{'s-invalid-field': state('documentKind') === false ? true : false}"></s-select>
+                    <div v-if="editMode && fieldsLevels.documentKind > 1" class="invalid-feedback" v-bind:style="{display: state('documentKind') === false ? 'block' : 'none'}">
+                        Вид документа должен быть заполнен
+                    </div>
                 </b-form-group>
             </b-col>
 
             <b-col>
                 <b-form-group
                         label="Адресат"
-                        label-for="addresseeInput">
+                        label-for="addresseeInput"
+                        v-if="fieldsLevels.addressee > 0">
                     <b-form-input
-                            v-if="!editMode"
+                            v-if="!editMode || fieldsLevels.addressee == 1"
                             id="addresseeInput"
                             v-model="document.addresseeTitle"
-                            required :readonly="!editMode" :plaintext="!editMode"  />
-                    <s-select v-if="editMode" id="addresseeInput" :config="userSelectConfig"
+                            required :readonly="!editMode || fieldsLevels.addressee == 1" :plaintext="!editMode || fieldsLevels.addressee == 1"  />
+                    <s-select v-if="editMode && fieldsLevels.addressee > 1" id="addresseeInput" :config="userSelectConfig"
                               @value="(val) => document.addressee=val" :value="document.addressee"
-                              :valueTitle="document.addresseeTitle"></s-select>
+                              :valueTitle="document.addresseeTitle"
+                              v-bind:class="{'s-invalid-field': state('addressee') === false ? true : false}"></s-select>
+                    <div v-if="editMode && fieldsLevels.addressee > 1" class="invalid-feedback" v-bind:style="{display: state('addressee') === false ? 'block' : 'none'}">
+                        Адресат должен быть заполнен
+                    </div>
                 </b-form-group>
             </b-col>
         </b-row>
 
         <b-form-group
                 label="Адресаты (копии)"
-                label-for="addresseeCopiesInput">
+                label-for="addresseeCopiesInput"
+                v-if="fieldsLevels.addresseeCopies > 0">
             <b-form-input
-                    v-if="!editMode"
+                    v-if="!editMode || fieldsLevels.addresseeCopies == 1"
                     id="addresseeCopiesInput"
                     v-model="document.addresseeCopiesTitles.join()"
-                    required :readonly="!editMode" :plaintext="!editMode"  />
-            <s-multi-select v-if="editMode" id="addresseeCopiesInput" :config="addresseeCopiesSelectConfig"
+                    required :readonly="!editMode || fieldsLevels.addresseeCopies == 1" :plaintext="!editMode || fieldsLevels.addresseeCopies == 1"  />
+            <s-multi-select v-if="editMode && fieldsLevels.addresseeCopies > 1" id="addresseeCopiesInput" :config="addresseeCopiesSelectConfig"
                       @value="(val) => document.addresseeCopies=val" :value="document.addresseeCopies"
                       :valueTitle="document.addresseeCopiesTitles"></s-multi-select>
         </b-form-group>
@@ -68,15 +84,20 @@
 
         <b-form-group
                 label="Корреспондент"
-                label-for="externalOrganizationInput">
+                label-for="externalOrganizationInput"
+                v-if="fieldsLevels.externalOrganization > 0">
             <b-form-input
-                    v-if="!editMode"
+                    v-if="!editMode || fieldsLevels.externalOrganization == 1"
                     id="externalOrganizationInput"
                     v-model="document.externalOrganizationTitle"
-                    required :readonly="!editMode" :plaintext="!editMode"  />
-            <s-select v-if="editMode" id="externalOrganizationInput" :config="externalOrganizationConfig"
+                    required :readonly="!editMode || fieldsLevels.externalOrganization == 1" :plaintext="!editMode || fieldsLevels.externalOrganization == 1"  />
+            <s-select v-if="editMode && fieldsLevels.externalOrganization > 1" id="externalOrganizationInput" :config="externalOrganizationConfig"
                       @value="(val) => document.externalOrganization=val" :value="document.externalOrganization"
-                      :valueTitle="document.externalOrganizationTitle"></s-select>
+                      :valueTitle="document.externalOrganizationTitle"
+                      v-bind:class="{'s-invalid-field': state('externalOrganization') === false ? true : false}"></s-select>
+            <div v-if="editMode && fieldsLevels.externalOrganization > 1" class="invalid-feedback" v-bind:style="{display: state('externalOrganization') === false ? 'block' : 'none'}">
+                Корреспондент должен быть заполнен
+            </div>
         </b-form-group>
 
         <b-row>
@@ -315,6 +336,10 @@
         padding-top: 0;
         padding-bottom: 0;
     }
+
+    .s-invalid-field .selectize-input {
+        border-color: #dc3545 !important;
+    }
 </style>
 
 <script>
@@ -373,7 +398,8 @@
         },
         props: {
             value: {},
-            editMode: {}
+            editMode: {},
+            fieldsLevels: {}
         },
         computed: {
             titleState() {
@@ -393,6 +419,22 @@
                 return !(this.titleState ===  false);
             },
             state(field) {
+                if (field === 'title') {
+                    return this.document.title.length > 0 ? null : false;
+                }
+
+                if (field === 'documentKind') {
+                    return this.document.documentKind ? null : false;
+                }
+
+                if (field === 'addressee') {
+                    return (!this.document.addressee && this.fieldsLevels.addressee == 3) ? false : null;
+                }
+
+                if (field === 'externalOrganization') {
+                    return (!this.document.externalOrganization && this.fieldsLevels.externalOrganization == 3) ? false : null;
+                }
+
                 if (field === 'pageCount' && this.document.pageCount) {
                     if (!(this.isNormalInteger(this.document.pageCount) && this.document.pageCount >= 0)) {
                         return false;

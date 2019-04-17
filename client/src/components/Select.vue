@@ -24,8 +24,8 @@
             }
 
             const config = {...this.config};
-            if (this.value) {
-                config.options = [{id: this.value, title: this.valueTitle}];
+            if (!config.options && this.value) {
+                config.options = [{id: this.value, title: this.valueTitle ? this.valueTitle : this.value}];
             }
 
             var $select = $(this.$refs["select"]).selectize(config);

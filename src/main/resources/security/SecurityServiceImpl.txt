@@ -1,5 +1,7 @@
 Входящий/Черновик/ROLE_AUTHOR/title=3
+Входящий/Черновик/ROLE_AUTHOR/comment=2
 Входящий/Черновик/ROLE_AUTHOR/documentKind=3
 Входящий/Черновик/ROLE_AUTHOR/addressee=3
 Входящий/Черновик/ROLE_AUTHOR/addresseeCopies=2
-Входящий/Черновик/ROLE_AUTHOR/registrationDate=1
+
+Входящий/Черновик/ROLE_AUTHOR/externalOrganization=3

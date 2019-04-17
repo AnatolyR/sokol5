@@ -11,12 +11,13 @@ import com.sokolsoft.ecm.core.repository.DocumentRepository;
 import com.sokolsoft.ecm.core.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentServiceImpl implements DocumentService {
@@ -29,17 +30,20 @@ public class DocumentServiceImpl implements DocumentService {
     private ContragentPersonRepository contragentPersonRepository;
 
     private UserService userService;
+    private SecurityService securityService;
 
     @Autowired
     public DocumentServiceImpl(DocumentRepository documentRepository,
                                UserRepository userRepository, ContragentRepository contragentRepository,
                                ContragentPersonRepository contragentPersonRepository,
-                               UserService userService) {
+                               UserService userService,
+                               SecurityService securityService) {
         this.documentRepository = documentRepository;
         this.userRepository = userRepository;
         this.contragentRepository = contragentRepository;
         this.contragentPersonRepository = contragentPersonRepository;
         this.userService = userService;
+        this.securityService = securityService;
     }
 
     @Override
@@ -55,7 +59,23 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public Document save(Document document) {
         Document oldDocument = documentRepository.getOne(document.getId());
-        BeanUtils.copyProperties(document, oldDocument, Utils.getNullPropertyNames(document));
+
+        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+        List<String> roles = new ArrayList<>(authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+
+        User currentUser = userService.getCurrentUser();
+        UUID creator = document.getCreator();
+        if (currentUser.getId().equals(creator)) {
+            roles.add("ROLE_AUTHOR");
+        }
+        String status = document.getStatus();
+        if ("Черновик".equals(status) && !roles.contains("ROLE_AUTHOR")) {
+            throw new RuntimeException("Document in draft state available only to author");
+        }
+
+        Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
+
+        BeanUtils.copyProperties(document, oldDocument, Utils.getAccessiblePropertyNames(document, fieldsRights)); 
 
         fillTitles(oldDocument);
         createExternalOrganizationPersons(oldDocument);
@@ -97,6 +117,8 @@ public class DocumentServiceImpl implements DocumentService {
         if (addresseeId != null) {
             User addressee = userRepository.getOne(addresseeId);
             document.setAddresseeTitle(addressee.getTitle());
+        } else {
+            document.setAddresseeTitle(null);
         }
 
         List<UUID> addresseeCopiesIds = document.getAddresseeCopies();
@@ -113,24 +135,32 @@ public class DocumentServiceImpl implements DocumentService {
         if (externalOrganizationId != null) {
             Contragent externalOrganization = contragentRepository.getOne(externalOrganizationId);
             document.setExternalOrganizationTitle(externalOrganization.getTitle());
+        } else {
+            document.setExternalOrganizationTitle(null);
         }
 
         UUID registrarId = document.getRegistrar();
         if (registrarId != null) {
             User registrar = userRepository.getOne(registrarId);
             document.setRegistrarTitle(registrar.getTitle());
+        } else {
+            document.setRegistrarTitle(null);
         }
 
         UUID executorId = document.getExecutor();
         if (executorId != null) {
             User executor = userRepository.getOne(executorId);
             document.setExecutorTitle(executor.getTitle());
+        } else {
+            document.setExecutorTitle(null);
         }
 
         UUID controllerId = document.getController();
         if (controllerId != null) {
             User controller = userRepository.getOne(controllerId);
             document.setControllerTitle(controller.getTitle());
+        } else {
+            document.setControllerTitle(null);
         }
     }
 

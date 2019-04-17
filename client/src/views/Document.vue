@@ -77,7 +77,9 @@
             </ul>
 
             <!-- FORM -->
-            <s-document-form ref="attributesForm" v-if="tab === 'attributes'" @formState="(val) => this.formState = val" :edit-mode="editMode" v-model="document"/>
+            <s-document-form ref="attributesForm" v-if="tab === 'attributes'" @formState="(val) => this.formState = val"
+                             :edit-mode="editMode" v-model="document"
+                             :fieldsLevels="fieldsLevels"/>
 
             <div v-if="tab === 'attaches'">
                 Вложения
@@ -207,6 +209,7 @@
                 axios.get(`/api/document/${this.documentId}`).then((response) => {
                     const document = response.data.document;
                     const fieldsLevels = response.data.fields;
+                    this.fieldsLevels = fieldsLevels;
                     console.log("levels ", fieldsLevels);
 
                     try {
@@ -271,6 +274,7 @@
                 errorMessage: null,
                 successMessage: null,
                 document: null,
+                fieldsLevels: null,
 
                 tab: 'attributes',
                 editMode: false,

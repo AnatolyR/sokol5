@@ -40,7 +40,7 @@ public class DocumentController {
         List<String> roles = new ArrayList<>(authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
 
         User currentUser = userService.getCurrentUser();
-        UUID creator = document.getCreator();
+        UUID creator = document.getCreator();   //todo add check for unexist document
         if (currentUser.getId().equals(creator)) {
             roles.add("ROLE_AUTHOR");
         }
