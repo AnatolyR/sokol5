@@ -46,23 +46,17 @@
             </b-col>
 
             <b-col>
-                <b-form-group
-                        label="Адресат"
-                        label-for="addresseeInput"
-                        v-if="fieldsLevels.addressee > 0">
-                    <b-form-input
-                            v-if="!editMode || fieldsLevels.addressee == 1"
-                            id="addresseeInput"
-                            v-model="document.addresseeTitle"
-                            required :readonly="!editMode || fieldsLevels.addressee == 1" :plaintext="!editMode || fieldsLevels.addressee == 1"  />
-                    <s-select v-if="editMode && fieldsLevels.addressee > 1" id="addresseeInput" :config="userSelectConfig"
-                              @value="(val) => document.addressee=val" :value="document.addressee"
-                              :valueTitle="document.addresseeTitle"
-                              v-bind:class="{'s-invalid-field': state('addressee') === false ? true : false}"></s-select>
-                    <div v-if="editMode && fieldsLevels.addressee > 1" class="invalid-feedback" v-bind:style="{display: state('addressee') === false ? 'block' : 'none'}">
-                        Адресат должен быть заполнен
-                    </div>
-                </b-form-group>
+                <s-select-group
+                    title="Адресат"
+                    id="addresseeInput"
+                    :fieldLevel="fieldsLevels.addressee"
+                    :editMode="editMode"
+                    v-model="document.addressee"
+                    :valueTitle="document.addresseeTitle"
+                    errorMessage="Адресат должен быть заполнен"
+                    :state="() => {return (!this.document.addressee && this.fieldsLevels.addressee == 3) ? false : null;}"
+                    :selectConfig="userSelectConfig"
+                    ></s-select-group>
             </b-col>
         </b-row>
 
@@ -344,13 +338,14 @@
 
 <script>
     import SSelect from "../components/Select";
+    import SSelectGroup from "../components/SelectGroup";
     import SMultiSelect from "../components/MultiSelect";
     import axios from 'axios';
 
     import datePicker from 'vue-bootstrap-datetimepicker';
 
     export default {
-        components: {SSelect, SMultiSelect, datePicker},
+        components: {SSelect, SMultiSelect, datePicker, SSelectGroup},
 
         mounted() {
             this.testSelectConfig = {

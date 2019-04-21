@@ -78,6 +78,8 @@ router.beforeEach((to, from, next) => {
         axios.get('/api/currentUser').then((res) => {
             const user = res.data;
             store.dispatch("setUser", user);
+        }).catch((err) => {
+            
         });
     }
     next();

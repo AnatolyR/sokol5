@@ -61,7 +61,7 @@ public class DocumentServiceImpl implements DocumentService {
         Document oldDocument = documentRepository.getOne(document.getId());
 
         Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-        List<String> roles = new ArrayList<>(authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+        List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toCollection(ArrayList::new));
 
         User currentUser = userService.getCurrentUser();
         UUID creator = document.getCreator();
