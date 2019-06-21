@@ -11,7 +11,7 @@
                 <b-row>
                     <b-col cols="2" style="padding: 0; position: fixed; height: 100%; overflow: auto;">
 
-                        <div >
+                        <div style="padding-top: 0.5em;">
                             <b-nav vertical pills style="text-align: left;">
                                 <b-nav-item class="s-folder-nav" exact-active-class="active" v-for="folder in folders" :key="folder.id" :to="'/folders/' + folder.id">{{folder.name}}</b-nav-item>
                             </b-nav>
@@ -20,7 +20,9 @@
                     </b-col>
 
                     <b-col offset="2" cols="10">
-                        <router-view :key="$route.fullPath"></router-view>
+                        <keep-alive>
+                            <router-view :key="$route.fullPath"></router-view>
+                        </keep-alive>
                     </b-col>
                 </b-row>
             </b-container>
@@ -35,7 +37,7 @@
         margin-right: 0.5em;
     }
     .s-folder-nav > a {
-        border-radius: 0 !important;
+        /*border-radius: 0 !important;*/
     }
 
 </style>

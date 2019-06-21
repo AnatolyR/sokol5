@@ -57,6 +57,21 @@ public class ConfigServiceFilePathImpl implements ConfigService {
 
     private JsonNode getPublicRawConfig(String configName) {
         File configFile = new File(configPath + "public/" +configName + ".json");
+        return getJsonNode(configName, configFile);
+    }
+
+    public JsonNode getPrivateConfig(String configName) {
+        JsonNode config = getPrivateRawConfig(configName);
+        config = processConfig(configName, config);
+        return config;
+    }
+
+    private JsonNode getPrivateRawConfig(String configName) {
+        File configFile = new File(configPath + "private/" +configName + ".json");
+        return getJsonNode(configName, configFile);
+    }
+
+    private JsonNode getJsonNode(String configName, File configFile) {
         if (!configFile.exists()) {
             return null;
         }

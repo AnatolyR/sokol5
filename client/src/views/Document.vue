@@ -106,7 +106,7 @@
         margin: 0.5em;
     }
 
-    button {
+    .s-document-button-bar button {
         margin-right: 0.5em !important;
     }
 

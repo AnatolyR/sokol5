@@ -1,0 +1,11 @@
+{
+  "id": "incoming",
+  "condition": [
+    {
+      "condition": "",
+      "column": "documentType",
+      "operation": "LIKE",
+      "value": "Входящий"
+    }
+  ]
+}

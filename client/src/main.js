@@ -6,15 +6,16 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'selectize/dist/css/selectize.bootstrap3.css'
+import 'bootstrap-select/dist/css/bootstrap-select.css'
 
 import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
+import { faAngleLeft, faAngleRight, faAngleUp, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import axios from 'axios'
 
-library.add(faAngleLeft);
+library.add(faAngleLeft, faAngleRight, faAngleUp, faAngleDown);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 Vue.use(BootstrapVue);

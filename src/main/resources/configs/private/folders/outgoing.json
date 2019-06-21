@@ -1,0 +1,11 @@
+{
+  "id": "outgoing",
+  "condition": [
+    {
+      "condition": "",
+      "column": "documentType",
+      "operation": "LIKE",
+      "value": "Исходящий"
+    }
+  ]
+}

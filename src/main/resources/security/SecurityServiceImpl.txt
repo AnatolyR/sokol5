@@ -5,3 +5,11 @@
 Входящий/Черновик/ROLE_AUTHOR/addresseeCopies=2
 
 Входящий/Черновик/ROLE_AUTHOR/externalOrganization=3
+
+Входящий/Черновик/ROLE_USER/title=3
+Входящий/Черновик/ROLE_USER/comment=2
+Входящий/Черновик/ROLE_USER/documentKind=3
+Входящий/Черновик/ROLE_USER/addressee=3
+Входящий/Черновик/ROLE_USER/addresseeCopies=2
+
+Входящий/Черновик/ROLE_USER/externalOrganization=3

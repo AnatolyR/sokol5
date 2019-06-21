@@ -9,8 +9,15 @@ import com.sokolsoft.ecm.core.repository.ContragentPersonRepository;
 import com.sokolsoft.ecm.core.repository.ContragentRepository;
 import com.sokolsoft.ecm.core.repository.DocumentRepository;
 import com.sokolsoft.ecm.core.repository.UserRepository;
+import com.sokolsoft.ecm.core.specification.SortOrder;
+import com.sokolsoft.ecm.core.specification.Specification;
+import com.sokolsoft.ecm.core.specification.SpecificationUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -47,8 +54,27 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<Document> getDocuments() {
-        return documentRepository.findAll();
+    public Page<Document> getDocuments(Specification spec) {
+        int pageNum = spec.getPage();
+
+        Sort sort;
+        if (spec.getSort() != null && spec.getSort().size() > 0) {
+            sort = new Sort(spec.getSort().get(0).getOrder() == SortOrder.ASC
+                    ? Sort.Direction.ASC : Sort.Direction.DESC, spec.getSort().get(0).getField());
+        } else {
+            sort = Sort.by("createDate");
+        }
+
+        PageRequest pageRequest = new PageRequest(pageNum, spec.getSize(), sort);
+
+        org.springframework.data.jpa.domain.Specification<Document> specification = null;
+        if (spec.getCondition() != null) {
+            specification = SpecificationUtil.conditionToSpringSpecification(spec.getCondition(), Document.class);
+        }
+
+        org.springframework.data.domain.Page<Document> repoPage = documentRepository.findAll(specification, pageRequest);
+
+        return repoPage;
     }
 
     @Override
