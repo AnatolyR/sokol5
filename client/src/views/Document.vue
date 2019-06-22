@@ -12,7 +12,7 @@
         <div v-if="!loading && document" class="">
             <!-- BUTTONS -->
             <div class="s-document-button-bar">
-                <b-button v-if="openedFromFolder" size="sm" variant="light" @click="$router.go(-1)"><font-awesome-icon icon="angle-left" /> Назад</b-button>
+                <b-button v-if="openedFromFolder" size="sm" variant="light" @click="back"><font-awesome-icon icon="angle-left" /> Назад</b-button>
                 <b-button v-if="!editMode" @click="edit" size="sm">Редактировать</b-button>
                 <b-button v-if="editMode" variant="success" @click="save" size="sm">Сохранить</b-button>
                 <b-button v-if="editMode" variant="danger" @click="cancel" size="sm">Отменить</b-button>
@@ -170,6 +170,12 @@
                 this.errorMessage = null;
                 this.document = JSON.parse(this.documentBackup);
                 this.editMode = false;
+            },
+            back() {
+                if (this.editMode) {
+                    this.cancel();
+                }
+                this.$router.go(-1);
             },
             save() {
                 this.errorMessage = null;

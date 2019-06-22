@@ -16,8 +16,15 @@
                 <b-dropdown id="dropdown-2" text="Колонки" size="sm">
                     <div class="dropdown-item" v-for="col in columns"><b-form-checkbox style="width: 100%;" v-model="col.visible" boundary="viewport">{{col.title}}</b-form-checkbox></div>
                 </b-dropdown>
+
+                <b-button size="sm" @click="update">Обновить</b-button>
+                <b-button :variant="conditions && conditions.length > 0 ? 'warning' : ''" size="sm" @click="toggleFilter">Фильтр</b-button>
+
             </div>
         </div>
+        <keep-alive>
+            <s-filter v-if="displayFilter" :propertySelect="propertySelect()" @update="update" @value="(val) => this.conditions = val"></s-filter>
+        </keep-alive>
         <table class="table table-bordered table-sm">
             <thead>
             <tr>
@@ -76,8 +83,10 @@
 </style>
 
 <script>
+    import SFilter from "./Filter";
     export default {
         name: 's-table',
+        components: {SFilter},
         mounted() {
             this.update();
         },
@@ -125,7 +134,9 @@
         },
         methods: {
             update() {
-                this.loadData({size: this.size, page: this.page, sortDirection: this.sortDirection, sortProperty: this.sortProperty}).then((res) => {
+                this.loadData({size: this.size, page: this.page,
+                        sortDirection: this.sortDirection, sortProperty: this.sortProperty,
+                        conditions: this.conditions}).then((res) => {
                     let fullData = res.data;
                     this.data = fullData.content;
                     this.totalPages = fullData.totalPages;
@@ -162,6 +173,18 @@
                     this.sortProperty = null;
                 }
                 this.update();
+            },
+            propertySelect() {
+                return {
+                    maxItems: 1,
+                    valueField: 'id',
+                    labelField: 'title',
+                    preload: true,
+                    options: this.columns,
+                };
+            },
+            toggleFilter() {
+                this.displayFilter = !this.displayFilter;
             }
         },
         watch: {
@@ -177,7 +200,9 @@
                 totalElements: null,
                 data: [],
                 sortProperty: null,
-                sortDirection: null
+                sortDirection: null,
+                conditions: null,
+                displayFilter: false
             }
         }
     }

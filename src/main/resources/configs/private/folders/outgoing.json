@@ -1,5 +1,6 @@
 {
   "id": "outgoing",
+  "secured": "hasRole('ROLE_USER')",
   "condition": [
     {
       "condition": "",

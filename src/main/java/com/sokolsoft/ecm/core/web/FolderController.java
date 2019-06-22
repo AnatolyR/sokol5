@@ -9,6 +9,12 @@ import com.sokolsoft.ecm.core.service.DocumentService;
 import com.sokolsoft.ecm.core.specification.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.SpelParserConfiguration;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +48,8 @@ public class FolderController {
                           @RequestParam(defaultValue = "0") Integer page,
                           String sortDirection,
                           String sortProperty,
-                          @RequestParam(defaultValue = "[]") String conditions) {
+                          @RequestParam(defaultValue = "") String conditions,
+                          Authentication authentication) {
         
         Specification spec = new Specification();
         if (sortProperty != null && !sortProperty.isEmpty()) {
@@ -57,8 +64,10 @@ public class FolderController {
         }
         JsonNode config = configService.getPrivateConfig("folders/" + folderId);
 
+        checkAccess(config, authentication);
+
         try {
-            JsonNode clientConditionsNode = mapper.readTree(conditions);
+            JsonNode clientConditionsNode = mapper.readTree("[" + conditions + "]");
             Condition clientCondition = SpecificationUtil.read((ArrayNode) clientConditionsNode);
 
             JsonNode configConditionsNode = config.get("condition");
@@ -77,5 +86,21 @@ public class FolderController {
         Page<Document> documentsPage = documentService.getDocuments(spec);
 
         return documentsPage;
+    }
+    
+    private void checkAccess(JsonNode config, Authentication authentication) {
+        String secured = config.get("secured").asText();
+
+        ExpressionParser parser = new SpelExpressionParser();
+
+        Expression exp = parser.parseExpression(secured);
+        Boolean result = (Boolean) exp.getValue(new Object() {
+            public boolean hasRole(String role) {
+                return authentication.getAuthorities().stream().anyMatch(a -> ((GrantedAuthority) a).getAuthority().equals(role));
+            }
+        });
+        if (!result) {
+            throw new RuntimeException("There is no access rights to this folder");
+        }
     }
 }

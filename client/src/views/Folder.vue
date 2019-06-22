@@ -44,8 +44,15 @@
                 if (spec.sortDirection) {
                     url += `&sortDirection=${spec.sortDirection}`;
                 }
+                // if (spec.conditions) {
+                //     url += `&conditions=${JSON.stringify(spec.conditions)}`;
+                // }
                 let res = new Promise((resolve, reject) => {
-                    axios.get(url)
+                    axios.get(url, {
+                        params: {
+                            conditions: spec.conditions ? JSON.stringify(spec.conditions).slice(1, -1) : null
+                        }
+                    })
                         .then(resolve)
                         .catch((error) => {
                             this.loading = false;
