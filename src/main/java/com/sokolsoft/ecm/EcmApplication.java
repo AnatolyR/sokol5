@@ -3,6 +3,7 @@ package com.sokolsoft.ecm;
 import com.sokolsoft.ecm.core.model.Contragent;
 import com.sokolsoft.ecm.core.model.User;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -71,6 +72,8 @@ public class EcmApplication {
                     .usernameParameter("j_username")
                     .passwordParameter("j_password")
                     .permitAll()
+//                  .and().requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
+//                    .anyRequest().permitAll()
                   .and().logout();
         }
 
@@ -112,4 +115,15 @@ public class EcmApplication {
             config.exposeIdsFor(Contragent.class);
         }
     }
+
+//    @Configuration
+//    public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
+//
+//        @Override
+//        protected void configure(HttpSecurity http) throws Exception {
+//            http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
+//                    .anyRequest().permitAll();
+//        }
+//
+//    }
 }

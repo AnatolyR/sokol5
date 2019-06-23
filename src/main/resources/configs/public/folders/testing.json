@@ -1,0 +1,37 @@
+{
+  "id": "testing",
+  "name": "Для тестов",
+  "fields": [
+    {
+      "id": "id",
+      "title": "ИД документа",
+      "visible": false
+    },
+    {
+      "id": "documentNumber",
+      "title": "Номер документа",
+      "visible": true
+    },
+    {
+      "id": "title",
+      "title": "Заголовок",
+      "visible": true,
+      "type": "link",
+      "path": "/document/"
+    },
+    {
+      "id": "status",
+      "title": "Статус",
+      "visible": true
+    },
+    {
+      "id": "documentType",
+      "title": "Тип документа",
+      "visible": true
+    },
+    {
+      "id": "registrationDate",
+      "title": "Дата регистрации",
+      "visible": true
+    }]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "testing",
+  "secured": "hasRole('ROLE_USER')",
+  "condition": [
+    {
+      "condition": "",
+      "column": "documentType",
+      "operation": "LIKE",
+      "value": "Тестовый"
+    }
+  ]
+}

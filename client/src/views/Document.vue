@@ -250,7 +250,9 @@
                     }
                     this.document = document;
                     this.documentBackup = JSON.stringify(document);
-
+                    if (this.document.status === "Черновик") {
+                        this.editMode = true;
+                    }
 
                     this.loading = false;
                 }).catch((error) => {

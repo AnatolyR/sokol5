@@ -14,6 +14,7 @@
                   :id="id" :config="selectConfig"
                   @value="(val) => modelValue=val"
                   :value="modelValue"
+                  :depends="depends"
                   :valueTitle="valueTitle"
                   v-bind:class="{'s-invalid-field': checkState() === false ? true : false}"></s-select>
         <div v-if="editMode && fieldLevel > 1"
@@ -45,7 +46,8 @@
             valueTitle: {},
             errorMessage: {},
             selectConfig: {},
-            state: {type: Function}
+            state: {type: Function},
+            depends: {}
         },
         computed: {
             modelValue: {

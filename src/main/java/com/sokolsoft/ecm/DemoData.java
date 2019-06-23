@@ -1,19 +1,15 @@
 package com.sokolsoft.ecm;
 
-import com.sokolsoft.ecm.core.model.Contragent;
-import com.sokolsoft.ecm.core.model.ContragentPerson;
-import com.sokolsoft.ecm.core.model.Document;
-import com.sokolsoft.ecm.core.model.User;
-import com.sokolsoft.ecm.core.repository.ContragentPersonRepository;
-import com.sokolsoft.ecm.core.repository.ContragentRepository;
-import com.sokolsoft.ecm.core.repository.DocumentRepository;
-import com.sokolsoft.ecm.core.repository.UserRepository;
+import com.sokolsoft.ecm.core.model.*;
+import com.sokolsoft.ecm.core.repository.*;
 import com.sokolsoft.ecm.core.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Component
 public class DemoData {
@@ -25,21 +21,40 @@ public class DemoData {
 
     private DocumentRepository documentRepository;
 
+    private DeliveryMethodRepository deliveryMethodRepository;
+
     @Autowired
     public DemoData(ContragentRepository contragentRepository,
                     UserRepository userRepository,
                     ContragentPersonRepository contragentPersonRepository,
-                    DocumentRepository documentRepository) {
+                    DocumentRepository documentRepository,
+                    DeliveryMethodRepository deliveryMethodRepository) {
         this.contragentRepository = contragentRepository;
         this.userRepository = userRepository;
         this.contragentPersonRepository = contragentPersonRepository;
         this.documentRepository = documentRepository;
+        this.deliveryMethodRepository = deliveryMethodRepository;
     }
     
     public void uploadData() {
         uploadDocuments();
         uploadContragents();
         uploadUsers();
+        uploadDeliveryMethods();
+    }
+
+    private void uploadDeliveryMethods() {
+        String[][] methods = new String[][] {
+                {"1a84dc46-0352-4b95-a3b0-bdb8faa53fda", "Почта"},
+                {"f0ba70b3-b7e5-44e9-aa0e-9b1d33a0436a", "Электронная почта"},
+                {"730dcee9-3e6a-477c-907c-444a4e49cf40", "Курьер"},
+        };
+        Stream.of(methods).forEach(m -> {
+            DeliveryMethod deliveryMethod = new DeliveryMethod();
+            deliveryMethod.setId(UUID.fromString(m[0]));
+            deliveryMethod.setTitle(m[1]);
+            deliveryMethodRepository.save(deliveryMethod);
+        });
     }
 
     public void uploadDocuments() {
@@ -105,6 +120,46 @@ public class DemoData {
 
             documentRepository.save(d);
         }
+
+        Document td1 = new Document();
+        td1.setId(UUID.fromString("5b92f46c-5398-43d2-bd31-70fb9fe65579"));
+        td1.setTitle("Тестовый - Нет полей");
+        td1.setDocumentType("Тестовый");
+        td1.setDocumentKind("Тест");
+        td1.setStatus("Тест<Нет полей>");
+        td1.setCreator(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"));
+        td1.setCreateDate(Instant.now());
+        documentRepository.save(td1);
+
+        Document td2 = new Document();
+        td2.setId(UUID.fromString("24112a41-1ace-4e30-ac69-65ddac5cc282"));
+        td2.setTitle("Тестовый - Только чтение");
+        td2.setDocumentType("Тестовый");
+        td2.setDocumentKind("Тест");
+        td2.setStatus("Тест<Только чтение>");
+        td2.setCreator(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"));
+        td2.setCreateDate(Instant.now());
+        documentRepository.save(td2);
+
+        Document td3 = new Document();
+        td3.setId(UUID.fromString("789cd5c3-3428-495e-a2d4-f9132a1edb04"));
+        td3.setTitle("Тестовый - Все поля");
+        td3.setDocumentType("Тестовый");
+        td3.setDocumentKind("Тест");
+        td3.setStatus("Тест<Все редактируемые>");
+        td3.setCreator(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"));
+        td3.setCreateDate(Instant.now());
+        documentRepository.save(td3);
+
+        Document td4 = new Document();
+        td4.setId(UUID.fromString("34d7b9af-06aa-4e3b-b5a3-091d54e394bf"));
+        td4.setTitle("Тестовый - Поля обязательные");
+        td4.setDocumentType("Тестовый");
+//        td4.setDocumentKind("Тест");
+        td4.setStatus("Тест<Все обязательные>");
+        td4.setCreator(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"));
+        td4.setCreateDate(Instant.now());
+        documentRepository.save(td4);
 
     }
     
