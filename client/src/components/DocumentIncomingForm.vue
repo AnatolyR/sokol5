@@ -354,49 +354,7 @@
         components: {SSelect, SMultiSelect, datePicker, SSelectGroup},
 
         mounted() {
-            this.testSelectConfig = {
-                maxItems: 1,
-                //plugins: ['remove_button'],
-                valueField: 'title',
-                labelField: 'title',
-                searchField: 'title',
-                preload: true,
-                options: [{title: 'Акт'},
-                    {title: 'Апелляционная жалоба'},
-                    {title: 'Жалоба'},
-                    {title: 'Запрос'},
-                    {title: 'Заявка'},
-                    {title: 'Извещение'},
-                    {title: 'Исковое заявление'},
-                    {title: 'Исполнительный лист'},
-                    {title: 'Кассационная жалоба'},
-                    {title: 'Определение'},
-                    {title: 'Ответ на запрос'},
-                    {title: 'Отчет'},
-                    {title: 'Письмо'},
-                    {title: 'Повестка'},
-                    {title: 'Поручение'},
-                    {title: 'Постановление'},
-                    {title: 'Предписание'},
-                    {title: 'Представление'},
-                    {title: 'Предупреждение'},
-                    {title: 'Претензия'},
-                    {title: 'Приглашение'},
-                    {title: 'Приговор суда'},
-                    {title: 'Приказ'},
-                    {title: 'Протокол'},
-                    {title: 'Распоряжение'},
-                    {title: 'Решение'},
-                    {title: 'Справка'},
-                    {title: 'Судебная повестка'},
-                    {title: 'Телеграмма'},
-                    {title: 'Телефонограмма'},
-                    {title: 'Тест'},
-                    {title: 'Требование'},
-                    {title: 'Уведомление'},
-                    {title: 'Указ'},
-                    {title: 'Указание Минтранса'}],
-            };
+
         },
         props: {
             value: {},
@@ -460,7 +418,6 @@
         data() {
             const documentData = this.document;
             return {
-                testSelectConfig: null,
                 userSelectConfig: {
                     maxItems: 1,
                     //plugins: ['remove_button'],
@@ -555,10 +512,12 @@
                     preload: true,
                     // create: true,
                     load(query, callback) {
-                        if (!query.length) {
-                            return callback();
-                        }
-                        axios.get(`/api/deliveryMethods/search/methodByTitle?title=%25${query}%25`).then((res) => {
+                        // if (!query.length) {
+                        //     return callback();
+                        // }
+                        // axios.get(`/api/deliveryMethods/search/methodByTitle?title=%25${query}%25`).then((res) => {
+                        axios.get(`/api/deliveryMethods?size=100`).then((res) => {
+                            this.settings.load = null;
                             const users = res.data._embedded.deliveryMethods;
                             callback(users);
                         }).catch(() => {
@@ -575,10 +534,8 @@
                     preload: true,
                     // create: true,
                     load(query, callback) {
-                        if (!query.length) {
-                            return callback();
-                        }
-                        axios.get(`/api/documentKinds/search/kindByTitle?title=%25${query}%25`).then((res) => {
+                        axios.get(`/api/documentKinds?size=100`).then((res) => {
+                            this.settings.load = null;
                             const users = res.data._embedded.documentKinds;
                             callback(users);
                         }).catch(() => {

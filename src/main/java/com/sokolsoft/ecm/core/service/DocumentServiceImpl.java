@@ -1,10 +1,7 @@
 package com.sokolsoft.ecm.core.service;
 
 import com.sokolsoft.ecm.core.Utils;
-import com.sokolsoft.ecm.core.model.Contragent;
-import com.sokolsoft.ecm.core.model.ContragentPerson;
-import com.sokolsoft.ecm.core.model.Document;
-import com.sokolsoft.ecm.core.model.User;
+import com.sokolsoft.ecm.core.model.*;
 import com.sokolsoft.ecm.core.repository.ContragentPersonRepository;
 import com.sokolsoft.ecm.core.repository.ContragentRepository;
 import com.sokolsoft.ecm.core.repository.DocumentRepository;
@@ -89,6 +86,21 @@ public class DocumentServiceImpl implements DocumentService {
         Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toCollection(ArrayList::new));
 
+        checkForDraft(document, roles);
+
+        Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
+
+        BeanUtils.copyProperties(document, oldDocument, Utils.getAccessiblePropertyNames(document, fieldsRights)); 
+
+        if (oldDocument instanceof IncomingDocument) {
+            fillTitles((IncomingDocument) oldDocument);
+            createExternalOrganizationPersons((IncomingDocument) oldDocument);
+        }
+
+        return documentRepository.save(oldDocument);
+    }
+
+    public void checkForDraft(Document document, List<String> roles) {
         User currentUser = userService.getCurrentUser();
         UUID creator = document.getCreator();
         if (currentUser.getId().equals(creator)) {
@@ -98,18 +110,9 @@ public class DocumentServiceImpl implements DocumentService {
         if ("Черновик".equals(status) && !roles.contains("ROLE_AUTHOR")) {
             throw new RuntimeException("Document in draft state available only to author");
         }
-
-        Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
-
-        BeanUtils.copyProperties(document, oldDocument, Utils.getAccessiblePropertyNames(document, fieldsRights)); 
-
-        fillTitles(oldDocument);
-        createExternalOrganizationPersons(oldDocument);
-
-        return documentRepository.save(oldDocument);
     }
 
-    private void createExternalOrganizationPersons(Document document) {
+    private void createExternalOrganizationPersons(IncomingDocument document) {
         UUID externalOrganization = document.getExternalOrganization();
         if (externalOrganization != null) {
             String externalSigner = document.getExternalSigner();
@@ -138,7 +141,7 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
-    private void fillTitles(Document document) {
+    private void fillTitles(IncomingDocument document) {
         UUID addresseeId = document.getAddressee();
         if (addresseeId != null) {
             User addressee = userRepository.getOne(addresseeId);
@@ -192,7 +195,13 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public UUID createDocument(String documentType) {
-        Document document = new Document();
+        Document document = null;
+
+        switch (documentType) {
+            case "Входящий": document = new IncomingDocument(); break;
+            case "Исходящий": document = new OutgoingDocument(); break;
+            case "Внутренний": document = new InnerDocument(); break;
+        }
         UUID id = UUID.randomUUID();
         document.setId(id);
         document.setTitle("Новый документ");

@@ -23,17 +23,21 @@ public class DemoData {
 
     private DeliveryMethodRepository deliveryMethodRepository;
 
+    private DocumentKindRepository documentKindRepository;
+
     @Autowired
     public DemoData(ContragentRepository contragentRepository,
                     UserRepository userRepository,
                     ContragentPersonRepository contragentPersonRepository,
                     DocumentRepository documentRepository,
-                    DeliveryMethodRepository deliveryMethodRepository) {
+                    DeliveryMethodRepository deliveryMethodRepository,
+                    DocumentKindRepository documentKindRepository) {
         this.contragentRepository = contragentRepository;
         this.userRepository = userRepository;
         this.contragentPersonRepository = contragentPersonRepository;
         this.documentRepository = documentRepository;
         this.deliveryMethodRepository = deliveryMethodRepository;
+        this.documentKindRepository = documentKindRepository;
     }
     
     public void uploadData() {
@@ -41,6 +45,53 @@ public class DemoData {
         uploadContragents();
         uploadUsers();
         uploadDeliveryMethods();
+        uploadDocumentRinds();
+    }
+
+    private void uploadDocumentRinds() {
+        String [][] kinds = new String[][] {
+                {"57389717-462c-4f7a-8158-e56fab991805", "Акт"},
+                {"064e11aa-3324-4f4a-aeaf-bfddb0de8e98", "Апелляционная жалоба"},
+                {"d23512f2-803a-4532-9600-6bc356d341f7", "Жалоба"},
+                {"45f9aaa9-1002-4331-992b-eac36416e7a3", "Запрос"},
+                {"2c994487-b708-4eec-b77b-817ba9b16b75", "Заявка"},
+                {"ed029aa7-53de-4435-aca1-fa0748377ffb", "Извещение"},
+                {"7ab26b19-a39f-4db9-a36f-597726886e29", "Исковое заявление"},
+                {"4134dd82-49bd-4178-8451-737f6596fcf2", "Исполнительный лист"},
+                {"612e569b-377e-4a5e-b9c3-6495f8998752", "Кассационная жалоба"},
+                {"5e8efcef-75c3-40a7-85ca-c76b51536eda", "Определение"},
+                {"192d2255-40e4-4a5a-ba0e-f6598ff45cae", "Ответ на запрос"},
+                {"2c908a83-8749-496f-87d4-8cd3148be548", "Отчет"},
+                {"0798f787-ef23-4dd4-8baf-e2cc460eff54", "Письмо"},
+                {"fd8e6386-d0e4-4177-a50d-b8f39117edc0", "Повестка"},
+                {"8060d45e-8c9c-4906-9c6b-0a8e3104e26c", "Поручение"},
+                {"e57665ca-80e3-4d07-8de2-fe8f2639c986", "Постановление"},
+                {"9fca7204-677b-41d3-a2e5-b04716c60cbb", "Предписание"},
+                {"1ec4e749-da74-429a-9959-aea45863b835", "Представление"},
+                {"5976eafb-1017-4d42-8b45-c3a52e6ee51b", "Предупреждение"},
+                {"853739a6-2eac-4409-8c07-66a5aacb2d30", "Претензия"},
+                {"eae6988b-c2f5-4016-8a86-b6f6923483e5", "Приглашение"},
+                {"77373195-ae98-4da4-a054-4a42aedee601", "Приговор суда"},
+                {"221476e8-7e89-4a60-914a-069bec890a22", "Приказ"},
+                {"e192085c-88f4-4eb2-b7cc-23c92a144d61", "Протокол"},
+                {"72ad160d-bb2c-4d85-9751-a194992e4df3", "Распоряжение"},
+                {"81797761-df21-45b2-bc03-e13f6c2c954c", "Решение"},
+                {"68cd1f1f-d948-4803-b684-76a65e05260d", "Справка"},
+                {"785377b6-251b-48e8-8627-2e4de478d22e", "Судебная повестка"},
+                {"70c67c16-be97-408e-8cde-b2f4e80b963b", "Телеграмма"},
+                {"b07e1ee2-4450-4cdf-b797-72a6692e7fa4", "Телефонограмма"},
+                {"a1a5944f-9d6c-484f-beab-2b3f9f532b99", "Тест"},
+                {"e4f5fc4f-6e67-4f86-ac6a-68123f9e8253", "Требование"},
+                {"9b329205-0eca-4b73-be71-b098fd6ebff6", "Уведомление"},
+                {"f619a798-a695-4a8c-b2ef-8ff7d4a40510", "Указ"},
+                {"ba615b41-4e67-4ab8-aefb-d2a65454813f", "Указание Минтранса"}
+        };
+        Stream.of(kinds).forEach(k -> {
+            DocumentKind kind = new DocumentKind();
+            kind.setId(UUID.fromString(k[0]));
+            kind.setTitle(k[1]);
+            documentKindRepository.save(kind);
+        });
     }
 
     private void uploadDeliveryMethods() {
@@ -60,7 +111,7 @@ public class DemoData {
     public void uploadDocuments() {
         List<Document> documents = new ArrayList<>();
 
-        Document d1 = new Document();
+        IncomingDocument d1 = new IncomingDocument();
         d1.setId(UUID.fromString("c32a1bdd-d6a4-4a09-8e7b-249d6c7fd673"));
         d1.setTitle("Запрос даных для выполнения работ");
         d1.setDocumentType("Входящий");
@@ -84,7 +135,7 @@ public class DemoData {
         documents.add(d1);
 
 
-        Document d2 = new Document();
+        IncomingDocument d2 = new IncomingDocument();
         d2.setId(UUID.fromString("f0e0615a-8ab6-43bf-bf5d-a1259ec24ab4"));
         d2.setTitle("О направлении информации");
         d2.setDocumentType("Входящий");
@@ -95,7 +146,7 @@ public class DemoData {
         d2.setCreateDate(Instant.now());
         documents.add(d2);
 
-        Document d3 = new Document();
+        IncomingDocument d3 = new IncomingDocument();
         d3.setId(UUID.fromString("d595a410-52fc-4b87-af1f-0c73ed2e8924"));
         d3.setTitle("Архивная справка");
         d3.setDocumentType("Входящий");
@@ -109,19 +160,26 @@ public class DemoData {
         documentRepository.saveAll(documents);
 
         for (int i = 0; i < 100; i++) {
-            Document d = new Document();
+            String type = new String[]{"Входящий", "Исходящий", "Внутренний"}[new Random().nextInt(3)];
+            Document d = null;
+
+            switch (type) {
+                case "Входящий": d = new IncomingDocument(); break;
+                case "Исходящий": d = new OutgoingDocument(); break;
+                case "Внутренний": d = new InnerDocument(); break;
+            }
             d.setId(UUID.randomUUID());
             d.setTitle("Тестовый документ " + i);
-            d.setDocumentType(new String[]{"Входящий", "Исходящий", "Внутренний"}[new Random().nextInt(3)]);
+            d.setDocumentType(type);
             d.setDocumentKind("Запрос");
-            d.setStatus(new String[]{"Рассмотрение", "Согласование", "Исполнение"}[new Random().nextInt(3)]);
+            d.setStatus(new String[]{"На рассмотрении", "На согласовании", "На исполнении"}[new Random().nextInt(3)]);
             d.setCreator(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"));
             d.setCreateDate(Instant.now());
 
             documentRepository.save(d);
         }
 
-        Document td1 = new Document();
+        IncomingDocument td1 = new IncomingDocument();
         td1.setId(UUID.fromString("5b92f46c-5398-43d2-bd31-70fb9fe65579"));
         td1.setTitle("Тестовый - Нет полей");
         td1.setDocumentType("Тестовый");
@@ -131,7 +189,7 @@ public class DemoData {
         td1.setCreateDate(Instant.now());
         documentRepository.save(td1);
 
-        Document td2 = new Document();
+        IncomingDocument td2 = new IncomingDocument();
         td2.setId(UUID.fromString("24112a41-1ace-4e30-ac69-65ddac5cc282"));
         td2.setTitle("Тестовый - Только чтение");
         td2.setDocumentType("Тестовый");
@@ -141,7 +199,7 @@ public class DemoData {
         td2.setCreateDate(Instant.now());
         documentRepository.save(td2);
 
-        Document td3 = new Document();
+        IncomingDocument td3 = new IncomingDocument();
         td3.setId(UUID.fromString("789cd5c3-3428-495e-a2d4-f9132a1edb04"));
         td3.setTitle("Тестовый - Все поля");
         td3.setDocumentType("Тестовый");
@@ -151,7 +209,7 @@ public class DemoData {
         td3.setCreateDate(Instant.now());
         documentRepository.save(td3);
 
-        Document td4 = new Document();
+        IncomingDocument td4 = new IncomingDocument();
         td4.setId(UUID.fromString("34d7b9af-06aa-4e3b-b5a3-091d54e394bf"));
         td4.setTitle("Тестовый - Поля обязательные");
         td4.setDocumentType("Тестовый");

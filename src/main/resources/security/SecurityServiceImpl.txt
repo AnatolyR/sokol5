@@ -1,17 +1,36 @@
-Входящий/Черновик/ROLE_AUTHOR/title=3
-Входящий/Черновик/ROLE_AUTHOR/comment=2
-Входящий/Черновик/ROLE_AUTHOR/documentKind=3
-Входящий/Черновик/ROLE_AUTHOR/addressee=3
-Входящий/Черновик/ROLE_AUTHOR/addresseeCopies=2
+Входящий1/Черновик/ROLE_AUTHOR/title=3
+Входящий1/Черновик/ROLE_AUTHOR/comment=2
+Входящий1/Черновик/ROLE_AUTHOR/documentKind=3
+Входящий1/Черновик/ROLE_AUTHOR/addressee=3
+Входящий1/Черновик/ROLE_AUTHOR/addresseeCopies=2
+Входящий1/Черновик/ROLE_AUTHOR/externalOrganization=3
+Входящий1/Черновик/ROLE_USER/title=3
+Входящий1/Черновик/ROLE_USER/comment=2
+Входящий1/Черновик/ROLE_USER/documentKind=3
+Входящий1/Черновик/ROLE_USER/addressee=3
+Входящий1/Черновик/ROLE_USER/addresseeCopies=2
+Входящий1/Черновик/ROLE_USER/externalOrganization=3
 
-Входящий/Черновик/ROLE_AUTHOR/externalOrganization=3
-
-Входящий/Черновик/ROLE_USER/title=3
+Входящий/Черновик/ROLE_USER/title=2
 Входящий/Черновик/ROLE_USER/comment=2
-Входящий/Черновик/ROLE_USER/documentKind=3
-Входящий/Черновик/ROLE_USER/addressee=3
+Входящий/Черновик/ROLE_USER/documentKind=2
+Входящий/Черновик/ROLE_USER/addressee=2
 Входящий/Черновик/ROLE_USER/addresseeCopies=2
-Входящий/Черновик/ROLE_USER/externalOrganization=3
+Входящий/Черновик/ROLE_USER/externalOrganization=2
+Входящий/Черновик/ROLE_USER/externalSigner=2
+Входящий/Черновик/ROLE_USER/externalExecutor=2
+Входящий/Черновик/ROLE_USER/externalNumber=2
+Входящий/Черновик/ROLE_USER/externalDate=2
+Входящий/Черновик/ROLE_USER/documentNumber=2
+Входящий/Черновик/ROLE_USER/caseNumber=2
+Входящий/Черновик/ROLE_USER/pageCount=2
+Входящий/Черновик/ROLE_USER/appendixCount=2
+Входящий/Черновик/ROLE_USER/registrationDate=2
+Входящий/Черновик/ROLE_USER/registrar=2
+Входящий/Черновик/ROLE_USER/executionDate=2
+Входящий/Черновик/ROLE_USER/executor=2
+Входящий/Черновик/ROLE_USER/controller=2
+Входящий/Черновик/ROLE_USER/deliveryMethod=2
 
 Тестовый/Тест<Нет полей>/ROLE_USER/title=0
 Тестовый/Тест<Нет полей>/ROLE_USER/comment=0
@@ -96,4 +115,42 @@
 Тестовый/Тест<Все обязательные>/ROLE_USER/executor=3
 Тестовый/Тест<Все обязательные>/ROLE_USER/controller=3
 Тестовый/Тест<Все обязательные>/ROLE_USER/deliveryMethod=3
+
+Внутренний/На рассмотрении/ROLE_USER/title=2
+Внутренний/На рассмотрении/ROLE_USER/comment=2
+Внутренний/На рассмотрении/ROLE_USER/documentKind=2
+Внутренний/На рассмотрении/ROLE_USER/addressee=2
+Внутренний/На рассмотрении/ROLE_USER/addresseeCopies=2
+Внутренний/На рассмотрении/ROLE_USER/documentNumber=2
+Внутренний/На рассмотрении/ROLE_USER/caseNumber=2
+Внутренний/На рассмотрении/ROLE_USER/pageCount=2
+Внутренний/На рассмотрении/ROLE_USER/appendixCount=2
+Внутренний/На рассмотрении/ROLE_USER/registrationDate=2
+Внутренний/На рассмотрении/ROLE_USER/registrar=2
+Внутренний/На рассмотрении/ROLE_USER/executionDate=2
+Внутренний/На рассмотрении/ROLE_USER/executor=2
+Внутренний/На рассмотрении/ROLE_USER/controller=2
+Внутренний/На рассмотрении/ROLE_USER/deliveryMethod=2
+
+Входящий/На рассмотрении/ROLE_USER/title=2
+Входящий/На рассмотрении/ROLE_USER/comment=2
+Входящий/На рассмотрении/ROLE_USER/documentKind=2
+Входящий/На рассмотрении/ROLE_USER/addressee=2
+Входящий/На рассмотрении/ROLE_USER/addresseeCopies=2
+Входящий/На рассмотрении/ROLE_USER/externalOrganization=2
+Входящий/На рассмотрении/ROLE_USER/externalSigner=2
+Входящий/На рассмотрении/ROLE_USER/externalExecutor=2
+Входящий/На рассмотрении/ROLE_USER/externalNumber=2
+Входящий/На рассмотрении/ROLE_USER/externalDate=2
+Входящий/На рассмотрении/ROLE_USER/documentNumber=2
+Входящий/На рассмотрении/ROLE_USER/caseNumber=2
+Входящий/На рассмотрении/ROLE_USER/pageCount=2
+Входящий/На рассмотрении/ROLE_USER/appendixCount=2
+Входящий/На рассмотрении/ROLE_USER/registrationDate=2
+Входящий/На рассмотрении/ROLE_USER/registrar=2
+Входящий/На рассмотрении/ROLE_USER/executionDate=2
+Входящий/На рассмотрении/ROLE_USER/executor=2
+Входящий/На рассмотрении/ROLE_USER/controller=2
+Входящий/На рассмотрении/ROLE_USER/deliveryMethod=2
+
 

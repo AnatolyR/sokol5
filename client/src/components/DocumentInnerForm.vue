@@ -74,91 +74,6 @@
 
         <div class="s-document-block-delimiter"></div>
 
-        <b-form-group
-                label="Корреспондент"
-                label-for="externalOrganizationInput"
-                v-if="fieldsLevels.externalOrganization > 0">
-            <b-form-input
-                    v-if="!editMode || fieldsLevels.externalOrganization == 1"
-                    id="externalOrganizationInput"
-                    v-model="document.externalOrganizationTitle"
-                    required :readonly="!editMode || fieldsLevels.externalOrganization == 1" :plaintext="!editMode || fieldsLevels.externalOrganization == 1"  />
-            <s-select v-if="editMode && fieldsLevels.externalOrganization > 1" id="externalOrganizationInput" :config="externalOrganizationConfig"
-                      @value="(val) => document.externalOrganization=val" :value="document.externalOrganization"
-                      :valueTitle="document.externalOrganizationTitle"
-                      v-bind:class="{'s-invalid-field': state('externalOrganization') === false ? true : false}"></s-select>
-            <div v-if="editMode && fieldsLevels.externalOrganization > 1" class="invalid-feedback" v-bind:style="{display: state('externalOrganization') === false ? 'block' : 'none'}">
-                Корреспондент должен быть заполнен
-            </div>
-        </b-form-group>
-
-        <b-row>
-            <b-col>
-                <s-select-group
-                        title="Кем подписано"
-                        id="externalSignerInput"
-                        :fieldLevel="fieldsLevels.externalSigner"
-                        :editMode="editMode"
-                        v-model="document.externalSigner"
-                        :valueTitle="document.externalSigner"
-                        :depends="document"
-                        errorMessage="Кем подписано должно быть заполнено"
-                        :state="() => {return (!this.document.externalSigner && this.fieldsLevels.externalSigner == 3) ? false : null;}"
-                        :selectConfig="externalOrganizationPersonConfig"
-                ></s-select-group>
-            </b-col>
-            <b-col>
-                <s-select-group
-                        title="Исполнитель"
-                        id="externalExecutorInput"
-                        :fieldLevel="fieldsLevels.externalExecutor"
-                        :editMode="editMode"
-                        v-model="document.externalExecutor"
-                        :valueTitle="document.externalExecutor"
-                        :depends="document"
-                        errorMessage="Исполнитель должен быть заполнен"
-                        :state="() => {return (!this.document.externalExecutor && this.fieldsLevels.externalExecutor == 3) ? false : null;}"
-                        :selectConfig="externalOrganizationPersonConfig"
-                ></s-select-group>
-            </b-col>
-        </b-row>
-
-        <b-row>
-            <b-col>
-                <b-form-group
-                        label="Исходящий номер"
-                        label-for="externalNumberInput"
-                        v-if="fieldsLevels.externalNumber > 0">
-                    <b-form-input
-                            id="externalNumberInput"
-                            :state="() => {return (!this.document.externalNumber && this.fieldsLevels.externalNumber == 3) ? false : null;}"
-                            v-model="document.externalNumber"
-                            required :readonly="!editMode || fieldsLevels.externalNumber == 1" :plaintext="!editMode || fieldsLevels.externalNumber == 1"  />
-                    <b-form-invalid-feedback>
-                        Исходящий номер не может быть пустой
-                    </b-form-invalid-feedback>
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-form-group
-                        label="Исходящая дата"
-                        label-for="externalDateInput"
-                        v-if="fieldsLevels.externalDate > 0">
-                    <b-form-input
-                            v-if="!editMode"
-                            id="externalDateInput"
-                            v-model="document.externalDateStr"
-                            required :readonly="!editMode || fieldsLevels.externalDate == 1" :plaintext="!editMode || fieldsLevels.externalDate == 1"  />
-                    <date-picker
-                            v-if="editMode && fieldsLevels.externalDate > 1"
-                            id="externalDateInput"
-                            :state="state('externalDate')"
-                            v-model="document.externalDate"
-                            :config="dateConfig"/>
-                </b-form-group>
-            </b-col>
-        </b-row>
-
         <div class="s-document-block-delimiter"></div>
 
         <b-row>
@@ -555,10 +470,12 @@
                     preload: true,
                     // create: true,
                     load(query, callback) {
-                        if (!query.length) {
-                            return callback();
-                        }
-                        axios.get(`/api/deliveryMethods/search/methodByTitle?title=%25${query}%25`).then((res) => {
+                        // if (!query.length) {
+                        //     return callback();
+                        // }
+                        // axios.get(`/api/deliveryMethods/search/methodByTitle?title=%25${query}%25`).then((res) => {
+                        axios.get(`/api/deliveryMethods?size=100`).then((res) => {
+                            this.settings.load = null;
                             const users = res.data._embedded.deliveryMethods;
                             callback(users);
                         }).catch(() => {
@@ -575,10 +492,8 @@
                     preload: true,
                     // create: true,
                     load(query, callback) {
-                        if (!query.length) {
-                            return callback();
-                        }
-                        axios.get(`/api/documentKinds/search/kindByTitle?title=%25${query}%25`).then((res) => {
+                        axios.get(`/api/documentKinds?size=100`).then((res) => {
+                            this.settings.load = null;
                             const users = res.data._embedded.documentKinds;
                             callback(users);
                         }).catch(() => {

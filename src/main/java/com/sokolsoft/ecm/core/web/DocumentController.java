@@ -1,7 +1,6 @@
 package com.sokolsoft.ecm.core.web;
 
-import com.sokolsoft.ecm.core.model.Document;
-import com.sokolsoft.ecm.core.model.User;
+import com.sokolsoft.ecm.core.model.*;
 import com.sokolsoft.ecm.core.service.DocumentService;
 import com.sokolsoft.ecm.core.service.SecurityService;
 import com.sokolsoft.ecm.core.service.UserService;
@@ -33,21 +32,16 @@ public class DocumentController {
     public Object getDocument(@PathVariable("documentId") String documentIdStr, Authentication authentication) {
         UUID documentId = UUID.fromString(documentIdStr);
         Document document = documentService.getDocument(documentId);
+        if (document == null) {
+            throw new RuntimeException("Document not found");
+        }
         DocumentResponse response = new DocumentResponse();
         response.setDocument(document);
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         List<String> roles = new ArrayList<>(authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
 
-        User currentUser = userService.getCurrentUser();
-        UUID creator = document.getCreator();   //todo add check for unexist document
-        if (currentUser.getId().equals(creator)) {
-            roles.add("ROLE_AUTHOR");
-        }
-        String status = document.getStatus();
-        if ("Черновик".equals(status) && !roles.contains("ROLE_AUTHOR")) {
-            throw new RuntimeException("Document in draft state available only to author");
-        }
+        documentService.checkForDraft(document, roles);
 
         Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
         response.setFields(fieldsRights);
@@ -55,8 +49,23 @@ public class DocumentController {
         return response;
     }
 
-    @PostMapping("document")
-    public Document save(@RequestBody Document document) {
+//    @PostMapping("document")
+//    public Document save(@RequestBody Document document) {
+//        return documentService.save(document);
+//    }
+
+    @PostMapping("incomingDocument")
+    public Document save(@RequestBody IncomingDocument document) {
+        return documentService.save(document);
+    }
+
+    @PostMapping("outgoingDocument")
+    public Document save(@RequestBody OutgoingDocument document) {
+        return documentService.save(document);
+    }
+
+    @PostMapping("innerDocument")
+    public Document save(@RequestBody InnerDocument document) {
         return documentService.save(document);
     }
 

@@ -77,7 +77,22 @@
             </ul>
 
             <!-- FORM -->
-            <s-document-form ref="attributesForm" v-if="tab === 'attributes'" @formState="(val) => this.formState = val"
+            <!--<s-document-form ref="attributesForm" v-if="tab === 'attributes'" @formState="(val) => this.formState = val"-->
+                             <!--:edit-mode="editMode" v-model="document"-->
+                             <!--:fieldsLevels="fieldsLevels"/>-->
+
+            <s-document-incoming-form v-if="tab === 'attributes' && document.documentType === 'Тестовый'" ref="attributesForm"
+                                      @formState="(val) => this.formState = val"
+                                      :edit-mode="editMode" v-model="document"
+                                      :fieldsLevels="fieldsLevels"/>
+
+            <s-document-incoming-form v-if="tab === 'attributes' && document.documentType === 'Входящий'" ref="attributesForm"
+                                      @formState="(val) => this.formState = val"
+                             :edit-mode="editMode" v-model="document"
+                             :fieldsLevels="fieldsLevels"/>
+
+            <s-document-inner-form v-if="tab === 'attributes' && document.documentType === 'Внутренний'" ref="attributesForm"
+                                   @formState="(val) => this.formState = val"
                              :edit-mode="editMode" v-model="document"
                              :fieldsLevels="fieldsLevels"/>
 
@@ -139,10 +154,13 @@
 <script>
     import axios from "axios";
     import SSelect from "../components/Select";
-    import SDocumentForm from "../components/DocumentForm";
+    // import SDocumentForm from "../components/DocumentForm";
+    import SDocumentIncomingForm from "../components/DocumentIncomingForm";
+    import SDocumentInnerForm from "../components/DocumentInnerForm";
 
     export default {
-        components: {SSelect, SDocumentForm},
+        // components: {SSelect, SDocumentForm},
+        components: {SSelect, SDocumentIncomingForm, SDocumentInnerForm},
         mounted() {
             this.loadDocument();
         },
@@ -199,7 +217,16 @@
                     document.executionDate = new Date(document.executionDate).toISOString();
                 }
 
-                axios.post('/api/document', document).then(() => {
+                let saveUrl;
+                if (this.document.documentType === "Входящий") {
+                    saveUrl = '/api/incomingDocument';
+                } else if (this.document.documentType === "Исходящий") {
+                    saveUrl = '/api/outgoingDocument';
+                } else if (this.document.documentType === "Внутренний") {
+                    saveUrl = '/api/innerDocument';
+                }
+
+                axios.post(saveUrl, document).then(() => {
                     this.successMessage = 'Документ сохранен';
                     setTimeout(() => this.successMessage = null, 3000);
                     this.loadDocument();

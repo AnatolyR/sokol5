@@ -12,79 +12,66 @@ import java.util.UUID;
 @Entity
 @Table(name = "document")
 @org.springframework.data.elasticsearch.annotations.Document(indexName = "document")
-public class Document implements Serializable {
+public abstract class Document implements Serializable {
 
     @Id
-    private UUID id;
+    protected UUID id;
 
-    private UUID addressee;
+    protected UUID addressee;
 
-    private String addresseeTitle;
-
-    @ElementCollection
-    @OrderColumn
-    private List<UUID> addresseeCopies;
+    protected String addresseeTitle;
 
     @ElementCollection
     @OrderColumn
-    private List<String> addresseeCopiesTitles;
+    protected List<UUID> addresseeCopies;
 
+    @ElementCollection
+    @OrderColumn
+    protected List<String> addresseeCopiesTitles;
 
-    private String documentKind;
+    protected String documentKind;
 
-    private String documentSubKind;
+    protected String documentSubKind;
 
-    private Instant registrationDate;
+    protected Instant registrationDate;
 
-    private Instant createDate;
+    protected Instant createDate;
 
-    private String title;
+    protected String title;
 
-    private String comment;
+    protected String comment;
 
-    private Instant externalDate;
+    protected Integer pageCount;
 
-    private String externalNumber;
+    protected Integer appendixCount;
 
-    private String externalSigner;
+    protected String caseNumber;
 
-    private String externalExecutor;
+    protected UUID registrar;
 
-    private Integer pageCount;
+    protected String registrarTitle;
 
-    private Integer appendixCount;
+    protected String documentNumber;
 
-    private String caseNumber;
+    protected String deliveryMethod;
 
-    private UUID registrar;
+    protected String executionDate;
 
-    private String registrarTitle;
+    protected UUID executor;
 
-    private UUID externalOrganization;
+    protected String executorTitle;
 
-    private String externalOrganizationTitle;
+    protected UUID controller;
 
-    private String documentNumber;
+    protected String controllerTitle;
 
-    private String deliveryMethod;
+    protected String status;
 
-    private String executionDate;
+    protected String documentType;
 
-    private UUID executor;
+    protected UUID creator;
 
-    private String executorTitle;
-
-    private UUID controller;
-
-    private String controllerTitle;
-
-    private String status;
-
-    private String documentType;
-
-    private UUID creator;
-
-    private String creatorTitle;
+    protected String creatorTitle;
 
     public UUID getId() {
         return id;
@@ -174,38 +161,6 @@ public class Document implements Serializable {
         this.comment = comment;
     }
 
-    public Instant getExternalDate() {
-        return externalDate;
-    }
-
-    public void setExternalDate(Instant externalDate) {
-        this.externalDate = externalDate;
-    }
-
-    public String getExternalNumber() {
-        return externalNumber;
-    }
-
-    public void setExternalNumber(String externalNumber) {
-        this.externalNumber = externalNumber;
-    }
-
-    public String getExternalSigner() {
-        return externalSigner;
-    }
-
-    public void setExternalSigner(String externalSigner) {
-        this.externalSigner = externalSigner;
-    }
-
-    public String getExternalExecutor() {
-        return externalExecutor;
-    }
-
-    public void setExternalExecutor(String externalExecutor) {
-        this.externalExecutor = externalExecutor;
-    }
-
     public Integer getPageCount() {
         return pageCount;
     }
@@ -244,22 +199,6 @@ public class Document implements Serializable {
 
     public void setRegistrarTitle(String registrarTitle) {
         this.registrarTitle = registrarTitle;
-    }
-
-    public UUID getExternalOrganization() {
-        return externalOrganization;
-    }
-
-    public void setExternalOrganization(UUID externalOrganization) {
-        this.externalOrganization = externalOrganization;
-    }
-
-    public String getExternalOrganizationTitle() {
-        return externalOrganizationTitle;
-    }
-
-    public void setExternalOrganizationTitle(String externalOrganizationTitle) {
-        this.externalOrganizationTitle = externalOrganizationTitle;
     }
 
     public String getDocumentNumber() {

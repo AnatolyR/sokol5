@@ -1,6 +1,7 @@
 [
   "incoming",
   "outgoing",
+  "inner",
   "testing",
   "internal",
   "contracts"
