@@ -32,7 +32,7 @@
 </style>
 
 <script>
-    import SSelect from "../components/Select";
+    import SSelect from "./Select";
 
     export default {
         name: "s-select-group",
@@ -61,7 +61,7 @@
         },
         methods: {
             checkState() {
-                return this.state();
+                return this.state ? this.state() : null;
             }
         }
     }

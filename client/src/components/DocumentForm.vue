@@ -343,9 +343,9 @@
 </style>
 
 <script>
-    import SSelect from "../components/Select";
-    import SSelectGroup from "../components/SelectGroup";
-    import SMultiSelect from "../components/MultiSelect";
+    import SSelect from "../components/fields/Select";
+    import SSelectGroup from "../components/fields/SelectGroup";
+    import SMultiSelect from "../components/fields/MultiSelect";
     import axios from 'axios';
 
     import datePicker from 'vue-bootstrap-datetimepicker';

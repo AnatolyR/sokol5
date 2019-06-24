@@ -1,32 +1,24 @@
 <template>
     <b-form class="s-document-form">
-        <b-form-group
-                label="Заголовок"
-                label-for="titleInput"
-                v-if="fieldsLevels.title > 0">
-            <b-form-input
-                    id="titleInput"
-                    :state="state('title')"
-                    v-model="document.title"
-                    required :readonly="!editMode || fieldsLevels.title == 1" :plaintext="!editMode || fieldsLevels.title == 1"  />
-            <b-form-invalid-feedback>
-                Заголовок не может быть пустой
-            </b-form-invalid-feedback>
-        </b-form-group>
+        <s-input-group
+                title="Заголовок"
+                id="titleInput"
+                :fieldLevel="fieldsLevels.title"
+                :editMode="editMode"
+                v-model="document.title"
+                errorMessage="Заголовок не может быть пустой"
+                :state="() => state('title')"
+        ></s-input-group>
 
-        <b-form-group
-                label="Комментарий"
-                label-for="commentInput"
-                v-if="fieldsLevels.comment > 0">
-            <b-form-input
-                    id="commentInput"
-                    :state="state('comment')"
-                    v-model="document.comment"
-                    required :readonly="!editMode || fieldsLevels.comment == 1" :plaintext="!editMode || fieldsLevels.comment == 1"  />
-            <b-form-invalid-feedback>
-                Комментарий не может быть пустой
-            </b-form-invalid-feedback>
-        </b-form-group>
+        <s-input-group
+                title="Комментарий"
+                id="commentInput"
+                :fieldLevel="fieldsLevels.comment"
+                :editMode="editMode"
+                v-model="document.comment"
+                errorMessage="Комментарий не может быть пустой"
+                :state="() => state('comment')"
+        ></s-input-group>
 
         <b-row>
             <b-col>
@@ -58,39 +50,30 @@
             </b-col>
         </b-row>
 
-        <b-form-group
-                label="Адресаты (копии)"
-                label-for="addresseeCopiesInput"
-                v-if="fieldsLevels.addresseeCopies > 0">
-            <b-form-input
-                    v-if="!editMode || fieldsLevels.addresseeCopies == 1"
-                    id="addresseeCopiesInput"
-                    v-model="document.addresseeCopiesTitles.join()"
-                    required :readonly="!editMode || fieldsLevels.addresseeCopies == 1" :plaintext="!editMode || fieldsLevels.addresseeCopies == 1"  />
-            <s-multi-select v-if="editMode && fieldsLevels.addresseeCopies > 1" id="addresseeCopiesInput" :config="addresseeCopiesSelectConfig"
-                      @value="(val) => document.addresseeCopies=val" :value="document.addresseeCopies"
-                      :valueTitle="document.addresseeCopiesTitles"></s-multi-select>
-        </b-form-group>
+        <s-multi-select-group
+                title="Адресаты (копии)"
+                id="addresseeCopiesInput"
+                :fieldLevel="fieldsLevels.addresseeCopies"
+                :editMode="editMode"
+                v-model="document.addresseeCopies"
+                :valueTitle="document.addresseeCopiesTitles"
+                :selectConfig="addresseeCopiesSelectConfig"
+        ></s-multi-select-group>
 
         <div class="s-document-block-delimiter"></div>
 
-        <b-form-group
-                label="Корреспондент"
-                label-for="externalOrganizationInput"
-                v-if="fieldsLevels.externalOrganization > 0">
-            <b-form-input
-                    v-if="!editMode || fieldsLevels.externalOrganization == 1"
-                    id="externalOrganizationInput"
-                    v-model="document.externalOrganizationTitle"
-                    required :readonly="!editMode || fieldsLevels.externalOrganization == 1" :plaintext="!editMode || fieldsLevels.externalOrganization == 1"  />
-            <s-select v-if="editMode && fieldsLevels.externalOrganization > 1" id="externalOrganizationInput" :config="externalOrganizationConfig"
-                      @value="(val) => document.externalOrganization=val" :value="document.externalOrganization"
-                      :valueTitle="document.externalOrganizationTitle"
-                      v-bind:class="{'s-invalid-field': state('externalOrganization') === false ? true : false}"></s-select>
-            <div v-if="editMode && fieldsLevels.externalOrganization > 1" class="invalid-feedback" v-bind:style="{display: state('externalOrganization') === false ? 'block' : 'none'}">
-                Корреспондент должен быть заполнен
-            </div>
-        </b-form-group>
+
+        <s-select-group
+                title="Корреспондент"
+                id="externalOrganizationInput"
+                :fieldLevel="fieldsLevels.externalOrganization"
+                :editMode="editMode"
+                v-model="document.externalOrganization"
+                :valueTitle="document.externalOrganizationTitle"
+                errorMessage="Корреспондент должен быть заполнен"
+                :state="() => {return (!this.document.externalOrganization && this.fieldsLevels.externalOrganization == 3) ? false : null;}"
+                :selectConfig="externalOrganizationConfig"
+        ></s-select-group>
 
         <b-row>
             <b-col>
@@ -125,37 +108,30 @@
 
         <b-row>
             <b-col>
-                <b-form-group
-                        label="Исходящий номер"
-                        label-for="externalNumberInput"
-                        v-if="fieldsLevels.externalNumber > 0">
-                    <b-form-input
-                            id="externalNumberInput"
-                            :state="() => {return (!this.document.externalNumber && this.fieldsLevels.externalNumber == 3) ? false : null;}"
-                            v-model="document.externalNumber"
-                            required :readonly="!editMode || fieldsLevels.externalNumber == 1" :plaintext="!editMode || fieldsLevels.externalNumber == 1"  />
-                    <b-form-invalid-feedback>
-                        Исходящий номер не может быть пустой
-                    </b-form-invalid-feedback>
-                </b-form-group>
+                <s-input-group
+                        title="Исходящий номер"
+                        id="externalNumberInput"
+                        :fieldLevel="fieldsLevels.externalNumber"
+                        :editMode="editMode"
+                        v-model="document.externalNumber"
+                        errorMessage="Исходящий номер не может быть пустой"
+                        :state="() => (!this.document.externalNumber && this.fieldsLevels.externalNumber == 3) ? false : null"
+                ></s-input-group>
+
             </b-col>
             <b-col>
-                <b-form-group
-                        label="Исходящая дата"
-                        label-for="externalDateInput"
-                        v-if="fieldsLevels.externalDate > 0">
-                    <b-form-input
-                            v-if="!editMode"
-                            id="externalDateInput"
-                            v-model="document.externalDateStr"
-                            required :readonly="!editMode || fieldsLevels.externalDate == 1" :plaintext="!editMode || fieldsLevels.externalDate == 1"  />
-                    <date-picker
-                            v-if="editMode && fieldsLevels.externalDate > 1"
-                            id="externalDateInput"
-                            :state="state('externalDate')"
-                            v-model="document.externalDate"
-                            :config="dateConfig"/>
-                </b-form-group>
+                <s-date-group
+                        title="Исходящая дата"
+                        id="externalDateInput"
+                        :fieldLevel="fieldsLevels.externalDate"
+                        :editMode="editMode"
+                        v-model="document.externalDate"
+                        :valueTitle="document.externalDateStr"
+                        :depends="document"
+                        errorMessage="Исходящая дата должена быть заполнена"
+                        :state="() => {return (!this.document.externalDate && this.fieldsLevels.externalDate == 3) ? false : null;}"
+                ></s-date-group>
+
             </b-col>
         </b-row>
 
@@ -163,61 +139,55 @@
 
         <b-row>
             <b-col>
-                <b-form-group
-                        label="Номер документа"
-                        label-for="documentNumberInput"
-                        v-if="fieldsLevels.documentNumber > 0">
-                    <b-form-input
-                            id="documentNumberInput"
-                            :state="state('documentNumber')"
-                            v-model="document.documentNumber"
-                            required :readonly="!editMode || fieldsLevels.documentNumber == 1" :plaintext="!editMode || fieldsLevels.documentNumber == 1"  />
-                </b-form-group>
+                <s-input-group
+                        title="Номер документа"
+                        id="documentNumberInput"
+                        :fieldLevel="fieldsLevels.documentNumber"
+                        :editMode="editMode"
+                        v-model="document.documentNumber"
+                        errorMessage="Номер документа не может быть пустой"
+                        :state="() => (!this.document.documentNumber && this.fieldsLevels.documentNumber == 3) ? false : null"
+                ></s-input-group>
+
             </b-col>
             <b-col>
-                <b-form-group
-                        label="Дело"
-                        label-for="caseNumberInput"
-                        v-if="fieldsLevels.caseNumber > 0">
-                    <b-form-input
-                            id="caseNumberInput"
-                            :state="state('caseNumber')"
-                            v-model="document.caseNumber"
-                            required :readonly="!editMode || fieldsLevels.caseNumber == 1" :plaintext="!editMode || fieldsLevels.caseNumber == 1"  />
-                </b-form-group>
+                <s-input-group
+                        title="Дело"
+                        id="caseNumberInput"
+                        :fieldLevel="fieldsLevels.caseNumber"
+                        :editMode="editMode"
+                        v-model="document.caseNumber"
+                        errorMessage="Дело не может быть пустым"
+                        :state="() => (!this.document.caseNumber && this.fieldsLevels.caseNumber == 3) ? false : null"
+                ></s-input-group>
+
             </b-col>
         </b-row>
 
         <b-row>
             <b-col>
-                <b-form-group
-                        label="Количество листов"
-                        label-for="pageCountInput"
-                        v-if="fieldsLevels.comment > 0">
-                    <b-form-input
-                            id="pageCountInput"
-                            :state="state('pageCount')"
-                            v-model="document.pageCount"
-                            required :readonly="!editMode || fieldsLevels.pageCount == 1" :plaintext="!editMode || fieldsLevels.pageCount == 1"  />
-                    <b-form-invalid-feedback>
-                        Количество листов должно быть целым числом
-                    </b-form-invalid-feedback>
-                </b-form-group>
+                <s-input-group
+                        title="Количество листов"
+                        id="pageCountInput"
+                        :fieldLevel="fieldsLevels.pageCount"
+                        :editMode="editMode"
+                        v-model="document.pageCount"
+                        errorMessage="Количество листов должно быть целым числом"
+                        :state="() => state('pageCount')"
+                ></s-input-group>
+
             </b-col>
             <b-col>
-                <b-form-group
-                        label="Количество приложений"
-                        label-for="appendixCountInput"
-                        v-if="fieldsLevels.appendixCount > 0">
-                    <b-form-input
-                            id="rappendixCountInput"
-                            :state="state('appendixCount')"
-                            v-model="document.appendixCount"
-                            required :readonly="!editMode || fieldsLevels.appendixCount == 1" :plaintext="!editMode || fieldsLevels.appendixCount == 1"  />
-                    <b-form-invalid-feedback>
-                        Количество приложений должно быть целым числом
-                    </b-form-invalid-feedback>
-                </b-form-group>
+                <s-input-group
+                        title="Количество приложений"
+                        id="appendixCountInput"
+                        :fieldLevel="fieldsLevels.appendixCount"
+                        :editMode="editMode"
+                        v-model="document.appendixCount"
+                        errorMessage="Количество приложений должно быть целым числом"
+                        :state="() => state('appendixCount')"
+                ></s-input-group>
+
             </b-col>
         </b-row>
 
@@ -225,22 +195,18 @@
 
         <b-row>
             <b-col>
-                <b-form-group
-                        label="Дата регистрации"
-                        label-for="registrationDateInput"
-                        v-if="fieldsLevels.registrationDate > 0">
-                    <b-form-input
-                            v-if="!editMode || fieldsLevels.registrationDate == 1"
-                            id="registrationDateInput"
-                            v-model="document.registrationDateStr"
-                            required :readonly="!editMode || fieldsLevels.registrationDate == 1" :plaintext="!editMode || fieldsLevels.registrationDate == 1"  />
-                    <date-picker
-                            v-if="editMode && fieldsLevels.registrationDate > 1"
-                            id="registrationDateInput"
-                            :state="state('registrationDate')"
-                            v-model="document.registrationDate"
-                            :config="dateConfig"/>
-                </b-form-group>
+                <s-date-group
+                        title="Дата регистрации"
+                        id="registrationDateInput"
+                        :fieldLevel="fieldsLevels.registrationDate"
+                        :editMode="editMode"
+                        v-model="document.registrationDate"
+                        :valueTitle="document.registrationDateStr"
+                        :depends="document"
+                        errorMessage="Дата регистрации должена быть заполнена"
+                        :state="() => {return (!this.document.registrationDate && this.fieldsLevels.registrationDate == 3) ? false : null;}"
+                ></s-date-group>
+
             </b-col>
             <b-col>
                 <s-select-group
@@ -259,22 +225,18 @@
 
         <b-row>
             <b-col>
-                <b-form-group
-                        label="Дата исполнения"
-                        label-for="executionDateInput"
-                        v-if="fieldsLevels.executionDate > 0">
-                    <b-form-input
-                            v-if="!editMode || fieldsLevels.executionDate == 1"
-                            id="executionDateInput"
-                            v-model="document.executionDateStr"
-                            required :readonly="!editMode || fieldsLevels.executionDate == 1" :plaintext="!editMode || fieldsLevels.executionDate == 1"  />
-                    <date-picker
-                            v-if="editMode && fieldsLevels.executionDate > 1"
-                            id="executionDateInput"
-                            :state="state('executionDate')"
-                            v-model="document.executionDate"
-                            :config="dateConfig"/>
-                </b-form-group>
+                <s-date-group
+                        title="Дата исполнения"
+                        id="executionDateInput"
+                        :fieldLevel="fieldsLevels.executionDate"
+                        :editMode="editMode"
+                        v-model="document.executionDate"
+                        :valueTitle="document.executionDateStr"
+                        :depends="document"
+                        errorMessage="Дата исполнения должена быть заполнена"
+                        :state="() => {return (!this.document.executionDate && this.fieldsLevels.executionDate == 3) ? false : null;}"
+                ></s-date-group>
+                
             </b-col>
             <b-col>
                 <s-select-group
@@ -329,6 +291,7 @@
     }
 
     .s-document-block-delimiter {
+        border-top: 1px solid #bbbbbb;
         height: 2em;
     }
 
@@ -343,15 +306,20 @@
 </style>
 
 <script>
-    import SSelect from "../components/Select";
-    import SSelectGroup from "../components/SelectGroup";
-    import SMultiSelect from "../components/MultiSelect";
+    import SSelect from "../components/fields/Select";
+    import SSelectGroup from "../components/fields/SelectGroup";
+    import SMultiSelectGroup from "../components/fields/MultiSelectGroup";
+    import SMultiSelect from "../components/fields/MultiSelect";
+    import SInputGroup from "../components/fields/InputGroup"
+    import SDateGroup from "../components/fields/DateGroup"
     import axios from 'axios';
 
     import datePicker from 'vue-bootstrap-datetimepicker';
 
     export default {
-        components: {SSelect, SMultiSelect, datePicker, SSelectGroup},
+        components: {SSelect, SMultiSelect, datePicker,
+            SSelectGroup, SInputGroup, SMultiSelectGroup,
+            SDateGroup},
 
         mounted() {
 
@@ -399,13 +367,21 @@
                     return (!this.document.externalOrganization && this.fieldsLevels.externalOrganization == 3) ? false : null;
                 }
 
-                if (field === 'pageCount' && this.document.pageCount) {
-                    if (!(this.isNormalInteger(this.document.pageCount) && this.document.pageCount >= 0)) {
+                if (field === 'pageCount') {
+                    if (this.document.pageCount) {
+                        if (!(this.isNormalInteger(this.document.pageCount) && this.document.pageCount >= 0)) {
+                            return false;
+                        }
+                    } else if (this.fieldsLevels.pageCount == 3) {
                         return false;
                     }
                 }
-                if (field === 'appendixCount' && this.document.appendixCount) {
-                    if (!(this.isNormalInteger(this.document.appendixCount) && this.document.appendixCount >= 0)) {
+                if (field === 'appendixCount') {
+                    if (this.document.appendixCount) {
+                        if (!(this.isNormalInteger(this.document.appendixCount) && this.document.appendixCount >= 0)) {
+                            return false;
+                        }
+                    } else if (this.fieldsLevels.appendixCount == 3) {
                         return false;
                     }
                 }

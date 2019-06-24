@@ -81,7 +81,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Document save(Document document) {
-        Document oldDocument = documentRepository.getOne(document.getId());
+        Document oldDocument = documentRepository.findById(document.getId()).orElse(null);
 
         Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toCollection(ArrayList::new));
@@ -97,7 +97,7 @@ public class DocumentServiceImpl implements DocumentService {
             createExternalOrganizationPersons((IncomingDocument) oldDocument);
         }
 
-        return documentRepository.save(oldDocument);
+        return (Document) documentRepository.save(oldDocument);
     }
 
     public void checkForDraft(Document document, List<String> roles) {

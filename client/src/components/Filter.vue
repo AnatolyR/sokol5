@@ -38,7 +38,7 @@
 </template>
 
 <script>
-    import SSelect from "../components/Select";
+    import SSelect from "../components/fields/Select";
 
     export default {
         components: {SSelect},

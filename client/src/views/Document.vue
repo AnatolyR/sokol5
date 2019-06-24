@@ -153,7 +153,7 @@
 
 <script>
     import axios from "axios";
-    import SSelect from "../components/Select";
+    import SSelect from "../components/fields/Select";
     // import SDocumentForm from "../components/DocumentForm";
     import SDocumentIncomingForm from "../components/DocumentIncomingForm";
     import SDocumentInnerForm from "../components/DocumentInnerForm";
@@ -277,9 +277,9 @@
                     }
                     this.document = document;
                     this.documentBackup = JSON.stringify(document);
-                    if (this.document.status === "Черновик") {
-                        this.editMode = true;
-                    }
+                    // if (this.document.status === "Черновик") {
+                    //     this.editMode = true;
+                    // }
 
                     this.loading = false;
                 }).catch((error) => {
