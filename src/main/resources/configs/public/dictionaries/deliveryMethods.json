@@ -1,0 +1,16 @@
+{
+  "id": "deliveryMethods",
+  "name": "Способы доставки",
+  "url": "deliveryMethods",
+  "fields": [
+    {
+      "id": "id",
+      "title": "ИД",
+      "visible": false
+    },
+    {
+      "id": "title",
+      "title": "Значение",
+      "visible": true
+    }]
+}

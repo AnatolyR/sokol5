@@ -1,9 +1,10 @@
 package com.sokolsoft.ecm;
 
 import com.sokolsoft.ecm.core.model.Contragent;
+import com.sokolsoft.ecm.core.model.DeliveryMethod;
+import com.sokolsoft.ecm.core.model.DocumentKind;
 import com.sokolsoft.ecm.core.model.User;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -113,6 +114,8 @@ public class EcmApplication {
         public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
             config.exposeIdsFor(User.class);
             config.exposeIdsFor(Contragent.class);
+            config.exposeIdsFor(DocumentKind.class);
+            config.exposeIdsFor(DeliveryMethod.class);
         }
     }
 

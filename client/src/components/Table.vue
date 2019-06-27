@@ -18,7 +18,7 @@
                 </b-dropdown>
 
                 <b-button size="sm" @click="update">Обновить</b-button>
-                <b-button :variant="conditions && conditions.length > 0 ? 'warning' : ''" size="sm" @click="toggleFilter">Фильтр</b-button>
+                <b-button v-if="buttons.filter" :variant="this.displayFilter ? 'outline-secondary' : (conditions && conditions.length > 0 ? 'warning' : '')" size="sm" @click="toggleFilter">Фильтр</b-button>
 
             </div>
         </div>
@@ -114,7 +114,7 @@
                 return selectors;
             },
             currentPageItem() {
-                return (this.page + 1) + " / " + this.totalPages;
+                return (this.page + 1) + " / " + (this.totalPages ? this.totalPages : '') ;
             },
             sortDirectionAngle() {
                 if (this.sortDirection === "DESC") {
@@ -130,7 +130,12 @@
             loadData: {
                 type: Function
             },
-            columns: {}
+            columns: {},
+            buttons: {
+                default: function () {
+                    return {}
+                }
+            }
         },
         methods: {
             update() {

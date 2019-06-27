@@ -4,10 +4,10 @@
             <b-alert show variant="danger">{{errorMessage}}</b-alert>
         </div>
         <div v-if="loading" class="s-folder-container s-folder-loader">
-            <b-spinner variant="secondary" label="Loading..." />
+            <b-spinner variant="secondary" label="Загрузка..." />
         </div>
         <div v-if="!loading" class="s-folder-container">
-            <s-table :buttons="{filter: true}" :loadData="loadData" :columns="tableColumns"></s-table>
+            <s-table :buttons="{adding: true}" :loadData="loadData" :columns="tableColumns"></s-table>
         </div>
     </div>
 </template>
@@ -28,32 +28,37 @@
     export default {
         components: {STable},
         mounted() {
-            this.fields = this.folder.fields;
+            this.fields = this.dictionary.fields;
+            this.url = this.dictionary.url;
             this.loading = false;
-            this.tableColumns = this.folder.fields;
+            this.tableColumns = this.dictionary.fields;
         },
         props: [
-            'folder'
+            'dictionary'
         ],
         methods: {
             loadData(spec) {
-                let url = `/api/folders/${this.folder.id}/data?size=${spec.size}&page=${spec.page}`;
+                let url = `/api/${this.url}?size=${spec.size}&page=${spec.page}`;
                 if (spec.sortProperty && spec.sortDirection) {
                     url += `&sortProperty=${spec.sortProperty}`;
+
+                    url += `&sort=${spec.sortProperty},${spec.sortDirection}`;
                 }
                 if (spec.sortDirection) {
                     url += `&sortDirection=${spec.sortDirection}`;
                 }
-                // if (spec.conditions) {
-                //     url += `&conditions=${JSON.stringify(spec.conditions)}`;
-                // }
+          
                 let res = new Promise((resolve, reject) => {
                     axios.get(url, {
                         params: {
                             conditions: spec.conditions ? JSON.stringify(spec.conditions).slice(1, -1) : null
                         }
                     })
-                        .then(resolve)
+                        .then((res) => {
+                            res.data.content = res.data._embedded[this.url];
+                            res.data.totalPages = res.data.page.totalPages;
+                            resolve(res);
+                        })
                         .catch((error) => {
                             this.loading = false;
                             console.log(error);

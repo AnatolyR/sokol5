@@ -1,0 +1,16 @@
+{
+  "id": "documentKinds",
+  "name": "Виды документов",
+  "url": "documentKinds",
+  "fields": [
+    {
+      "id": "id",
+      "title": "ИД",
+      "visible": false
+    },
+    {
+      "id": "title",
+      "title": "Значение",
+      "visible": true
+    }]
+}

@@ -34,7 +34,8 @@ export const router = new Router({
         {
             path: '/dictionaries',
             name: 'dictionaries',
-            component: Dictionaries
+            component: Dictionaries,
+            alias: '/dictionaries/*'
         },
         {
             path: '/reports',

@@ -39,8 +39,22 @@ public class ConfigServiceFilePathImpl implements ConfigService {
     private JsonNode processConfig(String configName, JsonNode config) {
         if (configName.startsWith("folderLists")) {
             config = processFolderLists(config);
+        } else if (configName.startsWith("dictionaries/index")) {
+            config = processDictionaryLists(config);
         }
         return config;
+    }
+
+    private JsonNode processDictionaryLists(JsonNode config) {
+        ArrayNode filledDictionaries = mapper.createArrayNode();
+        StreamSupport.stream(config.spliterator(), false).forEachOrdered(node -> {
+            String folderName = node.asText();
+            JsonNode folderConfig = getPublicRawConfig("dictionaries/" + folderName);
+            if (folderConfig != null) {
+                filledDictionaries.add(folderConfig);
+            }
+        });
+        return filledDictionaries;
     }
 
     private JsonNode processFolderLists(JsonNode config) {
