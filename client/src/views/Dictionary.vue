@@ -7,7 +7,11 @@
             <b-spinner variant="secondary" label="Загрузка..." />
         </div>
         <div v-if="!loading" class="s-folder-container">
-            <s-table :buttons="{adding: true}" :loadData="loadData" :columns="tableColumns"></s-table>
+            <s-table :buttons="{add: true, del: true}" :loadData="loadData"
+                     :columns="tableColumns"
+                     :delete-url="`delete/${url}`"
+                     :add-url="`${url}`"
+            ></s-table>
         </div>
     </div>
 </template>
@@ -74,29 +78,7 @@
                 items: null,
                 errorMessage: null,
                 fields: null,
-                tableColumns: [],
-                tableColumns1: [
-                    {
-                        id: 'id',
-                        title: 'ИД',
-                        visible: true
-                    },
-                    {
-                        id: 'title',
-                        title: 'Заголовок',
-                        visible: true
-                    },
-                    {
-                        id: 'type',
-                        title: 'Тип',
-                        visible: true
-                    },
-                    {
-                        id: 'status',
-                        title: 'Статус',
-                        visible: true
-                    }
-                ]
+                tableColumns: []
             }
         }
     }

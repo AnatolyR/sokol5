@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @SpringBootApplication
 public class EcmApplication {
 
@@ -85,7 +87,12 @@ public class EcmApplication {
             auth.inMemoryAuthentication()
                     .withUser("admin")
                     .password("{noop}admin")
-                    .roles("USER");
+                    .roles("USER",
+                            "DIC_DELIVERY_METHODS_SAVE",
+                            "DIC_DELIVERY_METHODS_DEL",
+                            "DIC_DOC_KINDS_DEL",
+                            "DIC_DOC_KINDS_SAVE"
+                            );
         }
 
     }

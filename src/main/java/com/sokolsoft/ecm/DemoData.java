@@ -4,6 +4,12 @@ import com.sokolsoft.ecm.core.model.*;
 import com.sokolsoft.ecm.core.repository.*;
 import com.sokolsoft.ecm.core.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -39,13 +45,24 @@ public class DemoData {
         this.deliveryMethodRepository = deliveryMethodRepository;
         this.documentKindRepository = documentKindRepository;
     }
-    
+
     public void uploadData() {
+        SecurityContext securityContext = new SecurityContextImpl();
+        
+        Collection<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_SYSTEM"));
+        AnonymousAuthenticationToken anonymousAuthenticationToken = new AnonymousAuthenticationToken("test", new User(), grantedAuthorities);
+        securityContext.setAuthentication(anonymousAuthenticationToken);
+
+        SecurityContextHolder.setContext(securityContext);
+
         uploadDocuments();
         uploadContragents();
         uploadUsers();
         uploadDeliveryMethods();
         uploadDocumentRinds();
+
+        SecurityContextHolder.clearContext();
     }
 
     private void uploadDocumentRinds() {

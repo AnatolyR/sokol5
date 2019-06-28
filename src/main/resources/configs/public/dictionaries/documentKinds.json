@@ -9,6 +9,13 @@
       "visible": false
     },
     {
+      "id": "select",
+      "title": "Выделение",
+      "type": "checkbox",
+      "ref": "id",
+      "visible": true
+    },
+    {
       "id": "title",
       "title": "Значение",
       "visible": true

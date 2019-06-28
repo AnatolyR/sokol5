@@ -19,7 +19,44 @@
 
                 <b-button size="sm" @click="update">Обновить</b-button>
                 <b-button v-if="buttons.filter" :variant="this.displayFilter ? 'outline-secondary' : (conditions && conditions.length > 0 ? 'warning' : '')" size="sm" @click="toggleFilter">Фильтр</b-button>
+                <b-button v-if="buttons.add" variant="success" size="sm" @click="showAddModal">Добавить</b-button>
+                <b-button v-if="buttons.del" :disabled="toDeleteItems === ''" variant="danger" size="sm" @click="showDelModal">Удалить</b-button>
 
+                <b-modal id="add-modal" ref="add-modal" title="Добавление" ok="'Сохранить'" cancel="'Отмена'">
+                    <p class="my-4">
+
+                        <s-dictionary-value v-model="toAddValue"></s-dictionary-value>
+                    </p>
+                    <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
+                        <b-form-checkbox v-model="addOneMore"
+                        >
+                            Добавить еще одно значение
+                        </b-form-checkbox>
+                        <b-button size="sm" variant="light" @click="cancel()">
+                            Отмена
+                        </b-button>
+                        <b-button size="sm" variant="success" @click="addValue()">
+                            Сохранить
+                        </b-button>
+                    </template>
+                </b-modal>
+                <b-toast id="add-success-toast" title="Добавление" static no-auto-hide>
+                    Значение успешно добавлено
+                </b-toast>
+
+                <b-modal id="del-modal" ref="del-modal" title="Подтверждение удаления">
+                    <p class="my-4">Будут удалены значения:
+                    {{toDeleteItems}}
+                    </p>
+                    <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
+                        <b-button size="sm" variant="light" @click="cancel()">
+                            Отмена
+                        </b-button>
+                        <b-button size="sm" variant="danger" @click="deleteSelected()">
+                            Удалить
+                        </b-button>
+                    </template>
+                </b-modal>
             </div>
         </div>
         <keep-alive>
@@ -28,17 +65,22 @@
         <table class="table table-bordered table-sm">
             <thead>
             <tr>
-                <th v-for="col in visibleColumns" scope="col" @click="doSort(col.id)">{{col.title}}
-                    <font-awesome-icon v-if="sortProperty === col.id && sortDirection" :icon="sortDirectionAngle" />
+                <th v-for="col in visibleColumns" scope="col" @click="doSort(col.id)" :style="col.type === 'checkbox' ? 'width: 2em;' : ''">
+                    <span v-if="col.type !== 'checkbox'">
+                        {{col.title}}
+                        <font-awesome-icon v-if="sortProperty === col.id && sortDirection" :icon="sortDirectionAngle" />
+                    </span>
                 </th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="item in data">
-                <td v-for="col in visibleColumns">
+                <td v-for="col in visibleColumns"
+                    @click="() => {if (col.type === 'checkbox') item.selected = !item.selected}">
                     <span v-if="!col.type">{{item[col.id]}}</span>
                     <router-link v-if="col.type === 'link'"
                                  :to="col.path + item.id">{{ item[col.id] }}</router-link>
+                    <b-form-checkbox v-if="col.type === 'checkbox'" v-model="item.selected" @click.native="(e) => e.preventDefault()"></b-form-checkbox>
                 </td>
             </tr>
             </tbody>
@@ -84,9 +126,12 @@
 
 <script>
     import SFilter from "./Filter";
+    import axios from 'axios';
+    import SDictionaryValue from './DictionaryValue'
+
     export default {
         name: 's-table',
-        components: {SFilter},
+        components: {SFilter, SDictionaryValue},
         mounted() {
             this.update();
         },
@@ -124,6 +169,9 @@
                 } else {
                     return null;
                 }
+            },
+            toDeleteItems() {
+                return this.data.filter((i) => i.selected === true).map((i) => i.title).join(", ");
             }
         },
         props: {
@@ -135,7 +183,9 @@
                 default: function () {
                     return {}
                 }
-            }
+            },
+            deleteUrl: {},
+            addUrl: {}
         },
         methods: {
             update() {
@@ -143,6 +193,11 @@
                         sortDirection: this.sortDirection, sortProperty: this.sortProperty,
                         conditions: this.conditions}).then((res) => {
                     let fullData = res.data;
+
+                    if (this.buttons.del) {
+                        fullData.content.forEach(i => i.selected = false);
+                    }
+
                     this.data = fullData.content;
                     this.totalPages = fullData.totalPages;
                 });
@@ -190,6 +245,51 @@
             },
             toggleFilter() {
                 this.displayFilter = !this.displayFilter;
+            },
+            showAddModal() {
+                this.$refs['add-modal'].show();
+            },
+            hideAddModal() {
+                this.$refs['add-modal'].hide();
+            },
+            toggleAddModal() {
+                this.$refs['add-modal'].toggle('#toggle-btn');
+            },
+            showDelModal() {
+                this.$refs['del-modal'].show();
+            },
+            deleteSelected() {
+                this.$refs['del-modal'].hide();
+                
+                let ids = this.data.filter((i) => i.selected === true).map((i) => i.id);
+                axios.delete(`/api/${this.deleteUrl}/${ids.join(',')}`).then((res) => {
+
+                    this.$bvToast.toast(`Значение(я) успешно удалены`, {
+                        variant: 'success',
+                        solid: true,
+                        autoHideDelay: 2000
+                    });
+
+                    this.update();
+                });
+            },
+            addValue() {
+                axios.post(`/api/${this.addUrl}`, {
+                    title: this.toAddValue
+                }).then((res) => {
+                    this.$bvToast.toast(`Значение успешно добавлено`, {
+                        variant: 'success',
+                        solid: true,
+                        autoHideDelay: 2000
+                    });
+
+                    this.update();
+                });
+
+                if (!this.addOneMore) {
+                    this.$refs['add-modal'].hide();
+                }
+                this.toAddValue = "";
             }
         },
         watch: {
@@ -207,7 +307,9 @@
                 sortProperty: null,
                 sortDirection: null,
                 conditions: null,
-                displayFilter: false
+                displayFilter: false,
+                toAddValue: null,
+                addOneMore: false
             }
         }
     }

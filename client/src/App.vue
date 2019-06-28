@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <s-header></s-header>
-    <b-modal v-if="!loggedIn" :visible="true" id="modal-1" title="Вход" @hide="handleHide">
+    <b-modal v-if="!loggedIn" :visible="true" :hide-footer="true" id="modal-1" title="Вход" @hide="handleHide">
       <!--<p class="my-4">Hello from modal!</p>-->
 
       <form @submit.prevent="handleSubmit" class="form-signin">
@@ -51,9 +51,6 @@ a .nav-link.router-link-exact-active {
 }
   .modal-dialog .close {
     display: none;
-  }
-  .modal-dialog .modal-footer {
-    border: 0;
   }
 </style>
 
