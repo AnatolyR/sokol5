@@ -11,7 +11,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "document")
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "document")
+//@org.springframework.data.elasticsearch.annotations.Document(indexName = "document")
 public abstract class Document implements Serializable {
 
     @Id

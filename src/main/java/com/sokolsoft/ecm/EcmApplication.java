@@ -88,11 +88,20 @@ public class EcmApplication {
                     .withUser("admin")
                     .password("{noop}admin")
                     .roles("USER",
+                            "DIC_DELIVERY_METHODS",
                             "DIC_DELIVERY_METHODS_SAVE",
                             "DIC_DELIVERY_METHODS_DEL",
+                            "DIC_DOC_KINDS",
                             "DIC_DOC_KINDS_DEL",
-                            "DIC_DOC_KINDS_SAVE"
-                            );
+                            "DIC_DOC_KINDS_SAVE",
+                            "DIC_CONTRAGENT_PERSONS",
+                            "DIC_CONTRAGENTS",
+                            "DIC_USERS"
+                            )
+                    .and()
+                    .withUser("user")
+                    .password("{noop}user")
+                    .roles("USER");
         }
 
     }

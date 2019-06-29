@@ -291,7 +291,7 @@
     }
 
     .s-document-block-delimiter {
-        border-top: 1px solid #bbbbbb;
+        border-top: 1px solid #dee2e6;
         height: 2em;
     }
 

@@ -3,6 +3,8 @@ package com.sokolsoft.ecm.core.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.sokolsoft.ecm.core.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,15 @@ public class ConfigServiceFilePathImpl implements ConfigService {
             JsonNode folderConfig = getPublicRawConfig("dictionaries/" + folderName);
             if (folderConfig != null) {
                 filledDictionaries.add(folderConfig);
+                ArrayNode actions = ((ObjectNode) folderConfig).putArray("actions");
+                JsonNode privateConfig = getPrivateRawConfig("dictionaries/" + folderName);
+                if (privateConfig != null) {
+                    privateConfig.get("actions").forEach(a -> {
+                        if (Utils.checkAccess(a.get("secured").asText())) {
+                            actions.add(a.get("id").asText());
+                        }
+                    });
+                }
             }
         });
         return filledDictionaries;

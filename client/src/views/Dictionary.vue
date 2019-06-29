@@ -7,7 +7,7 @@
             <b-spinner variant="secondary" label="Загрузка..." />
         </div>
         <div v-if="!loading" class="s-folder-container">
-            <s-table :buttons="{add: true, del: true}" :loadData="loadData"
+            <s-table :buttons="buttons" :loadData="loadData"
                      :columns="tableColumns"
                      :delete-url="`delete/${url}`"
                      :add-url="`${url}`"
@@ -70,6 +70,15 @@
                         });
                 });
                 return res;
+            }
+        },
+        computed: {
+            buttons() {
+                let buttons = {};
+                if (this.dictionary && this.dictionary.actions) {
+                    this.dictionary.actions.forEach((a) => buttons[a] = true);
+                }
+                return buttons;
             }
         },
         data() {

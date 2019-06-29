@@ -1,0 +1,13 @@
+{
+  "id": "deliveryMethods",
+  "actions": [
+    {
+      "id": "add",
+      "secured": "hasRole('ROLE_DIC_DELIVERY_METHODS_SAVE')"
+    },
+    {
+      "id": "del",
+      "secured": "hasRole('ROLE_DIC_DELIVERY_METHODS_DEL')"
+    }
+  ]
+}
