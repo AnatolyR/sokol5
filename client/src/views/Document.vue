@@ -96,6 +96,17 @@
                              :edit-mode="editMode" v-model="document"
                              :fieldsLevels="fieldsLevels"/>
 
+            <b-modal id="info-modal" ref="info-modal" title="Некорректно заполненные поля">
+                <p class="my-4">
+                    {{uncorrectFields}}
+                </p>
+                <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
+                    <b-button size="sm" variant="info" @click="cancel()">
+                        Ок
+                    </b-button>
+                </template>
+            </b-modal>
+
             <div v-if="tab === 'attaches'">
                 Вложения
             </div>
@@ -197,10 +208,11 @@
             },
             save() {
                 this.errorMessage = null;
-                if (
-                    this.$refs.attributesForm && this.$refs.attributesForm.getFormState() === false
-                ) {
-                    this.errorMessage = "Некорректно заполненные поля";
+                let fields = this.$refs.attributesForm && this.$refs.attributesForm.getFormState();
+                if (fields && fields.length > 0) {
+                    this.uncorrectFields = fields.join(", ");
+                    this.$refs['info-modal'].show();
+                    // this.errorMessage = "Некорректно заполненные поля";
                     return;
                 } else {
                     this.errorMessage = null;
@@ -227,8 +239,13 @@
                 }
 
                 axios.post(saveUrl, document).then(() => {
-                    this.successMessage = 'Документ сохранен';
-                    setTimeout(() => this.successMessage = null, 3000);
+                    // this.successMessage = 'Документ сохранен';
+                    this.$bvToast.toast(`Документ сохранен`, {
+                        variant: 'success',
+                        solid: true,
+                        autoHideDelay: 2000
+                    });
+                    // setTimeout(() => this.successMessage = null, 3000);
                     this.loadDocument();
                 }).catch((err) => {
                     console.log('err', err);
@@ -318,7 +335,8 @@
                 processCount: 2,
                 linksCount: 3,
 
-                formState: null
+                formState: null,
+                uncorrectFields: ""
             }
         }
     }

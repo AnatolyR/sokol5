@@ -30,7 +30,7 @@
                         v-model="document.documentKind"
                         :valueTitle="document.documentKind"
                         errorMessage="Вид документа должен быть заполнен"
-                        :state="() => {return (!this.document.documentKind && this.fieldsLevels.documentKind == 3) ? false : null;}"
+                        :state="() => state('documentKind')"
                         :selectConfig="documentKindConfig"
                 ></s-select-group>
             </b-col>
@@ -44,7 +44,7 @@
                     v-model="document.addressee"
                     :valueTitle="document.addresseeTitle"
                     errorMessage="Адресат должен быть заполнен"
-                    :state="() => {return (!this.document.addressee && this.fieldsLevels.addressee == 3) ? false : null;}"
+                    :state="() => state('addressee')"
                     :selectConfig="userSelectConfig"
                     ></s-select-group>
             </b-col>
@@ -58,6 +58,8 @@
                 v-model="document.addresseeCopies"
                 :valueTitle="document.addresseeCopiesTitles"
                 :selectConfig="addresseeCopiesSelectConfig"
+                :state="() => state('addresseeCopies')"
+                errorMessage="Адресаты должены быть заполнены"
         ></s-multi-select-group>
 
         <div class="s-document-block-delimiter"></div>
@@ -71,7 +73,7 @@
                 v-model="document.externalOrganization"
                 :valueTitle="document.externalOrganizationTitle"
                 errorMessage="Корреспондент должен быть заполнен"
-                :state="() => {return (!this.document.externalOrganization && this.fieldsLevels.externalOrganization == 3) ? false : null;}"
+                :state="() => state('externalOrganization')"
                 :selectConfig="externalOrganizationConfig"
         ></s-select-group>
 
@@ -86,7 +88,7 @@
                         :valueTitle="document.externalSigner"
                         :depends="document"
                         errorMessage="Кем подписано должно быть заполнено"
-                        :state="() => {return (!this.document.externalSigner && this.fieldsLevels.externalSigner == 3) ? false : null;}"
+                        :state="() => state('externalSigner')"
                         :selectConfig="externalOrganizationPersonConfig"
                 ></s-select-group>
             </b-col>
@@ -100,7 +102,7 @@
                         :valueTitle="document.externalExecutor"
                         :depends="document"
                         errorMessage="Исполнитель должен быть заполнен"
-                        :state="() => {return (!this.document.externalExecutor && this.fieldsLevels.externalExecutor == 3) ? false : null;}"
+                        :state="() => state('externalExecutor')"
                         :selectConfig="externalOrganizationPersonConfig"
                 ></s-select-group>
             </b-col>
@@ -115,7 +117,7 @@
                         :editMode="editMode"
                         v-model="document.externalNumber"
                         errorMessage="Исходящий номер не может быть пустой"
-                        :state="() => (!this.document.externalNumber && this.fieldsLevels.externalNumber == 3) ? false : null"
+                        :state="() => state('externalNumber')"
                 ></s-input-group>
 
             </b-col>
@@ -129,7 +131,7 @@
                         :valueTitle="document.externalDateStr"
                         :depends="document"
                         errorMessage="Исходящая дата должена быть заполнена"
-                        :state="() => {return (!this.document.externalDate && this.fieldsLevels.externalDate == 3) ? false : null;}"
+                        :state="() => state('externalDate')"
                 ></s-date-group>
 
             </b-col>
@@ -146,7 +148,7 @@
                         :editMode="editMode"
                         v-model="document.documentNumber"
                         errorMessage="Номер документа не может быть пустой"
-                        :state="() => (!this.document.documentNumber && this.fieldsLevels.documentNumber == 3) ? false : null"
+                        :state="() => state('documentNumber')"
                 ></s-input-group>
 
             </b-col>
@@ -158,7 +160,7 @@
                         :editMode="editMode"
                         v-model="document.caseNumber"
                         errorMessage="Дело не может быть пустым"
-                        :state="() => (!this.document.caseNumber && this.fieldsLevels.caseNumber == 3) ? false : null"
+                        :state="() => state('caseNumber')"
                 ></s-input-group>
 
             </b-col>
@@ -204,7 +206,7 @@
                         :valueTitle="document.registrationDateStr"
                         :depends="document"
                         errorMessage="Дата регистрации должена быть заполнена"
-                        :state="() => {return (!this.document.registrationDate && this.fieldsLevels.registrationDate == 3) ? false : null;}"
+                        :state="() => state('registrationDate')"
                 ></s-date-group>
 
             </b-col>
@@ -217,7 +219,7 @@
                         v-model="document.registrar"
                         :valueTitle="document.registrarTitle"
                         errorMessage="Регистратор должен быть заполнен"
-                        :state="() => {return (!this.document.registrar && this.fieldsLevels.registrar == 3) ? false : null;}"
+                        :state="() => state('registrar')"
                         :selectConfig="userSelectConfig"
                 ></s-select-group>
             </b-col>
@@ -234,7 +236,7 @@
                         :valueTitle="document.executionDateStr"
                         :depends="document"
                         errorMessage="Дата исполнения должена быть заполнена"
-                        :state="() => {return (!this.document.executionDate && this.fieldsLevels.executionDate == 3) ? false : null;}"
+                        :state="() => state('executionDate')"
                 ></s-date-group>
                 
             </b-col>
@@ -247,7 +249,7 @@
                         v-model="document.executor"
                         :valueTitle="document.executorTitle"
                         errorMessage="Исполнитель должен быть заполнен"
-                        :state="() => {return (!this.document.executor && this.fieldsLevels.executor == 3) ? false : null;}"
+                        :state="() => state('executor')"
                         :selectConfig="userSelectConfig"
                 ></s-select-group>
             </b-col>
@@ -263,7 +265,7 @@
                         v-model="document.controller"
                         :valueTitle="document.controllerTitle"
                         errorMessage="Контроллер должен быть заполнен"
-                        :state="() => {return (!this.document.controller && this.fieldsLevels.controller == 3) ? false : null;}"
+                        :state="() => state('controller')"
                         :selectConfig="userSelectConfig"
                 ></s-select-group>
             </b-col>
@@ -276,7 +278,7 @@
                         v-model="document.deliveryMethod"
                         :valueTitle="document.deliveryMethod"
                         errorMessage="Способ доставки должен быть заполнен"
-                        :state="() => {return (!this.document.deliveryMethod && this.fieldsLevels.deliveryMethod == 3) ? false : null;}"
+                        :state="() => state('deliveryMethod')"
                         :selectConfig="deliveryMethodConfig"
                 ></s-select-group>
             </b-col>
@@ -344,7 +346,15 @@
         },
         methods: {
             getFormState() {
-                return !(this.titleState ===  false);
+                let result = [];
+                for (let field in this.document) {
+                    let state = this.state(field);
+                    if (state !== null) {
+                        result.push(this.fieldTitles[field]);
+                    }
+                }
+
+                return result;
             },
             state(field) {
                 if (field === 'title') {
@@ -356,15 +366,43 @@
                 }
 
                 if (field === 'documentKind') {
-                    return this.document.documentKind ? null : false;
+                    return (!this.document.documentKind && this.fieldsLevels.documentKind == 3) ? false : null;
                 }
 
                 if (field === 'addressee') {
                     return (!this.document.addressee && this.fieldsLevels.addressee == 3) ? false : null;
                 }
 
+                if (field === 'addresseeCopies') {
+                    return (!this.document.addresseeCopies && this.fieldsLevels.addresseeCopies == 3) ? false : null;
+                }
+
                 if (field === 'externalOrganization') {
                     return (!this.document.externalOrganization && this.fieldsLevels.externalOrganization == 3) ? false : null;
+                }
+
+                if (field === 'externalSigner') {
+                    return (!this.document.externalSigner && this.fieldsLevels.externalSigner == 3) ? false : null;
+                }
+
+                if (field === 'externalExecutor') {
+                    return (!this.document.externalSigner && this.fieldsLevels.externalSigner == 3) ? false : null;
+                }
+
+                if (field === 'externalNumber') {
+                    return (!this.document.externalNumber && this.fieldsLevels.externalNumber == 3) ? false : null;
+                }
+
+                if (field === 'externalDate') {
+                    return (!this.document.externalDate && this.fieldsLevels.externalDate == 3) ? false : null;
+                }
+
+                if (field === 'documentNumber') {
+                    return (!this.document.documentNumber && this.fieldsLevels.documentNumber == 3) ? false : null;
+                }
+
+                if (field === 'caseNumber') {
+                    return (!this.document.caseNumber && this.fieldsLevels.caseNumber == 3) ? false : null;
                 }
 
                 if (field === 'pageCount') {
@@ -385,6 +423,31 @@
                         return false;
                     }
                 }
+
+                if (field === 'registrationDate') {
+                    return (!this.document.registrationDate && this.fieldsLevels.registrationDate == 3) ? false : null;
+                }
+
+                if (field === 'registrar') {
+                    return (!this.document.registrar && this.fieldsLevels.registrar == 3) ? false : null;
+                }
+
+                if (field === 'executionDate') {
+                    return (!this.document.executionDate && this.fieldsLevels.executionDate == 3) ? false : null;
+                }
+
+                if (field === 'executor') {
+                    return (!this.document.executor && this.fieldsLevels.executor == 3) ? false : null;
+                }
+
+                if (field === 'controller') {
+                    return (!this.document.controller && this.fieldsLevels.controller == 3) ? false : null;
+                }
+
+                if (field === 'deliveryMethod') {
+                    return (!this.document.deliveryMethod && this.fieldsLevels.deliveryMethod == 3) ? false : null;
+                }
+
                 return null;
             },
             isNormalInteger(str) {
@@ -394,6 +457,29 @@
         data() {
             const documentData = this.document;
             return {
+                fieldTitles: {
+                    addressee: "Адресат",
+                    addresseeCopies: "Адресаты (копии)",
+                    appendixCount: "Количество приложений",
+                    caseNumber: "Дело",
+                    comment: "Комментарий",
+                    controller: "Контроллер",
+                    deliveryMethod: "Способ доставки",
+                    documentKind: "Вид документа",
+                    documentNumber: "Номер документа",
+                    documentType: "Тестовый",
+                    executionDate: "Дата исполнения",
+                    executor: "Исполнитель",
+                    externalDate: "Исходящая дата",
+                    externalExecutor: "Исполнитель",
+                    externalNumber: "Исходящий номер",
+                    externalOrganization: "Корреспондент",
+                    externalSigner: "Кем подписано",
+                    pageCount: "Количество листов",
+                    registrar: "Регистратор",
+                    registrationDate: "Дата регистрации",
+                    title: "Заголовок"
+                },
                 userSelectConfig: {
                     maxItems: 1,
                     //plugins: ['remove_button'],
