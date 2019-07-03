@@ -7,4 +7,6 @@ public interface SecurityService {
     Map<String, String> getFieldsRights(String documentType, String documentStatus, String role);
 
     Map<String, String> getFieldsRights(String documentType, String documentStatus, List<String> roles);
+
+    List<String> getCurrentUserRoles();
 }

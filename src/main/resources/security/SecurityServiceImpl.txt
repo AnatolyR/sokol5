@@ -11,6 +11,20 @@
 Входящий1/Черновик/ROLE_USER/addresseeCopies=2
 Входящий1/Черновик/ROLE_USER/externalOrganization=3
 
+Входящий/Черновик/ROLE_USER/creator=1
+Входящий/Черновик/ROLE_USER/documentSubKind=1
+Входящий/Черновик/ROLE_USER/documentType=1
+Входящий/Черновик/ROLE_USER/creatorTitle=1
+Входящий/Черновик/ROLE_USER/addresseeCopiesTitles=1
+Входящий/Черновик/ROLE_USER/controllerTitle=1
+Входящий/Черновик/ROLE_USER/executorTitle=1
+Входящий/Черновик/ROLE_USER/externalOrganizationTitle=1
+Входящий/Черновик/ROLE_USER/registrarTitle=1
+Входящий/Черновик/ROLE_USER/addresseeTitle=1
+Входящий/Черновик/ROLE_USER/id=1
+Входящий/Черновик/ROLE_USER/class=1
+Входящий/Черновик/ROLE_USER/createDate=1
+Входящий/Черновик/ROLE_USER/status=1
 Входящий/Черновик/ROLE_USER/title=2
 Входящий/Черновик/ROLE_USER/comment=2
 Входящий/Черновик/ROLE_USER/documentKind=2
@@ -32,6 +46,20 @@
 Входящий/Черновик/ROLE_USER/controller=2
 Входящий/Черновик/ROLE_USER/deliveryMethod=2
 
+Тестовый/Тест<Нет полей>/ROLE_USER/creator=1
+Тестовый/Тест<Нет полей>/ROLE_USER/documentSubKind=1
+Тестовый/Тест<Нет полей>/ROLE_USER/documentType=1
+Тестовый/Тест<Нет полей>/ROLE_USER/creatorTitle=1
+Тестовый/Тест<Нет полей>/ROLE_USER/addresseeCopiesTitles=1
+Тестовый/Тест<Нет полей>/ROLE_USER/controllerTitle=1
+Тестовый/Тест<Нет полей>/ROLE_USER/executorTitle=1
+Тестовый/Тест<Нет полей>/ROLE_USER/externalOrganizationTitle=1
+Тестовый/Тест<Нет полей>/ROLE_USER/registrarTitle=1
+Тестовый/Тест<Нет полей>/ROLE_USER/addresseeTitle=1
+Тестовый/Тест<Нет полей>/ROLE_USER/id=1
+Тестовый/Тест<Нет полей>/ROLE_USER/class=1
+Тестовый/Тест<Нет полей>/ROLE_USER/createDate=1
+Тестовый/Тест<Нет полей>/ROLE_USER/status=1
 Тестовый/Тест<Нет полей>/ROLE_USER/title=0
 Тестовый/Тест<Нет полей>/ROLE_USER/comment=0
 Тестовый/Тест<Нет полей>/ROLE_USER/documentKind=0
@@ -53,6 +81,21 @@
 Тестовый/Тест<Нет полей>/ROLE_USER/controller=0
 Тестовый/Тест<Нет полей>/ROLE_USER/deliveryMethod=0
 
+
+Тестовый/Тест<Только чтение>/ROLE_USER/creator=1
+Тестовый/Тест<Только чтение>/ROLE_USER/documentSubKind=1
+Тестовый/Тест<Только чтение>/ROLE_USER/documentType=1
+Тестовый/Тест<Только чтение>/ROLE_USER/creatorTitle=1
+Тестовый/Тест<Только чтение>/ROLE_USER/addresseeCopiesTitles=1
+Тестовый/Тест<Только чтение>/ROLE_USER/controllerTitle=1
+Тестовый/Тест<Только чтение>/ROLE_USER/executorTitle=1
+Тестовый/Тест<Только чтение>/ROLE_USER/externalOrganizationTitle=1
+Тестовый/Тест<Только чтение>/ROLE_USER/registrarTitle=1
+Тестовый/Тест<Только чтение>/ROLE_USER/addresseeTitle=1
+Тестовый/Тест<Только чтение>/ROLE_USER/id=1
+Тестовый/Тест<Только чтение>/ROLE_USER/class=1
+Тестовый/Тест<Только чтение>/ROLE_USER/createDate=1
+Тестовый/Тест<Только чтение>/ROLE_USER/status=1
 Тестовый/Тест<Только чтение>/ROLE_USER/title=1
 Тестовый/Тест<Только чтение>/ROLE_USER/comment=1
 Тестовый/Тест<Только чтение>/ROLE_USER/documentKind=1
@@ -74,6 +117,20 @@
 Тестовый/Тест<Только чтение>/ROLE_USER/controller=1
 Тестовый/Тест<Только чтение>/ROLE_USER/deliveryMethod=1
 
+Тестовый/Тест<Все редактируемые>/ROLE_USER/creator=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/documentSubKind=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/documentType=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/creatorTitle=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/addresseeCopiesTitles=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/controllerTitle=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/executorTitle=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/externalOrganizationTitle=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/registrarTitle=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/addresseeTitle=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/id=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/class=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/createDate=1
+Тестовый/Тест<Все редактируемые>/ROLE_USER/status=1
 Тестовый/Тест<Все редактируемые>/ROLE_USER/title=2
 Тестовый/Тест<Все редактируемые>/ROLE_USER/comment=2
 Тестовый/Тест<Все редактируемые>/ROLE_USER/documentKind=2
@@ -95,6 +152,20 @@
 Тестовый/Тест<Все редактируемые>/ROLE_USER/controller=2
 Тестовый/Тест<Все редактируемые>/ROLE_USER/deliveryMethod=2
 
+Тестовый/Тест<Все обязательные>/ROLE_USER/creator=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/documentSubKind=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/documentType=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/creatorTitle=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/addresseeCopiesTitles=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/controllerTitle=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/executorTitle=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/externalOrganizationTitle=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/registrarTitle=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/addresseeTitle=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/id=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/class=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/createDate=1
+Тестовый/Тест<Все обязательные>/ROLE_USER/status=1
 Тестовый/Тест<Все обязательные>/ROLE_USER/title=3
 Тестовый/Тест<Все обязательные>/ROLE_USER/comment=3
 Тестовый/Тест<Все обязательные>/ROLE_USER/documentKind=3
@@ -116,6 +187,20 @@
 Тестовый/Тест<Все обязательные>/ROLE_USER/controller=3
 Тестовый/Тест<Все обязательные>/ROLE_USER/deliveryMethod=3
 
+Внутренний/На рассмотрении/ROLE_USER/creator=1
+Внутренний/На рассмотрении/ROLE_USER/documentSubKind=1
+Внутренний/На рассмотрении/ROLE_USER/documentType=1
+Внутренний/На рассмотрении/ROLE_USER/creatorTitle=1
+Внутренний/На рассмотрении/ROLE_USER/addresseeCopiesTitles=1
+Внутренний/На рассмотрении/ROLE_USER/controllerTitle=1
+Внутренний/На рассмотрении/ROLE_USER/executorTitle=1
+Внутренний/На рассмотрении/ROLE_USER/externalOrganizationTitle=1
+Внутренний/На рассмотрении/ROLE_USER/registrarTitle=1
+Внутренний/На рассмотрении/ROLE_USER/addresseeTitle=1
+Внутренний/На рассмотрении/ROLE_USER/id=1
+Внутренний/На рассмотрении/ROLE_USER/class=1
+Внутренний/На рассмотрении/ROLE_USER/createDate=1
+Внутренний/На рассмотрении/ROLE_USER/status=1
 Внутренний/На рассмотрении/ROLE_USER/title=2
 Внутренний/На рассмотрении/ROLE_USER/comment=2
 Внутренний/На рассмотрении/ROLE_USER/documentKind=2
@@ -132,6 +217,20 @@
 Внутренний/На рассмотрении/ROLE_USER/controller=2
 Внутренний/На рассмотрении/ROLE_USER/deliveryMethod=2
 
+Входящий/На рассмотрении/ROLE_USER/creator=1
+Входящий/На рассмотрении/ROLE_USER/documentSubKind=1
+Входящий/На рассмотрении/ROLE_USER/documentType=1
+Входящий/На рассмотрении/ROLE_USER/creatorTitle=1
+Входящий/На рассмотрении/ROLE_USER/addresseeCopiesTitles=1
+Входящий/На рассмотрении/ROLE_USER/controllerTitle=1
+Входящий/На рассмотрении/ROLE_USER/executorTitle=1
+Входящий/На рассмотрении/ROLE_USER/externalOrganizationTitle=1
+Входящий/На рассмотрении/ROLE_USER/registrarTitle=1
+Входящий/На рассмотрении/ROLE_USER/addresseeTitle=1
+Входящий/На рассмотрении/ROLE_USER/id=1
+Входящий/На рассмотрении/ROLE_USER/class=1
+Входящий/На рассмотрении/ROLE_USER/createDate=1
+Входящий/На рассмотрении/ROLE_USER/status=1
 Входящий/На рассмотрении/ROLE_USER/title=2
 Входящий/На рассмотрении/ROLE_USER/comment=2
 Входящий/На рассмотрении/ROLE_USER/documentKind=2

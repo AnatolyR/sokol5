@@ -27,7 +27,11 @@ public class Utils {
         return emptyNames.toArray(result);
     }
 
-    public static String[] getAccessiblePropertyNames (Object source, Map<String, String> fieldsLevels) {
+    public static String[] getNotAccessibleWritablePropertyNames(Object source, Map<String, String> fieldsLevels) {
+        return getNotAccessiblePropertyNames(source, fieldsLevels, true);
+    }
+
+    private static String[] getNotAccessiblePropertyNames(Object source, Map<String, String> fieldsLevels, boolean writable) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
 
@@ -35,12 +39,17 @@ public class Utils {
         for(java.beans.PropertyDescriptor pd : pds) {
             String propertyName = pd.getName();
             String level = fieldsLevels.get(propertyName);
-            if (level == null || (!level.equals("2") && !level.equals("3"))) {
+            
+            if (level == null || level.equals("0") || (writable && level.equals("1"))) {
                 emptyNames.add(propertyName);
             }
         }
         String[] result = new String[emptyNames.size()];
         return emptyNames.toArray(result);
+    }
+
+    public static String[] getNotAccessibleReadablePropertyNames(Object source, Map<String, String> fieldsLevels) {
+        return getNotAccessiblePropertyNames(source, fieldsLevels, false);
     }
 
     public static boolean checkAccess(String secured) {

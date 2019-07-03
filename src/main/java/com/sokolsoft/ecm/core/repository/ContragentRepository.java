@@ -18,4 +18,8 @@ public interface ContragentRepository extends JpaRepository<Contragent, UUID> {
     @RestResource(path = "userByTitle")
     @Secured({"ROLE_DIC_CONTRAGENTS", "ROLE_SYSTEM"})
     public Page findByTitleLike(@Param("title") String title, Pageable p);
+
+    @Secured({"ROLE_USER", "ROLE_SYSTEM"})
+    @Override
+    Contragent getOne(UUID uuid);
 }

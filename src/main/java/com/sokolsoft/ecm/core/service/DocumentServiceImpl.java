@@ -13,7 +13,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,21 +75,38 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Document getDocument(UUID documentId) {
-        return documentRepository.findById(documentId).orElse(null);
+        Document document = documentRepository.findById(documentId).orElse(null);
+        if (document != null) {
+            Document clearedDocument = null;
+
+            switch (document.getDocumentType()) {
+                case "Входящий": clearedDocument = new IncomingDocument(); break;
+                case "Тестовый": clearedDocument = new IncomingDocument(); break;
+                case "Исходящий": clearedDocument = new OutgoingDocument(); break;
+                case "Внутренний": clearedDocument = new InnerDocument(); break;
+            }
+
+            List<String> roles = securityService.getCurrentUserRoles();
+            checkForDraft(document, roles);
+
+            Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
+            BeanUtils.copyProperties(document, clearedDocument, Utils.getNotAccessibleReadablePropertyNames(document, fieldsRights));
+
+            return clearedDocument;
+        } else {
+            throw new RuntimeException("Document not exist or no access rights");
+        }
     }
 
     @Override
     public Document save(Document document) {
         Document oldDocument = documentRepository.findById(document.getId()).orElse(null);
 
-        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-        List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toCollection(ArrayList::new));
-
+        List<String> roles = securityService.getCurrentUserRoles();
         checkForDraft(document, roles);
 
         Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
-
-        BeanUtils.copyProperties(document, oldDocument, Utils.getAccessiblePropertyNames(document, fieldsRights)); 
+        BeanUtils.copyProperties(document, oldDocument, Utils.getNotAccessibleWritablePropertyNames(document, fieldsRights));
 
         if (oldDocument instanceof IncomingDocument) {
             fillTitles((IncomingDocument) oldDocument);

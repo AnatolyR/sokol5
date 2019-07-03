@@ -20,4 +20,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Secured({"ROLE_DIC_USERS", "ROLE_SYSTEM"})
     public Page findByTitleLike(@Param("title") String title, Pageable p);
 //    public Page findByTitleStartsWith(@Param("title") String title, Pageable p);
+
+    @Secured({"ROLE_USER", "ROLE_SYSTEM"})
+    @Override
+    User getOne(UUID uuid);
 }

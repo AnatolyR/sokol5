@@ -3,15 +3,15 @@ package com.sokolsoft.ecm.core.service;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SecurityServiceImpl implements SecurityService {
@@ -68,5 +68,13 @@ public class SecurityServiceImpl implements SecurityService {
             }
         }
         return rights;
+    }
+
+    @Override
+    public List<String> getCurrentUserRoles() {
+        Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+        List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toCollection(ArrayList::new));
+
+        return roles;
     }
 }
