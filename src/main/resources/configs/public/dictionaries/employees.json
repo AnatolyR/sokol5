@@ -1,0 +1,18 @@
+{
+  "id": "employees",
+  "name": "Сотрудники",
+  "url": "users",
+  "fields": [
+    {
+      "id": "id",
+      "title": "ИД",
+      "visible": true
+    },
+    {
+      "id": "title",
+      "title": "Сотрудник",
+      "visible": true,
+      "type": "link",
+      "path": "/user/"
+    }]
+}

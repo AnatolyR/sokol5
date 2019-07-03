@@ -358,7 +358,7 @@
             },
             state(field) {
                 if (field === 'title') {
-                    return this.document.title.length > 0 ? null : false;
+                    return this.document.title && this.document.title.length > 0 ? null : false;
                 }
 
                 if (field === 'comment') {

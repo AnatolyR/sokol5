@@ -51,17 +51,23 @@ public class ConfigServiceFilePathImpl implements ConfigService {
         ArrayNode filledDictionaries = mapper.createArrayNode();
         StreamSupport.stream(config.spliterator(), false).forEachOrdered(node -> {
             String folderName = node.asText();
-            JsonNode folderConfig = getPublicRawConfig("dictionaries/" + folderName);
-            if (folderConfig != null) {
-                filledDictionaries.add(folderConfig);
-                ArrayNode actions = ((ObjectNode) folderConfig).putArray("actions");
-                JsonNode privateConfig = getPrivateRawConfig("dictionaries/" + folderName);
-                if (privateConfig != null) {
-                    privateConfig.get("actions").forEach(a -> {
-                        if (Utils.checkAccess(a.get("secured").asText())) {
-                            actions.add(a.get("id").asText());
-                        }
-                    });
+            if ("--".equals(folderName)) {
+                ObjectNode delimiterNode = mapper.createObjectNode();
+                delimiterNode.put("type", "--");
+                filledDictionaries.add(delimiterNode);
+            } else {
+                JsonNode folderConfig = getPublicRawConfig("dictionaries/" + folderName);
+                if (folderConfig != null) {
+                    filledDictionaries.add(folderConfig);
+                    ArrayNode actions = ((ObjectNode) folderConfig).putArray("actions");
+                    JsonNode privateConfig = getPrivateRawConfig("dictionaries/" + folderName);
+                    if (privateConfig != null) {
+                        privateConfig.get("actions").forEach(a -> {
+                            if (Utils.checkAccess(a.get("secured").asText())) {
+                                actions.add(a.get("id").asText());
+                            }
+                        });
+                    }
                 }
             }
         });

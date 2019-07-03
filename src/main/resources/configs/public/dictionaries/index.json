@@ -1,4 +1,7 @@
 [
+  "employees",
+  "contragents",
+  "--",
   "documentKinds",
   "deliveryMethods"
 ]

@@ -13,10 +13,12 @@
 
                         <div style="padding-top: 0.5em;">
                             <b-nav vertical pills style="text-align: left;">
-                                <b-nav-item class="s-folder-nav" exact-active-class="active"
-                                            v-for="dictionary in dictionaries"
+                                <template v-for="dictionary in dictionaries">
+                                    <b-nav-item v-if="dictionary.type !== '--'" class="s-folder-nav" exact-active-class="active"
                                             :key="dictionary.id"
                                             :to="'/dictionaries/' + dictionary.id">{{dictionary.name}}</b-nav-item>
+                                    <div v-if="dictionary.type === '--'" style="height: 1em;"></div>
+                                </template>
                             </b-nav>
                         </div>
 
@@ -48,6 +50,8 @@
 <script>
     import VueRouter from "vue-router";
     import Dictionary from './Dictionary'
+    import User from './User'
+    import Contragent from './Contragent'
     import axios from "axios";
 
     export default {
@@ -77,7 +81,20 @@
         router: new VueRouter({
             mode: 'history',
             routes: [
-
+                {
+                    path: '/user/:userId',
+                    name: 'user',
+                    component: User,
+                    meta: {openedFromDictionary: true},
+                    props: true
+                },
+                {
+                    path: '/contragent/:contragentId',
+                    name: 'contragent',
+                    component: Contragent,
+                    meta: {openedFromDictionary: true},
+                    props: true
+                }
             ]
         }),
         data() {

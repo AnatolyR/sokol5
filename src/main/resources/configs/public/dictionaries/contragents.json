@@ -1,0 +1,18 @@
+{
+  "id": "contragents",
+  "name": "Контрагенты",
+  "url": "contragents",
+  "fields": [
+    {
+      "id": "id",
+      "title": "ИД",
+      "visible": true
+    },
+    {
+      "id": "title",
+      "title": "Название",
+      "visible": true,
+      "type": "link",
+      "path": "/contragent/"
+    }]
+}

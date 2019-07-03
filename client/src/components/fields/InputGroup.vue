@@ -43,7 +43,7 @@
         },
         methods: {
             checkState() {
-                return this.state();
+                return this.editMode ? this.state() : null;
             }
         }
     }

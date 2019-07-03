@@ -3,6 +3,8 @@ import Router from 'vue-router'
 
 import Folders from './views/Folders.vue'
 import Document from './views/Document.vue'
+import User from './views/User.vue'
+import Contragent from './views/Contragent.vue'
 import Dictionaries from './views/Dictionaries.vue'
 import Reports from './views/Reports.vue'
 import Search from './views/Search.vue'
@@ -36,6 +38,19 @@ export const router = new Router({
             name: 'dictionaries',
             component: Dictionaries,
             alias: '/dictionaries/*'
+        },
+        {
+            path: '/user/:userId',
+            name: 'user',
+            component: User,
+            props: true
+        },
+        {
+            path: '/contragent/:contragentId',
+            name: 'contragent',
+            component: Contragent,
+            meta: {openedFromDictionary: true},
+            props: true
         },
         {
             path: '/reports',
