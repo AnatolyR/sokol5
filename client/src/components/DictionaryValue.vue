@@ -4,7 +4,7 @@
             label-for="dictionaryInputValue">
         <b-form-input
                 id="dictionaryInputValue"
-                v-model="modelValue"
+                v-model="modelValue.title"
                 required />
     </b-form-group>
 </template>
@@ -32,7 +32,12 @@
             }
         },
         methods: {
-
+            getFormState() {
+                if (!this.modelValue.title) {
+                    return ["Значение"];
+                }
+                return null;
+            }
         },
         props: {
             value: {}

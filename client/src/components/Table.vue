@@ -25,7 +25,11 @@
                 <b-modal id="add-modal" ref="add-modal" title="Добавление" ok="'Сохранить'" cancel="'Отмена'">
                     <p class="my-4">
 
-                        <s-dictionary-value v-model="toAddValue"></s-dictionary-value>
+                        <s-dictionary-value v-if="addType === 'string'" v-model="toAddValue" ref="addForm"></s-dictionary-value>
+
+                        <s-user-form v-if="addType === 'user'" v-model="toAddValue" :edit-mode="true" ref="addForm"></s-user-form>
+
+                        <s-contragent-form v-if="addType === 'contragent'" v-model="toAddValue" :edit-mode="true" ref="addForm"></s-contragent-form>
                     </p>
                     <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
                         <b-form-checkbox v-model="addOneMore"
@@ -43,6 +47,17 @@
                 <b-toast id="add-success-toast" title="Добавление" static no-auto-hide>
                     Значение успешно добавлено
                 </b-toast>
+
+                <b-modal id="info-modal" ref="info-modal" title="Некорректно заполненные поля">
+                    <p class="my-4">
+                        {{uncorrectFields}}
+                    </p>
+                    <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
+                        <b-button size="sm" variant="info" @click="cancel()">
+                            Ок
+                        </b-button>
+                    </template>
+                </b-modal>
 
                 <b-modal id="del-modal" ref="del-modal" title="Подтверждение удаления">
                     <p class="my-4">Будут удалены значения:
@@ -127,11 +142,13 @@
 <script>
     import SFilter from "./Filter";
     import axios from 'axios';
-    import SDictionaryValue from './DictionaryValue'
+    import SDictionaryValue from './DictionaryValue';
+    import SUserForm from "../components/UserForm";
+    import SContragentForm from "../components/ContragentForm";
 
     export default {
         name: 's-table',
-        components: {SFilter, SDictionaryValue},
+        components: {SFilter, SDictionaryValue, SUserForm, SContragentForm},
         mounted() {
             this.update();
         },
@@ -185,7 +202,10 @@
                 }
             },
             deleteUrl: {},
-            addUrl: {}
+            addUrl: {},
+            addType: {
+                default: 'default'
+            }
         },
         methods: {
             update() {
@@ -274,9 +294,14 @@
                 });
             },
             addValue() {
-                axios.post(`/api/${this.addUrl}`, {
-                    title: this.toAddValue
-                }).then((res) => {
+                let fields = this.$refs.addForm && this.$refs.addForm.getFormState();
+                if (fields && fields.length > 0) {
+                    this.uncorrectFields = fields.join(", ");
+                    this.$refs['info-modal'].show();
+                    return;
+                }
+
+                axios.post(`/api/${this.addUrl}`, this.toAddValue).then((res) => {
                     this.$bvToast.toast(`Значение успешно добавлено`, {
                         variant: 'success',
                         solid: true,
@@ -289,7 +314,10 @@
                 if (!this.addOneMore) {
                     this.$refs['add-modal'].hide();
                 }
-                this.toAddValue = "";
+                if (this.$refs.addForm) {
+                    this.$refs.addForm.highlightErrors = false;
+                }
+                this.toAddValue = {};
             }
         },
         watch: {
@@ -308,8 +336,9 @@
                 sortDirection: null,
                 conditions: null,
                 displayFilter: false,
-                toAddValue: null,
-                addOneMore: false
+                toAddValue: {},
+                addOneMore: false,
+                uncorrectFields: null
             }
         }
     }

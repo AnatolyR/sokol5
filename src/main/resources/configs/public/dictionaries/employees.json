@@ -2,10 +2,18 @@
   "id": "employees",
   "name": "Сотрудники",
   "url": "users",
+  "addType": "user",
   "fields": [
     {
       "id": "id",
       "title": "ИД",
+      "visible": true
+    },
+    {
+      "id": "select",
+      "title": "Выделение",
+      "type": "checkbox",
+      "ref": "id",
       "visible": true
     },
     {

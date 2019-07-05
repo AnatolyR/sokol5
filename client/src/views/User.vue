@@ -48,47 +48,11 @@
 
             </ul>
 
-            <div v-if="tab === 'attributes'" class="s-user-form">
-                <s-input-group
-                        title="Заголовок"
-                        id="titleInput"
-                        :fieldLevel="fieldsLevels.title"
-                        :editMode="editMode"
-                        v-model="user.title"
-                        errorMessage="Заголовок не может быть пустой"
-                        :state="() => state('title')"
-                ></s-input-group>
+            <s-user-form v-if="tab === 'attributes'" class="s-user-form"  ref="attributesForm"
+                         :edit-mode="editMode" v-model="user"
+                         :fieldsLevels="fieldsLevels">
 
-                <s-input-group
-                        title="Имя"
-                        id="firstNameInput"
-                        :fieldLevel="fieldsLevels.firstName"
-                        :editMode="editMode"
-                        v-model="user.firstName"
-                        errorMessage="Имя не может быть пустым"
-                        :state="() => state('firstName')"
-                ></s-input-group>
-
-                <s-input-group
-                        title="Фамилия"
-                        id="lastNameInput"
-                        :fieldLevel="fieldsLevels.lastName"
-                        :editMode="editMode"
-                        v-model="user.lastName"
-                        errorMessage="Фамилия не может быть пустой"
-                        :state="() => state('lastName')"
-                ></s-input-group>
-
-                <s-input-group
-                        title="Отчество"
-                        id="middleNameInput"
-                        :fieldLevel="fieldsLevels.middleName"
-                        :editMode="editMode"
-                        v-model="user.middleName"
-                        errorMessage="Отчество не может быть пустым"
-                        :state="() => state('middleName')"
-                ></s-input-group>
-            </div>
+            </s-user-form>
 
             <b-modal id="info-modal" ref="info-modal" title="Некорректно заполненные поля">
                 <p class="my-4">
@@ -156,9 +120,11 @@
     import SSelect from "../components/fields/Select";
     import SInputGroup from "../components/fields/InputGroup";
 
+    import SUserForm from "../components/UserForm";
+
     export default {
         // components: {SSelect, SDocumentForm},
-        components: {SSelect, SInputGroup},
+        components: {SSelect, SInputGroup, SUserForm},
         mounted() {
             this.loadUser();
         },
@@ -193,30 +159,9 @@
                 }
                 this.$router.go(-1);
             },
-            state(field) {
-                let fieldValue = this.user[field];
-                let level = this.fieldsLevels[field];
-                if (level === "3") {
-                    if (fieldValue === undefined || fieldValue === null || fieldValue.length === 0) {
-                        return false;
-                    }
-                }
-                return null;
-            },
-            getFormState() {
-                let result = [];
-                for (let field in this.user) {
-                    let state = this.state(field);
-                    if (state !== null) {
-                        result.push(this.fieldTitles[field]);
-                    }
-                }
-
-                return result;
-            },
             save() {
                 this.errorMessage = null;
-                let fields = this.getFormState();
+                let fields = this.$refs.attributesForm && this.$refs.attributesForm.getFormState();
                 if (fields && fields.length > 0) {
                     this.uncorrectFields = fields.join(", ");
                     this.$refs['info-modal'].show();
@@ -230,6 +175,7 @@
 
                 axios.post(`/api/users`, user).then(() => {
                     this.$bvToast.toast(`Пользователь сохранен`, {
+                        title: 'Успешно',
                         variant: 'success',
                         solid: true,
                         autoHideDelay: 2000
@@ -276,12 +222,6 @@
         },
         data() {
             return {
-                fieldTitles: {
-                    firstName: "Имя",
-                    lastName: "Фамилия",
-                    middleName: "Отчество",
-                    title: "Заголовок"
-                },
                 loading: true,
                 errorMessage: null,
                 successMessage: null,

@@ -11,6 +11,7 @@
                      :columns="tableColumns"
                      :delete-url="`delete/${url}`"
                      :add-url="`${url}`"
+                     :add-type="`${addType}`"
             ></s-table>
         </div>
     </div>
@@ -34,6 +35,7 @@
         mounted() {
             this.fields = this.dictionary.fields;
             this.url = this.dictionary.url;
+            this.addType = this.dictionary.addType;
             this.loading = false;
             this.tableColumns = this.dictionary.fields;
         },

@@ -97,8 +97,10 @@ public class EcmApplication {
                             "DIC_CONTRAGENT_PERSONS",
                             "DIC_CONTRAGENTS",
                             "DIC_CONTRAGENTS_SAVE",
+                            "DIC_CONTRAGENTS_DEL",
                             "DIC_USERS",
-                            "DIC_USERS_SAVE"
+                            "DIC_USERS_SAVE",
+                            "DIC_USERS_DEL"
                             )
                     .and()
                     .withUser("user")

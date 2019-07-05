@@ -2,10 +2,18 @@
   "id": "contragents",
   "name": "Контрагенты",
   "url": "contragents",
+  "addType": "contragent",
   "fields": [
     {
       "id": "id",
       "title": "ИД",
+      "visible": true
+    },
+    {
+      "id": "select",
+      "title": "Выделение",
+      "type": "checkbox",
+      "ref": "id",
       "visible": true
     },
     {

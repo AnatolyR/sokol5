@@ -36,4 +36,8 @@ public interface ContragentRepository extends JpaRepository<Contragent, UUID> {
     @Secured({"ROLE_DIC_CONTRAGENTS_SAVE", "ROLE_SYSTEM"})
     @Override
     <S extends Contragent> S save(S s);
+
+    @Secured({"ROLE_DIC_CONTRAGENTS_DEL", "ROLE_SYSTEM"})
+    @Override
+    void deleteAll(Iterable iterable);
 }

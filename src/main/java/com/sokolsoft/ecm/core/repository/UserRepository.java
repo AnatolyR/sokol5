@@ -38,4 +38,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Secured({"ROLE_DIC_USERS_SAVE", "ROLE_SYSTEM"})
     @Override
     <S extends User> S save(S s);
+
+    @Secured({"ROLE_DIC_USERS_DEL", "ROLE_SYSTEM"})
+    @Override
+    void deleteAll(Iterable iterable);
 }

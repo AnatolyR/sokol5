@@ -2,6 +2,7 @@
   "id": "deliveryMethods",
   "name": "Способы доставки",
   "url": "deliveryMethods",
+  "addType": "string",
   "fields": [
     {
       "id": "id",

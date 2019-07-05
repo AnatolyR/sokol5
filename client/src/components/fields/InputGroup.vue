@@ -1,6 +1,6 @@
 <template>
     <b-form-group
-            :label="title"
+            :label="title + (fieldLevel === '3' && editMode ? ' *' : '')"
             :label-for="id"
             v-if="fieldLevel > 0">
         <b-form-input

@@ -2,6 +2,7 @@
   "id": "documentKinds",
   "name": "Виды документов",
   "url": "documentKinds",
+  "addType": "string",
   "fields": [
     {
       "id": "id",

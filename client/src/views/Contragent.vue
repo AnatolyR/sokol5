@@ -48,47 +48,11 @@
 
             </ul>
 
-            <div v-if="tab === 'attributes'" class="s-contragent-form">
-                <s-input-group
-                        title="Заголовок"
-                        id="titleInput"
-                        :fieldLevel="fieldsLevels.title"
-                        :editMode="editMode"
-                        v-model="contragent.title"
-                        errorMessage="Заголовок не может быть пустой"
-                        :state="() => state('title')"
-                ></s-input-group>
+            <s-contragent-form v-if="tab === 'attributes'" class="s-contragent-form" ref="attributesForm"
+                               :edit-mode="editMode" v-model="contragent"
+                               :fieldsLevels="fieldsLevels">
 
-                <s-input-group
-                        title="Полное название"
-                        id="fullNameInput"
-                        :fieldLevel="fieldsLevels.fullName"
-                        :editMode="editMode"
-                        v-model="contragent.fullName"
-                        errorMessage="Полное название не может быть пустым"
-                        :state="() => state('fullName')"
-                ></s-input-group>
-
-                <s-input-group
-                        title="Адрес"
-                        id="addressInput"
-                        :fieldLevel="fieldsLevels.address"
-                        :editMode="editMode"
-                        v-model="contragent.address"
-                        errorMessage="Адрес не может быть пустой"
-                        :state="() => state('address')"
-                ></s-input-group>
-
-                <s-input-group
-                        title="Телефон"
-                        id="phoneInput"
-                        :fieldLevel="fieldsLevels.phone"
-                        :editMode="editMode"
-                        v-model="contragent.phone"
-                        errorMessage="Телефон не может быть пустым"
-                        :state="() => state('phone')"
-                ></s-input-group>
-            </div>
+            </s-contragent-form>
 
             <b-modal id="info-modal" ref="info-modal" title="Некорректно заполненные поля">
                 <p class="my-4">
@@ -156,9 +120,11 @@
     import SSelect from "../components/fields/Select";
     import SInputGroup from "../components/fields/InputGroup";
 
+    import SContragentForm from "../components/ContragentForm";
+
     export default {
         // components: {SSelect, SDocumentForm},
-        components: {SSelect, SInputGroup},
+        components: {SSelect, SInputGroup, SContragentForm},
         mounted() {
             this.loadContragent();
         },
@@ -193,30 +159,9 @@
                 }
                 this.$router.go(-1);
             },
-            state(field) {
-                let fieldValue = this.contragent[field];
-                let level = this.fieldsLevels[field];
-                if (level === "3") {
-                    if (fieldValue === undefined || fieldValue === null || fieldValue.length === 0) {
-                        return false;
-                    }
-                }
-                return null;
-            },
-            getFormState() {
-                let result = [];
-                for (let field in this.contragent) {
-                    let state = this.state(field);
-                    if (state !== null) {
-                        result.push(this.fieldTitles[field]);
-                    }
-                }
-
-                return result;
-            },
             save() {
                 this.errorMessage = null;
-                let fields = this.getFormState();
+                let fields = this.$refs.attributesForm && this.$refs.attributesForm.getFormState();
                 if (fields && fields.length > 0) {
                     this.uncorrectFields = fields.join(", ");
                     this.$refs['info-modal'].show();
@@ -262,8 +207,6 @@
                     this.contragent = contragent;
                     this.contragentBackup = JSON.stringify(contragent);
 
-                    console.log("contragent", this.contragent);
-
                     this.loading = false;
                 }).catch((error) => {
                     this.loading = false;
@@ -279,12 +222,6 @@
         },
         data() {
             return {
-                fieldTitles: {
-                    fullName: "Полное название",
-                    address: "Адрес",
-                    phone: "Телефон",
-                    title: "Заголовок"
-                },
                 loading: true,
                 errorMessage: null,
                 successMessage: null,
