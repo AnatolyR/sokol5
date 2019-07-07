@@ -48,7 +48,7 @@
                     Значение успешно добавлено
                 </b-toast>
 
-                <b-modal id="info-modal" ref="info-modal" title="Некорректно заполненные поля">
+                <b-modal id="info-modal" ref="info-modal" modal-class="s-modal-incorrect-fields" title="Некорректно заполненные поля">
                     <p class="my-4">
                         {{uncorrectFields}}
                     </p>
@@ -59,7 +59,7 @@
                     </template>
                 </b-modal>
 
-                <b-modal id="del-modal" ref="del-modal" title="Подтверждение удаления">
+                <b-modal id="del-modal" ref="del-modal" title="Подтверждение удаления" modal-class="s-modal-confirm-delete">
                     <p class="my-4">Будут удалены значения:
                     {{toDeleteItems}}
                     </p>
@@ -92,10 +92,13 @@
             <tr v-for="item in data">
                 <td v-for="col in visibleColumns"
                     @click="() => {if (col.type === 'checkbox') item.selected = !item.selected}">
-                    <span v-if="!col.type">{{item[col.id]}}</span>
+                    <span v-if="!col.type" :class="`s-table-cell-${col.id}`">{{item[col.id]}}</span>
                     <router-link v-if="col.type === 'link'"
+                                 :class="`s-table-cell-${col.id}`"
                                  :to="col.path + item.id">{{ item[col.id] }}</router-link>
-                    <b-form-checkbox v-if="col.type === 'checkbox'" v-model="item.selected" @click.native="(e) => e.preventDefault()"></b-form-checkbox>
+                    <b-form-checkbox v-if="col.type === 'checkbox'"
+                                     :class="`s-table-cell-${col.id}`"
+                                     v-model="item.selected" @click.native="(e) => e.preventDefault()"></b-form-checkbox>
                 </td>
             </tr>
             </tbody>

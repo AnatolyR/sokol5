@@ -7,7 +7,7 @@
     {
       "id": "id",
       "title": "ИД",
-      "visible": true
+      "visible": false
     },
     {
       "id": "select",
@@ -22,5 +22,21 @@
       "visible": true,
       "type": "link",
       "path": "/contragent/"
-    }]
+    },
+    {
+      "id": "address",
+      "title": "Адрес",
+      "visible": true
+    },
+    {
+      "id": "phone",
+      "title": "Телефон",
+      "visible": true
+    },
+    {
+      "id": "fullName",
+      "title": "Полное наименование",
+      "visible": true
+    }
+  ]
 }

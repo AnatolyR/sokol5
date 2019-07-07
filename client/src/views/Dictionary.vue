@@ -1,12 +1,12 @@
 <template>
     <div>
-        <div v-if="errorMessage" class="s-folder-container">
+        <div v-if="errorMessage" class="s-dictionary-error-message">
             <b-alert show variant="danger">{{errorMessage}}</b-alert>
         </div>
-        <div v-if="loading" class="s-folder-container s-folder-loader">
+        <div v-if="loading" class="s-dictionary-loading s-dictionary-loader">
             <b-spinner variant="secondary" label="Загрузка..." />
         </div>
-        <div v-if="!loading" class="s-folder-container">
+        <div v-if="!loading" class="s-dictionary-container">
             <s-table :buttons="buttons" :loadData="loadData"
                      :columns="tableColumns"
                      :delete-url="`delete/${url}`"
@@ -18,10 +18,16 @@
 </template>
 
 <style>
-    .s-folder-container {
+    .s-dictionary-container {
         margin: 0.5em;
     }
-    .s-folder-loader {
+    .s-dictionary-error-message {
+        margin: 0.5em;
+    }
+    .s-dictionary-loading {
+        margin: 0.5em;
+    }
+    .s-dictionary-loader {
         text-align: center;
     }
 </style>

@@ -6,7 +6,7 @@
         <div v-if="loading" class="s-folder-container s-folder-loader">
             <b-spinner variant="secondary" label="Загрузка..." />
         </div>
-        <div v-if="dictionaries">
+        <div v-if="dictionaries" class="s-dictionaries-list">
             <b-container fluid>
                 <b-row>
                     <b-col cols="2" style="padding: 0; position: fixed; height: 100%; overflow: auto;">
