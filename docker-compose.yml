@@ -1,0 +1,25 @@
+version: '2'
+services:
+    sokol5-app:
+        image: sokol5
+        ports:
+            - 8080:8080
+    sokol5-postgresql:
+        image: postgres:10.4
+        environment:
+            - POSTGRES_USER=sokol5
+            - POSTGRES_PASSWORD=
+        ports:
+            - 5432:5432
+    sokol5-elasticsearch:
+        image: elasticsearch:5.6.13
+        ports:
+            - 9200:9200
+            - 9300:9300
+        command: -Enetwork.host=0.0.0.0 -Ediscovery.type=single-node
+        environment:
+            - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+
+
+
+#docker-compose up

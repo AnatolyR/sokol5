@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import static org.testng.Assert.*;
 
-public class SecurityServiceImplTest {
+public class SecurityServiceImplIT {
     SecurityServiceImpl securityService = new SecurityServiceImpl();
 
     @Before
