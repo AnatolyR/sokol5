@@ -34,7 +34,7 @@ public class DeleteController {
         this.userRepository = userRepository;
     }
 
-    @DeleteMapping("/delete/documentKinds/{ids}")
+    @DeleteMapping("/api/delete/documentKinds/{ids}")
     public void deleteDocumentKinds(@PathVariable String ids) {
         List<DocumentKind> documentKinds = Arrays.stream(ids.split(","))
                 .map(id -> {
@@ -45,7 +45,7 @@ public class DeleteController {
         documentKindRepository.deleteAll(documentKinds);
     }
 
-    @DeleteMapping("/delete/deliveryMethods/{ids}")
+    @DeleteMapping("/api/delete/deliveryMethods/{ids}")
     public void deleteDeliveryMethods(@PathVariable String ids) {
         List<DeliveryMethod> documentKinds = Arrays.stream(ids.split(","))
                 .map(id -> {
@@ -56,7 +56,7 @@ public class DeleteController {
         deliveryMethodRepository.deleteAll(documentKinds);
     }
 
-    @DeleteMapping("/delete/contragents/{ids}")
+    @DeleteMapping("/api/delete/contragents/{ids}")
     public void deleteContragents(@PathVariable String ids) {
         List<Contragent> contragents = Arrays.stream(ids.split(","))
                 .map(id -> {
@@ -67,7 +67,7 @@ public class DeleteController {
         contragentRepository.deleteAll(contragents);
     }
 
-    @DeleteMapping("/delete/users/{ids}")
+    @DeleteMapping("/api/delete/users/{ids}")
     public void deleteUsers(@PathVariable String ids) {
         List<User> users = Arrays.stream(ids.split(","))
                 .map(id -> {

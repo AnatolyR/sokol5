@@ -42,7 +42,7 @@ public class FolderController {
         this.configService = configService;
     }
 
-    @GetMapping(value = "/folders/{folderId}/data", produces = "application/json")
+    @GetMapping(value = "/api/folders/{folderId}/data", produces = "application/json")
     public Object getData(@PathVariable String folderId,
                           @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) Integer size,
                           @RequestParam(defaultValue = "0") Integer page,

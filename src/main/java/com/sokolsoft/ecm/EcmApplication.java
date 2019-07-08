@@ -7,6 +7,7 @@ import com.sokolsoft.ecm.core.model.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -20,6 +21,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +38,26 @@ public class EcmApplication {
 
 
         context.getBean(DemoData.class).uploadData();
+    }
+
+    @Bean
+    public WebMvcConfigurer forwardToIndex() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addViewControllers(ViewControllerRegistry registry) {
+                registry.addViewController("/").setViewName("forward:/index.html");
+                registry.addViewController("/dictionaries").setViewName("forward:/index.html");
+                registry.addViewController("/dictionaries/*").setViewName("forward:/index.html");
+                registry.addViewController("/folders").setViewName("forward:/index.html");
+                registry.addViewController("/folders/*").setViewName("forward:/index.html");
+                registry.addViewController("/document/*").setViewName("forward:/index.html");
+                registry.addViewController("/search").setViewName("forward:/index.html");
+                registry.addViewController("/reports").setViewName("forward:/index.html");
+                registry.addViewController("/contragent/*").setViewName("forward:/index.html");
+                registry.addViewController("/user/*").setViewName("forward:/index.html");
+
+            }
+        };
     }
 
     @Configuration
@@ -61,15 +84,17 @@ public class EcmApplication {
                     .httpBasic()
                   .and()
                     .authorizeRequests()
-                    .antMatchers("/document/**", "currentUser", "/document**", "/createDocument/**", "/config**", "/folders/**").hasRole("USER")
-                    .antMatchers("/authentication", "/login", "/logout")
+                    .antMatchers("/api/document/**", "/api/currentUser", "/api/document**", "/api/createDocument/**", "/api/config**", "/api/folders/**").hasRole("USER")
+                    .antMatchers("/api/authentication", "/api/login",
+                            "/api/logout", "/css/*", "/js/*", "/favicon.ico",
+                            "/index.html", "/")
                     .permitAll()
                   .and()
                     .authorizeRequests()
                     .antMatchers("/**").authenticated()
                   .and()
                     .formLogin()
-                    .loginProcessingUrl("/authentication")
+                    .loginProcessingUrl("/api/authentication")
                     .successHandler(new AjaxAuthenticationSuccessHandler())
                     .failureHandler(new AjaxAuthenticationFailureHandler())
                     .usernameParameter("j_username")

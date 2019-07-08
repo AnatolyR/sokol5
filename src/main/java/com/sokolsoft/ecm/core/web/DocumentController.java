@@ -28,7 +28,7 @@ public class DocumentController {
         this.userService = userService;
     }
 
-    @GetMapping("document/{documentId}")
+    @GetMapping("/api/document/{documentId}")
     public Object getDocument(@PathVariable("documentId") String documentIdStr, Authentication authentication) {
         UUID documentId = UUID.fromString(documentIdStr);
         Document document = documentService.getDocument(documentId);
@@ -54,22 +54,22 @@ public class DocumentController {
 //        return documentService.save(document);
 //    }
 
-    @PostMapping("incomingDocument")
+    @PostMapping("/api/incomingDocument")
     public Document save(@RequestBody IncomingDocument document) {
         return documentService.save(document);
     }
 
-    @PostMapping("outgoingDocument")
+    @PostMapping("/api/outgoingDocument")
     public Document save(@RequestBody OutgoingDocument document) {
         return documentService.save(document);
     }
 
-    @PostMapping("innerDocument")
+    @PostMapping("/api/innerDocument")
     public Document save(@RequestBody InnerDocument document) {
         return documentService.save(document);
     }
 
-    @PostMapping("createDocument/{documentType}")
+    @PostMapping("/api/createDocument/{documentType}")
     public String createDocument(@PathVariable("documentType") String documentType) {
         UUID documentId = documentService.createDocument(documentType);
         return documentId.toString();

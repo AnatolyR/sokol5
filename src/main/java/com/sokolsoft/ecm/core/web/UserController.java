@@ -9,7 +9,7 @@ import java.security.Principal;
 public class UserController {
 
 
-    @GetMapping("/currentUser")
+    @GetMapping("/api/currentUser")
     public User getCurrentUser(Principal principal) {
         User user = new User();
         user.setName(principal.getName());

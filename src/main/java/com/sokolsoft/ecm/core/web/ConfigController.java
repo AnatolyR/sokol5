@@ -15,7 +15,7 @@ public class ConfigController {
         this.configService = configService;
     }
 
-    @GetMapping(value = "/config", produces = "application/json")
+    @GetMapping(value = "/api/config", produces = "application/json")
     public JsonNode getConfig(String configName) {
         if (configName == null || configName.split("/").length > 2 || !configName.replace("/", "").matches("^[a-zA-Z]+$")) {
             throw new RuntimeException("Empty or wrong config id");
