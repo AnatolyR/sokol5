@@ -2,7 +2,6 @@ package com.sokolsoft.ecm;
 
 import com.sokolsoft.ecm.core.model.*;
 import com.sokolsoft.ecm.core.repository.*;
-import com.sokolsoft.ecm.core.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @Component
 public class DemoData {
@@ -148,7 +146,21 @@ public class DemoData {
         d1.setExternalSigner("Васин И. Ю.");
         d1.setExternalNumber("0012");
         d1.setExternalDate(Instant.parse("2019-02-14T00:00:00.00Z"));
-        d1.setCreateDate(Instant.now());
+        d1.setCreateDate(Instant.parse("2019-03-03T00:00:00.00Z"));
+        d1.setComment("Необходимо предоставить все нужные данные");
+        d1.setPageCount(3);
+        d1.setAppendixCount(1);
+        d1.setCaseNumber("52 Запросы");
+        d1.setRegistrar(UUID.fromString("c90b9c9f-ca1a-4b7c-bc77-3557c908f8d7"));
+        d1.setRegistrarTitle("Енотина А. В.");
+        d1.setDeliveryMethod("Почта");
+        d1.setExecutionDate(Instant.parse("2019-08-14T00:00:00.00Z"));
+        d1.setExecutor(UUID.fromString("5ca6d548-afa3-4c26-a72e-f0f19100e701"));
+        d1.setExecutorTitle("Луков Б. П.");
+        d1.setController(UUID.fromString("d259e840-0b34-4512-bc2e-5b5498dc4171"));
+        d1.setControllerTitle("Карандашов К. Н.");
+        d1.setCreator(UUID.fromString("c90b9c9f-ca1a-4b7c-bc77-3557c908f8d7"));
+        d1.setCreatorTitle("Енотина А. В.");
         documents.add(d1);
 
 

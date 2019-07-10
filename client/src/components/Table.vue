@@ -89,10 +89,12 @@
             </tr>
             </thead>
             <tbody>
+
+            <!-- ========================== -->
             <tr v-for="item in data">
                 <td v-for="col in visibleColumns"
                     @click="() => {if (col.type === 'checkbox') item.selected = !item.selected}">
-                    <span v-if="!col.type" :class="`s-table-cell-${col.id}`">{{item[col.id]}}</span>
+                    <span v-if="col.type !== 'link' && col.type !== 'checkbox'" :class="`s-table-cell-${col.id}`">{{item[col.id]}}</span>
                     <router-link v-if="col.type === 'link'"
                                  :class="`s-table-cell-${col.id}`"
                                  :to="col.path + item.id">{{ item[col.id] }}</router-link>
@@ -101,6 +103,8 @@
                                      v-model="item.selected" @click.native="(e) => e.preventDefault()"></b-form-checkbox>
                 </td>
             </tr>
+            <!-- ========================== -->
+            
             </tbody>
         </table>
         <div>

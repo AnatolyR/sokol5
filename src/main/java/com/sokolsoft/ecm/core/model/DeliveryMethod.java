@@ -15,7 +15,7 @@ public class DeliveryMethod {
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
             name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
+            strategy = "com.sokolsoft.ecm.core.model.SUUIDGenerator"
     )
     private UUID id;
 

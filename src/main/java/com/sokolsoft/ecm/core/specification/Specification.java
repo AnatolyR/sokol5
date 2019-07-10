@@ -34,6 +34,7 @@ public class Specification {
     private Integer page;
     private String join;
     private String searchText;
+    private Class documentClass;
 
     public List<String> getFields() {
         if (fields == null) {
@@ -100,5 +101,13 @@ public class Specification {
 
     public void setSearchText(String searchText) {
         this.searchText = searchText;
+    }
+
+    public Class getDocumentClass() {
+        return documentClass;
+    }
+
+    public void setDocumentClass(Class documentClass) {
+        this.documentClass = documentClass;
     }
 }

@@ -1,6 +1,7 @@
 {
   "id": "incoming",
   "secured": "hasRole('ROLE_USER')",
+  "documentClass": "IncomingDocument",
   "condition": [
     {
       "condition": "",

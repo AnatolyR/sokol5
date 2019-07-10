@@ -5,12 +5,14 @@
     {
       "id": "id",
       "title": "ИД документа",
-      "visible": false
+      "visible": false,
+      "type": "text"
     },
     {
       "id": "documentNumber",
       "title": "Номер документа",
-      "visible": true
+      "visible": true,
+      "type": "text"
     },
     {
       "id": "title",
@@ -22,16 +24,19 @@
     {
       "id": "status",
       "title": "Статус",
-      "visible": true
+      "visible": true,
+      "type": "documentStatus"
     },
     {
       "id": "documentType",
       "title": "Тип документа",
-      "visible": true
+      "visible": true,
+      "type": "documentType"
     },
     {
       "id": "registrationDate",
       "title": "Дата регистрации",
-      "visible": true
+      "visible": true,
+      "type": "date"
     }]
 }

@@ -55,7 +55,7 @@ public abstract class Document implements Serializable {
 
     protected String deliveryMethod;
 
-    protected String executionDate;
+    protected Instant executionDate;
 
     protected UUID executor;
 
@@ -217,11 +217,11 @@ public abstract class Document implements Serializable {
         this.deliveryMethod = deliveryMethod;
     }
 
-    public String getExecutionDate() {
+    public Instant getExecutionDate() {
         return executionDate;
     }
 
-    public void setExecutionDate(String executionDate) {
+    public void setExecutionDate(Instant executionDate) {
         this.executionDate = executionDate;
     }
 

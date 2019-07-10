@@ -47,13 +47,33 @@
                 // if (spec.conditions) {
                 //     url += `&conditions=${JSON.stringify(spec.conditions)}`;
                 // }
+
+                if (spec.conditions) {
+                    spec.conditions.forEach(
+                        (c) => c.column.endsWith('Title')
+                            ? c.column = c.column.substring(0, c.column.length - 5)
+                            : c.column);
+                }
+
                 let res = new Promise((resolve, reject) => {
                     axios.get(url, {
                         params: {
                             conditions: spec.conditions ? JSON.stringify(spec.conditions).slice(1, -1) : null
                         }
                     })
-                        .then(resolve)
+                        .then((res) => {
+                            if (res.data && res.data.content) {
+                                res.data.content.forEach((d) => {
+                                    d.addresseeCopiesTitles = d.addresseeCopiesTitles ? d.addresseeCopiesTitles.join(", ") : '';
+                                    d.registrationDate = d.registrationDate ? new Date(d.registrationDate).toLocaleDateString("ru") : '';
+                                    d.createDate = d.createDate ? new Date(d.createDate).toLocaleDateString("ru") : '';
+                                    d.externalDate = d.externalDate ? new Date(d.externalDate).toLocaleDateString("ru") : '';
+                                    d.executionDate = d.executionDate ? new Date(d.executionDate).toLocaleDateString("ru") : '';
+                                });
+                            }
+
+                            resolve(res);
+                        })
                         .catch((error) => {
                             this.loading = false;
                             console.log(error);

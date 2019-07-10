@@ -3,15 +3,16 @@ package com.sokolsoft.ecm.core.web;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.sokolsoft.ecm.core.model.Document;
+import com.sokolsoft.ecm.core.model.IncomingDocument;
+import com.sokolsoft.ecm.core.model.InnerDocument;
+import com.sokolsoft.ecm.core.model.OutgoingDocument;
 import com.sokolsoft.ecm.core.service.ConfigService;
 import com.sokolsoft.ecm.core.service.DocumentService;
+import com.sokolsoft.ecm.core.service.DocumentServiceImpl;
 import com.sokolsoft.ecm.core.specification.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
 @RestController
 public class FolderController {
@@ -66,6 +66,15 @@ public class FolderController {
 
         checkAccess(config, authentication);
 
+        if (config.has("documentClass")) {
+            String documentClassStr = config.get("documentClass").asText();
+            switch (documentClassStr) {
+                case "IncomingDocument": spec.setDocumentClass(IncomingDocument.class); break;
+                case "OutgoindDocument": spec.setDocumentClass(OutgoingDocument.class); break;
+                case "InnerDocument": spec.setDocumentClass(InnerDocument.class); break;
+            }
+        }
+
         try {
             JsonNode clientConditionsNode = mapper.readTree("[" + conditions + "]");
             Condition clientCondition = SpecificationUtil.read((ArrayNode) clientConditionsNode);
@@ -83,7 +92,7 @@ public class FolderController {
         spec.setPage(page);
         spec.setSize(size);
 
-        Page<Document> documentsPage = documentService.getDocuments(spec);
+        DocumentServiceImpl.DocumentsPage documentsPage = documentService.getDocuments(spec);
 
         return documentsPage;
     }

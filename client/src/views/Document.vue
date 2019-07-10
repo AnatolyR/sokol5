@@ -260,7 +260,6 @@
                     const document = response.data.document;
                     const fieldsLevels = response.data.fields;
                     this.fieldsLevels = fieldsLevels;
-                    console.log("levels ", fieldsLevels);
 
                     try {
                         const registrationDate = Date.parse(document.registrationDate);

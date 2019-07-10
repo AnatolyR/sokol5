@@ -89,15 +89,16 @@ public class SpecificationUtil {
 
     public static <T> org.springframework.data.jpa.domain.Specification<T> conditionToSpringSpecification(Condition condition, Class<T> c) {
         org.springframework.data.jpa.domain.Specification<T> specification = (root, query, criteriaBuilder) ->
-            conditionToPredicate(condition, root, criteriaBuilder);
+            conditionToPredicate(condition, root, criteriaBuilder, c);
         return specification;
     }
 
-    public static Predicate conditionToPredicate(Condition condition, Root root, CriteriaBuilder criteriaBuilder) {
+    public static Predicate conditionToPredicate(Condition condition, Root root, CriteriaBuilder criteriaBuilder, Class docClass) {
+
         if (condition instanceof ContainerCondition) {
             List<Predicate> subconditions = new ArrayList<>();
             ((ContainerCondition) condition).getConditions().forEach(c -> {
-                Predicate p = conditionToPredicate(c, root, criteriaBuilder);
+                Predicate p = conditionToPredicate(c, root, criteriaBuilder, docClass);
                 if (p != null) {
                     subconditions.add(p);
                 }
@@ -112,13 +113,21 @@ public class SpecificationUtil {
             }
         } else if (condition instanceof ValueCondition) {
             ValueCondition valueCondition = (ValueCondition) condition;
-            Attribute attr = root.getModel().getAttribute(valueCondition.getField());
+            Attribute attr = criteriaBuilder.treat(root, docClass).getModel().getAttribute(valueCondition.getField());
             Expression path = attr instanceof SingularAttribute ? root.get((SingularAttribute) attr) : root.get((PluralAttribute) attr);
             Predicate predicate;
             if (valueCondition.getOperation() == Operation.EQUAL) {
-                predicate = criteriaBuilder.equal(path, valueCondition.getValue());
+                if (UUID.class.equals(attr.getJavaType())) {
+                    predicate = criteriaBuilder.equal(path, UUID.fromString((String) valueCondition.getValue()));
+                } else {
+                    predicate = criteriaBuilder.equal(path, valueCondition.getValue());
+                }
             } else if (valueCondition.getOperation() == Operation.NOT_EQUAL) {
-                predicate = criteriaBuilder.notEqual(path, valueCondition.getValue());
+                if (UUID.class.equals(attr.getJavaType())) {
+                    predicate = criteriaBuilder.equal(path, UUID.fromString((String) valueCondition.getValue()));
+                } else {
+                    predicate = criteriaBuilder.equal(path, valueCondition.getValue());
+                }
             } else if (valueCondition.getOperation() == Operation.LIKE && List.class.equals(attr.getJavaType()) && valueCondition.getValue() instanceof String) {
                 Class elementType = ((PluralAttributeImpl) attr).getElementType().getJavaType();
                 if (UUID.class.equals(elementType)) {

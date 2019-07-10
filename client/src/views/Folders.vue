@@ -9,7 +9,8 @@
         <div v-if="folders">
             <b-container fluid>
                 <b-row>
-                    <b-col cols="2" style="padding: 0; position: fixed; height: 100%; overflow: auto;">
+                    <b-col cols="2" style="padding: 0; position: fixed; height: 100%; overflow: auto;
+                        z-index: 1000;background-color: white;">
 
                         <div style="padding-top: 0.5em;">
                             <b-nav vertical pills style="text-align: left;">

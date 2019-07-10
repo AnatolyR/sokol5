@@ -11,16 +11,12 @@ import com.sokolsoft.ecm.core.specification.Specification;
 import com.sokolsoft.ecm.core.specification.SpecificationUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class DocumentServiceImpl implements DocumentService {
@@ -50,7 +46,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Page<Document> getDocuments(Specification spec) {
+    public DocumentsPage getDocuments(Specification spec) {
         int pageNum = spec.getPage();
 
         Sort sort;
@@ -65,37 +61,108 @@ public class DocumentServiceImpl implements DocumentService {
 
         org.springframework.data.jpa.domain.Specification<Document> specification = null;
         if (spec.getCondition() != null) {
-            specification = SpecificationUtil.conditionToSpringSpecification(spec.getCondition(), Document.class);
+            specification = SpecificationUtil.conditionToSpringSpecification(spec.getCondition(),
+                    spec.getDocumentClass() != null ? spec.getDocumentClass() : Document.class);
         }
 
         org.springframework.data.domain.Page<Document> repoPage = documentRepository.findAll(specification, pageRequest);
 
-        return repoPage;
+        DocumentsPage page = new DocumentsPage();
+        page.setTotalElements(repoPage.getTotalPages());
+        page.setTotalPages(repoPage.getTotalPages());
+        page.setSize(repoPage.getSize());
+
+        List<Document> content = repoPage.getContent();
+        List<Document> processedContent = processDocuments(content);
+        page.setContent(processedContent);
+
+        return page;
+    }
+
+    private List<Document> processDocuments(List<Document> initialContent) {
+        List<Document> content = new ArrayList<>(initialContent.size());
+
+        for (Document document : initialContent) {
+            Document clearedDocument = createDocumentByType(document.getDocumentType());
+            copyAccessibleProperties(document, clearedDocument);
+            content.add(clearedDocument);
+        }
+
+        return content;
+    }
+
+    public static class DocumentsPage {
+        private Integer totalElements;
+        private Integer totalPages;
+        private Integer size;
+        private List<Document> content;
+
+        public Integer getTotalElements() {
+            return totalElements;
+        }
+
+        public void setTotalElements(Integer totalElements) {
+            this.totalElements = totalElements;
+        }
+
+        public Integer getTotalPages() {
+            return totalPages;
+        }
+
+        public void setTotalPages(Integer totalPages) {
+            this.totalPages = totalPages;
+        }
+
+        public Integer getSize() {
+            return size;
+        }
+
+        public void setSize(Integer size) {
+            this.size = size;
+        }
+
+        public List<Document> getContent() {
+            return content;
+        }
+
+        public void setContent(List<Document> content) {
+            this.content = content;
+        }
     }
 
     @Override
     public Document getDocument(UUID documentId) {
         Document document = documentRepository.findById(documentId).orElse(null);
         if (document != null) {
-            Document clearedDocument = null;
+            Document clearedDocument = createDocumentByType(document.getDocumentType());
 
-            switch (document.getDocumentType()) {
-                case "Входящий": clearedDocument = new IncomingDocument(); break;
-                case "Тестовый": clearedDocument = new IncomingDocument(); break;
-                case "Исходящий": clearedDocument = new OutgoingDocument(); break;
-                case "Внутренний": clearedDocument = new InnerDocument(); break;
-            }
-
-            List<String> roles = securityService.getCurrentUserRoles();
-            checkForDraft(document, roles);
-
-            Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
-            BeanUtils.copyProperties(document, clearedDocument, Utils.getNotAccessibleReadablePropertyNames(document, fieldsRights));
+            copyAccessibleProperties(document, clearedDocument);
 
             return clearedDocument;
         } else {
             throw new RuntimeException("Document not exist or no access rights");
         }
+    }
+
+    protected Document createDocumentByType(String documentType) {
+        Document document = null;
+
+        switch (documentType) {
+            case "Входящий": document = new IncomingDocument(); break;
+            case "Тестовый": document = new IncomingDocument(); break;
+            case "Исходящий": document = new OutgoingDocument(); break;
+            case "Внутренний": document = new InnerDocument(); break;
+        }
+
+        return document;
+    }
+
+    protected void copyAccessibleProperties(Document document, Document clearedDocument) {
+        List<String> roles = securityService.getCurrentUserRoles();
+        checkForDraft(document, roles);
+
+        Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
+        BeanUtils.copyProperties(document, clearedDocument, Utils.getNotAccessibleReadablePropertyNames(document, fieldsRights));
     }
 
     @Override

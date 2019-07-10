@@ -5,12 +5,14 @@
     {
       "id": "id",
       "title": "ИД документа",
-      "visible": false
+      "visible": false,
+      "type": "text"
     },
     {
       "id": "documentNumber",
       "title": "Номер документа",
-      "visible": true
+      "visible": true,
+      "type": "text"
     },
     {
       "id": "title",
@@ -22,16 +24,135 @@
     {
       "id": "status",
       "title": "Статус",
-      "visible": true
+      "visible": true,
+      "type": "documentStatus"
     },
     {
       "id": "documentType",
       "title": "Тип документа",
-      "visible": true
+      "visible": false,
+      "type": "documentType"
     },
     {
       "id": "registrationDate",
       "title": "Дата регистрации",
-      "visible": true
-    }]
+      "visible": true,
+      "type": "date"
+    },
+    {
+      "id": "documentKind",
+      "title": "Вид документа",
+      "visible": true,
+      "type": "documentKind"
+    },
+    {
+      "id": "externalOrganizationTitle",
+      "title": "Корреспондент",
+      "visible": true,
+      "type": "externalOrganization"
+    },
+    {
+      "id": "addresseeTitle",
+      "title": "Адресат",
+      "visible": false,
+      "type": "user"
+    },
+    {
+      "id": "addresseeCopiesTitles",
+      "title": "Адресаты (копии)",
+      "visible": false,
+      "type": "text"
+    },
+    {
+      "id": "createDate",
+      "title": "Дата создания",
+      "visible": false,
+      "type": "date"
+    },
+    {
+      "id": "comment",
+      "title": "Комментарий",
+      "visible": false,
+      "type": "text"
+    },
+    {
+      "id": "pageCount",
+      "title": "Количество листов",
+      "visible": false,
+      "type": "text"
+    },
+    {
+      "id": "appendixCount",
+      "title": "Количество приложений",
+      "visible": false,
+      "type": "text"
+    },
+    {
+      "id": "caseNumber",
+      "title": "Дело",
+      "visible": false,
+      "type": "text"
+    },
+    {
+      "id": "registrarTitle",
+      "title": "Регистратор",
+      "visible": false,
+      "type": "user"
+    },
+    {
+      "id": "deliveryMethod",
+      "title": "Способ доставки",
+      "visible": false,
+      "type": "deliveryMethod"
+    },
+    {
+      "id": "executionDate",
+      "title": "Дата исполнения",
+      "visible": true,
+      "type": "date"
+    },
+    {
+      "id": "executorTitle",
+      "title": "Исполнитель",
+      "visible": false,
+      "type": "user"
+    },
+    {
+      "id": "controllerTitle",
+      "title": "Контроллер",
+      "visible": false,
+      "type": "user"
+    },
+    {
+      "id": "creatorTitle",
+      "title": "Создатель",
+      "visible": false,
+      "type": "user"
+    },
+    {
+      "id": "externalDate",
+      "title": "Исходящая дата (контрагент)",
+      "visible": false,
+      "type": "date"
+    },
+    {
+      "id": "externalNumber",
+      "title": "Исходящий номер (контрагент)",
+      "visible": false,
+      "type": "text"
+    },
+    {
+      "id": "externalSigner",
+      "title": "Кем подписано (контрагент)",
+      "visible": false,
+      "type": "text"
+    },
+    {
+      "id": "externalExecutor",
+      "title": "Исполнитель (контрагент)",
+      "visible": false,
+      "type": "text"
+    }
+
+  ]
 }
