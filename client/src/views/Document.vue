@@ -108,7 +108,7 @@
             </b-modal>
 
             <div v-if="tab === 'attaches'">
-                Вложения
+                <s-attach-form :object-id="documentId" :object-type="'document'"></s-attach-form>
             </div>
             <div v-if="tab === 'process'">
                 Процесс
@@ -168,12 +168,16 @@
     // import SDocumentForm from "../components/DocumentForm";
     import SDocumentIncomingForm from "../components/DocumentIncomingForm";
     import SDocumentInnerForm from "../components/DocumentInnerForm";
+    import SAttachForm from "../components/AttachForm";
 
     export default {
         // components: {SSelect, SDocumentForm},
-        components: {SSelect, SDocumentIncomingForm, SDocumentInnerForm},
+        components: {SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm},
         mounted() {
             this.loadDocument();
+            axios.get(`/api/attaches/search/countByObjectId?objectId=${this.documentId}&objectType=document`).then((res) => {
+                this.attachesCount = res.data;
+            })
         },
         props: [
             "documentId"
@@ -330,7 +334,7 @@
                 tab: 'attributes',
                 editMode: false,
 
-                attachesCount: 1,
+                attachesCount: 0,
                 processCount: 2,
                 linksCount: 3,
 

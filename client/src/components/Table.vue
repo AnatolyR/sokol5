@@ -30,6 +30,8 @@
                         <s-user-form v-if="addType === 'user'" v-model="toAddValue" :edit-mode="true" ref="addForm"></s-user-form>
 
                         <s-contragent-form v-if="addType === 'contragent'" v-model="toAddValue" :edit-mode="true" ref="addForm"></s-contragent-form>
+
+                        <s-add-attach v-if="addType === 'attach'" v-model="toAddValue" ref="addForm"></s-add-attach>
                     </p>
                     <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
                         <b-form-checkbox v-model="addOneMore"
@@ -94,10 +96,19 @@
             <tr v-for="item in data">
                 <td v-for="col in visibleColumns"
                     @click="() => {if (col.type === 'checkbox') item.selected = !item.selected}">
-                    <span v-if="col.type !== 'link' && col.type !== 'checkbox'" :class="`s-table-cell-${col.id}`">{{item[col.id]}}</span>
+                    <span v-if="col.type !== 'link'
+                        && col.type !== 'checkbox'
+                        && col.type !== 'fileLink'"
+                          :class="`s-table-cell-${col.id}`">{{item[col.id]}}</span>
                     <router-link v-if="col.type === 'link'"
                                  :class="`s-table-cell-${col.id}`"
                                  :to="col.path + item.id">{{ item[col.id] }}</router-link>
+
+                    <router-link v-if="col.type === 'fileLink'"
+                                 :class="`s-table-cell-${col.id}`"
+                                 target="_blank"
+                                 :to="'/api/file/' + item.id">{{ item[col.id] }}</router-link>
+
                     <b-form-checkbox v-if="col.type === 'checkbox'"
                                      :class="`s-table-cell-${col.id}`"
                                      v-model="item.selected" @click.native="(e) => e.preventDefault()"></b-form-checkbox>
@@ -152,10 +163,11 @@
     import SDictionaryValue from './DictionaryValue';
     import SUserForm from "../components/UserForm";
     import SContragentForm from "../components/ContragentForm";
+    import SAddAttach from "./AddAttachForm";
 
     export default {
         name: 's-table',
-        components: {SFilter, SDictionaryValue, SUserForm, SContragentForm},
+        components: {SAddAttach, SFilter, SDictionaryValue, SUserForm, SContragentForm},
         mounted() {
             this.update();
         },
@@ -212,7 +224,9 @@
             addUrl: {},
             addType: {
                 default: 'default'
-            }
+            },
+            objectId: {},
+            objectType: {}
         },
         methods: {
             update() {
@@ -308,15 +322,43 @@
                     return;
                 }
 
-                axios.post(`/api/${this.addUrl}`, this.toAddValue).then((res) => {
-                    this.$bvToast.toast(`Значение успешно добавлено`, {
-                        variant: 'success',
-                        solid: true,
-                        autoHideDelay: 2000
-                    });
+                if (this.addType === 'attach') {
+                    let formData = new FormData();
+                    formData.append('file', this.toAddValue.file);
+                    formData.append('objectId', this.objectId);
+                    formData.append('objectType', this.objectType);
 
-                    this.update();
-                });
+                    axios.post('/api/file',
+                        formData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                    ).then((res) => {
+                        this.$bvToast.toast(`Значение успешно добавлено`, {
+                            variant: 'success',
+                            solid: true,
+                            autoHideDelay: 2000
+                        });
+
+                        this.update();
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+                } else {
+
+                    axios.post(`/api/${this.addUrl}`, this.toAddValue).then((res) => {
+                        this.$bvToast.toast(`Значение успешно добавлено`, {
+                            variant: 'success',
+                            solid: true,
+                            autoHideDelay: 2000
+                        });
+
+                        this.update();
+                    });
+                }
 
                 if (!this.addOneMore) {
                     this.$refs['add-modal'].hide();

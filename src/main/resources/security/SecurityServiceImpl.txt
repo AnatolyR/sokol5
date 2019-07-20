@@ -60,7 +60,7 @@
 Тестовый/Тест<Нет полей>/ROLE_USER/class=1
 Тестовый/Тест<Нет полей>/ROLE_USER/createDate=1
 Тестовый/Тест<Нет полей>/ROLE_USER/status=1
-Тестовый/Тест<Нет полей>/ROLE_USER/title=0
+Тестовый/Тест<Нет полей>/ROLE_USER/title=1
 Тестовый/Тест<Нет полей>/ROLE_USER/comment=0
 Тестовый/Тест<Нет полей>/ROLE_USER/documentKind=0
 Тестовый/Тест<Нет полей>/ROLE_USER/addressee=0

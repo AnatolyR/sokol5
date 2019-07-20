@@ -1,9 +1,6 @@
 package com.sokolsoft.ecm;
 
-import com.sokolsoft.ecm.core.model.Contragent;
-import com.sokolsoft.ecm.core.model.DeliveryMethod;
-import com.sokolsoft.ecm.core.model.DocumentKind;
-import com.sokolsoft.ecm.core.model.User;
+import com.sokolsoft.ecm.core.model.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -161,6 +158,7 @@ public class EcmApplication {
             config.exposeIdsFor(Contragent.class);
             config.exposeIdsFor(DocumentKind.class);
             config.exposeIdsFor(DeliveryMethod.class);
+            config.exposeIdsFor(Attach.class);
         }
     }
 

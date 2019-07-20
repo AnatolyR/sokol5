@@ -73,6 +73,8 @@ public abstract class Document implements Serializable {
 
     protected String creatorTitle;
 
+    private String documentGroup;
+
     public UUID getId() {
         return id;
     }
@@ -287,5 +289,13 @@ public abstract class Document implements Serializable {
 
     public void setCreatorTitle(String creatorTitle) {
         this.creatorTitle = creatorTitle;
+    }
+
+    public String getDocumentGroup() {
+        return documentGroup;
+    }
+
+    public void setDocumentGroup(String group) {
+        this.documentGroup = group;
     }
 }

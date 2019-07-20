@@ -2,6 +2,7 @@ package com.sokolsoft.ecm;
 
 import com.sokolsoft.ecm.core.model.*;
 import com.sokolsoft.ecm.core.repository.*;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Stream;
@@ -29,19 +32,27 @@ public class DemoData {
 
     private DocumentKindRepository documentKindRepository;
 
+    private AttachRepository attachRepository;
+
+    private AttachContentRepository attachContentRepository;
+
     @Autowired
     public DemoData(ContragentRepository contragentRepository,
                     UserRepository userRepository,
                     ContragentPersonRepository contragentPersonRepository,
                     DocumentRepository documentRepository,
                     DeliveryMethodRepository deliveryMethodRepository,
-                    DocumentKindRepository documentKindRepository) {
+                    DocumentKindRepository documentKindRepository,
+                    AttachRepository attachRepository,
+                    AttachContentRepository attachContentRepository) {
         this.contragentRepository = contragentRepository;
         this.userRepository = userRepository;
         this.contragentPersonRepository = contragentPersonRepository;
         this.documentRepository = documentRepository;
         this.deliveryMethodRepository = deliveryMethodRepository;
         this.documentKindRepository = documentKindRepository;
+        this.attachRepository = attachRepository;
+        this.attachContentRepository = attachContentRepository;
     }
 
     public void uploadData() {
@@ -162,6 +173,44 @@ public class DemoData {
         d1.setCreator(UUID.fromString("c90b9c9f-ca1a-4b7c-bc77-3557c908f8d7"));
         d1.setCreatorTitle("Енотина А. В.");
         documents.add(d1);
+
+        AttachContent attachContent1 = new AttachContent();
+        byte[] content1 = "Тестовое содержимое 1".getBytes();
+        attachContent1.setContent(content1);
+        UUID attachContent1Id = UUID.fromString("e5f72dfb-cd7e-44ad-a5c9-8e9a4263eacd");
+        attachContent1.setId(attachContent1Id);
+        attachContentRepository.save(attachContent1);
+
+        Attach attach1 = new Attach();
+        attach1.setTitle("Тестовое вложение 1.txt");
+        attach1.setSize(content1.length);
+        attach1.setObjectId(d1.getId());
+        attach1.setId(UUID.fromString("9d0b8a59-8bc7-4b49-b559-be326cd1337f"));
+        attach1.setAttachContentId(attachContent1Id);
+        attachRepository.save(attach1);
+
+        AttachContent attachContent2 = new AttachContent();
+
+        byte[] content2 = "Тестовое содержимое 2".getBytes();
+        try {
+            content2 = FileUtils.readFileToByteArray(new File("/Users/anatolii/Downloads/b7ac6d39ea4e2cfc905ebde4d06fabea.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        attachContent2.setContent(content2);
+        UUID attachContent2Id = UUID.fromString("a24811ad-77cc-4881-950d-94a51876e21a");
+        attachContent2.setId(attachContent2Id);
+        attachContentRepository.save(attachContent2);
+
+        Attach attach2 = new Attach();
+        attach2.setTitle("Тестовое вложение 2.jpg");
+        attach2.setSize(content2.length);
+        attach2.setObjectId(d1.getId());
+        attach2.setId(UUID.fromString("e36df78d-e4b1-4645-b729-e7459ae21c3f"));
+        attach2.setAttachContentId(attachContent2Id);
+        attachRepository.save(attach2);
 
 
         IncomingDocument d2 = new IncomingDocument();
