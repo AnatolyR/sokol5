@@ -108,7 +108,7 @@
             </b-modal>
 
             <div v-if="tab === 'attaches'">
-                <s-attach-form :object-id="documentId" :object-type="'document'"></s-attach-form>
+                <s-attach-form :object-id="documentId" :object-type="'document'" @updateAttaches="updateAttachCount"></s-attach-form>
             </div>
             <div v-if="tab === 'process'">
                 Процесс
@@ -175,9 +175,7 @@
         components: {SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm},
         mounted() {
             this.loadDocument();
-            axios.get(`/api/attaches/search/countByObjectId?objectId=${this.documentId}&objectType=document`).then((res) => {
-                this.attachesCount = res.data;
-            })
+            this.updateAttachCount();
         },
         props: [
             "documentId"
@@ -190,9 +188,15 @@
         watch: {
             documentId () {
                 this.loadDocument();
+                this.updateAttachCount();
             }
         },
         methods: {
+            updateAttachCount() {
+                axios.get(`/api/attaches/search/countByObjectId?objectId=${this.documentId}&objectType=document`).then((res) => {
+                    this.attachesCount = res.data;
+                });
+            },
             goBack() {
                 this.$router.go(-1);
             },

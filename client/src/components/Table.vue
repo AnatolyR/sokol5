@@ -312,6 +312,12 @@
                     });
 
                     this.update();
+                }).catch((res) => {
+                    this.$bvToast.toast(`Не удалось удалить значения`, {
+                        variant: 'danger',
+                        solid: true,
+                        autoHideDelay: 4000
+                    });
                 });
             },
             addValue() {

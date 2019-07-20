@@ -24,8 +24,7 @@ public class AccessRightsServiceImpl implements AccessRightsService {
     }
 
     @Override
-    public List<String> getRolesForObject(String objectId, String objectType) {
-        UUID id = UUID.fromString(objectId);
+    public List<String> getRolesForObject(UUID id, String objectType) {
         Set<String> roles = new HashSet<>();
 
         if ("document".equals(objectType)) {

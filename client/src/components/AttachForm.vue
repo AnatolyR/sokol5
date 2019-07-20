@@ -9,7 +9,7 @@
         <div v-if="!loading" class="s-dictionary-container">
             <s-table :buttons="buttons" :loadData="loadData"
                      :columns="tableColumns"
-                     :delete-url="`delete/${url}`"
+                     :delete-url="`delete/files`"
                      :add-url="`${url}`"
                      :add-type="`${addType}`"
                      :object-id="objectId"
@@ -36,8 +36,15 @@
         },
         mounted() {
             this.loading = false;
+            this.loadActions();
         },
         methods: {
+            loadActions() {
+                axios.get(`/api/attaches/availableActions?objectId=${this.objectId}&objectType=${this.objectType}`)
+                    .then((res) => {
+                        res.data.forEach((a) => this.buttons[a] = true);
+                    });
+            },
             loadData(spec) {
                 let url = `/api/${this.url}?objectId=${this.objectId}&objectType=${this.objectType}&size=${spec.size}&page=${spec.page}`;
                 if (spec.sortProperty && spec.sortDirection) {
@@ -56,6 +63,7 @@
                         }
                     })
                         .then((res) => {
+                            this.$emit("updateAttaches");
                             resolve(res);
                         })
                         .catch((error) => {
@@ -68,17 +76,13 @@
             }
         },
         data() {
-            //todo add AR to buttons
             return {
                 loading: true,
                 items: null,
                 errorMessage: null,
                 url: 'attaches/search/attachesByObjectId',
                 addType: 'attach',
-                buttons: {
-                    add: true,
-                    del: true
-                },
+                buttons: {},
                 tableColumns: [
                     {
                         "id": "select",

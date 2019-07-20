@@ -185,6 +185,7 @@ public class DemoData {
         attach1.setTitle("Тестовое вложение 1.txt");
         attach1.setSize(content1.length);
         attach1.setObjectId(d1.getId());
+        attach1.setObjectType("document");
         attach1.setId(UUID.fromString("9d0b8a59-8bc7-4b49-b559-be326cd1337f"));
         attach1.setAttachContentId(attachContent1Id);
         attachRepository.save(attach1);
@@ -208,6 +209,7 @@ public class DemoData {
         attach2.setTitle("Тестовое вложение 2.jpg");
         attach2.setSize(content2.length);
         attach2.setObjectId(d1.getId());
+        attach2.setObjectType("document");
         attach2.setId(UUID.fromString("e36df78d-e4b1-4645-b729-e7459ae21c3f"));
         attach2.setAttachContentId(attachContent2Id);
         attachRepository.save(attach2);
