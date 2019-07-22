@@ -13,9 +13,11 @@
             <!-- BUTTONS -->
             <div class="s-user-button-bar">
                 <b-button v-if="openedFromFolder" size="sm" variant="light" @click="back"><font-awesome-icon icon="angle-left" /> Назад</b-button>
-                <b-button v-if="!editMode" @click="edit" size="sm">Редактировать</b-button>
+                <b-button v-if="buttons['edit'] && !editMode" @click="edit" size="sm">Редактировать</b-button>
                 <b-button v-if="editMode" variant="success" @click="save" size="sm">Сохранить</b-button>
                 <b-button v-if="editMode" variant="danger" @click="cancel" size="sm">Отменить</b-button>
+
+<!--                <b-button v-if="buttons['reset_pass']" @click="resetPass" variant="warning" size="sm">Сбросить пароль</b-button>-->
             </div>
 
 
@@ -127,6 +129,7 @@
         components: {SSelect, SInputGroup, SUserForm},
         mounted() {
             this.loadUser();
+            this.loadActions();
         },
         props: [
             "userId"
@@ -139,9 +142,16 @@
         watch: {
             userId () {
                 this.loadUser();
+                this.loadActions();
             }
         },
         methods: {
+            loadActions() {
+                axios.get(`/api/user/availableActions`)
+                    .then((res) => {
+                        res.data.forEach((a) => this.buttons[a] = true);
+                    });
+            },
             goBack() {
                 this.$router.go(-1);
             },
@@ -199,7 +209,9 @@
                         title: "3",
                         firstName: "3",
                         lastName: "3",
-                        middleName: "2"
+                        middleName: "2",
+                        username: "2",
+                        email: "2"
                     };
                     // console.log("levels ", fieldsLevels);
 
@@ -231,10 +243,11 @@
                 tab: 'attributes',
                 editMode: false,
 
-                attachesCount: 1,
+                attachesCount: 0,
 
                 formState: null,
-                uncorrectFields: ""
+                uncorrectFields: "",
+                buttons: {}
             }
         }
     }

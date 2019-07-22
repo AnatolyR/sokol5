@@ -9,6 +9,7 @@ import Dictionaries from './views/Dictionaries.vue'
 import Reports from './views/Reports.vue'
 import Search from './views/Search.vue'
 import Error from './views/Error.vue'
+import Admin from './views/Admin.vue'
 
 import Login from './views/Login.vue'
 import store from './store'
@@ -61,6 +62,11 @@ export const router = new Router({
             path: '/search',
             name: 'search',
             component: Search
+        },{
+            path: '/admin',
+            name: 'admin',
+            component: Admin,
+            alias: '/admin/*'
         },
         {
             path: '/error',

@@ -2,58 +2,48 @@ package com.sokolsoft.ecm;
 
 import com.sokolsoft.ecm.core.model.*;
 import com.sokolsoft.ecm.core.repository.*;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
+@RequiredArgsConstructor
 public class DemoData {
-    private ContragentRepository contragentRepository;
+    private final ContragentRepository contragentRepository;
     
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private ContragentPersonRepository contragentPersonRepository;
+    private final ContragentPersonRepository contragentPersonRepository;
 
-    private DocumentRepository documentRepository;
+    private final DocumentRepository documentRepository;
 
-    private DeliveryMethodRepository deliveryMethodRepository;
+    private final DeliveryMethodRepository deliveryMethodRepository;
 
-    private DocumentKindRepository documentKindRepository;
+    private final DocumentKindRepository documentKindRepository;
 
-    private AttachRepository attachRepository;
+    private final AttachRepository attachRepository;
 
-    private AttachContentRepository attachContentRepository;
+    private final AttachContentRepository attachContentRepository;
 
-    @Autowired
-    public DemoData(ContragentRepository contragentRepository,
-                    UserRepository userRepository,
-                    ContragentPersonRepository contragentPersonRepository,
-                    DocumentRepository documentRepository,
-                    DeliveryMethodRepository deliveryMethodRepository,
-                    DocumentKindRepository documentKindRepository,
-                    AttachRepository attachRepository,
-                    AttachContentRepository attachContentRepository) {
-        this.contragentRepository = contragentRepository;
-        this.userRepository = userRepository;
-        this.contragentPersonRepository = contragentPersonRepository;
-        this.documentRepository = documentRepository;
-        this.deliveryMethodRepository = deliveryMethodRepository;
-        this.documentKindRepository = documentKindRepository;
-        this.attachRepository = attachRepository;
-        this.attachContentRepository = attachContentRepository;
-    }
+//    private final JdbcUserDetailsManager detailsManager;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final AuthorityRepository authorityRepository;
 
     public void uploadData() {
         SecurityContext securityContext = new SecurityContextImpl();
@@ -67,7 +57,7 @@ public class DemoData {
 
         uploadDocuments();
         uploadContragents();
-        uploadUsers();
+        uploadEmployees();
         uploadDeliveryMethods();
         uploadDocumentRinds();
 
@@ -347,7 +337,7 @@ public class DemoData {
 
     }
     
-    private void uploadUsers() {
+    private void uploadEmployees() {
         List<User> list = new ArrayList<>();
 
         String[][] users = {{"580f62b3-7b96-4109-a321-dc7d24109a1a", "Поляков И. В.", null, null, "Иван", "Вячеславович", "Поляков"},
@@ -390,7 +380,7 @@ public class DemoData {
         {"cc1b2ba7-c245-4680-bc15-97b04be8b50e", "Грибова А. С.", null, null, "Антонина", "Сергеевна", "Грибова"},
         {"697660a9-8bed-4548-a15e-757282776ebb", "Карандашова А. В.", null, null, "Анна", "Вячеславовна", "Карандашова"},
         {"a4cff11c-936a-45e1-889f-f478f27fcc20", "Зверева А. М.", null, null, "Антонина", "Михайловна", "Зверева"},
-        {"52cc85b5-fab7-4365-a9cd-94afac1f0e8d", "Admin", null, null, "Admin", "Admin", "Admin"},
+//        {"52cc85b5-fab7-4365-a9cd-94afac1f0e8d", "Admin", null, null, "Admin", "Admin", "Admin"},
         {"a4fa069b-64ac-4a7e-ba5f-a3dc3e84c66e", "Карандашова Д. Г.", null, null, "Дарья", "Георгиевна", "Карандашова"}};
 
         for (String[] user : users) {
@@ -402,6 +392,43 @@ public class DemoData {
             u.setLastName(user[6]);
             list.add(u);
         }
+
+        List<Authority> authorities = Stream.of(
+                "ROLE_USER",
+                "ROLE_DIC_DELIVERY_METHODS",
+                "ROLE_DIC_DELIVERY_METHODS_SAVE",
+                "ROLE_DIC_DELIVERY_METHODS_DEL",
+                "ROLE_DIC_DOC_KINDS",
+                "ROLE_DIC_DOC_KINDS_DEL",
+                "ROLE_DIC_DOC_KINDS_SAVE",
+                "ROLE_DIC_CONTRAGENT_PERSONS",
+                "ROLE_DIC_CONTRAGENTS",
+                "ROLE_DIC_CONTRAGENTS_SAVE",
+                "ROLE_DIC_CONTRAGENTS_DEL",
+                "ROLE_DIC_USERS",
+                "ROLE_DIC_USERS_SAVE",
+                "ROLE_DIC_USERS_RESET_PASS",
+                "ROLE_DIC_USERS_DEL").map(r -> {
+            Authority authority = new Authority();
+            authority.setUsername("admin");
+            authority.setAuthority(r);
+            return authority;
+        }).collect(Collectors.toList());
+        authorityRepository.saveAll(authorities);
+
+
+        User u = new User();
+        u.setId(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"));
+        u.setTitle("Admin");
+        u.setFirstName("Admin");
+        u.setLastName("Admin");
+        u.setMiddleName("Admin");
+        u.setUsername("admin");
+        u.setEnabled(true);
+        u.setPassword(passwordEncoder.encode("admin"));
+        userRepository.save(u);
+
+
 
         userRepository.saveAll(list);
     }

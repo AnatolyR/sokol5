@@ -26,13 +26,15 @@ public abstract class ConfigServiceBase implements ConfigService {
     private JsonNode processConfig(String configName, JsonNode config) {
         if (configName.startsWith("folderLists")) {
             config = processFolderLists(config);
+        } else if (configName.startsWith("admin/index")) {
+            config = processLists(config, "admin");
         } else if (configName.startsWith("dictionaries/index")) {
-            config = processDictionaryLists(config);
+            config = processLists(config, "dictionaries");
         }
         return config;
     }
 
-    private JsonNode processDictionaryLists(JsonNode config) {
+    private JsonNode processLists(JsonNode config, String type) {
         ArrayNode filledDictionaries = mapper.createArrayNode();
         StreamSupport.stream(config.spliterator(), false).forEachOrdered(node -> {
             String folderName = node.asText();
@@ -41,11 +43,11 @@ public abstract class ConfigServiceBase implements ConfigService {
                 delimiterNode.put("type", "--");
                 filledDictionaries.add(delimiterNode);
             } else {
-                JsonNode folderConfig = getPublicRawConfig("dictionaries/" + folderName);
+                JsonNode folderConfig = getPublicRawConfig(type + "/" + folderName);
                 if (folderConfig != null) {
                     filledDictionaries.add(folderConfig);
                     ArrayNode actions = ((ObjectNode) folderConfig).putArray("actions");
-                    JsonNode privateConfig = getPrivateRawConfig("dictionaries/" + folderName);
+                    JsonNode privateConfig = getPrivateRawConfig(type + "/" + folderName);
                     if (privateConfig != null) {
                         privateConfig.get("actions").forEach(a -> {
                             if (Utils.checkAccess(a.get("secured").asText())) {

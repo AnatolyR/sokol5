@@ -11,9 +11,9 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name = "authorities")
 @Data
-public class User {
+public class Authority {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -22,20 +22,7 @@ public class User {
     )
     private UUID id;
 
-    private String title;
-
-    private String firstName;
-
-    private String lastName;
-
-    private String middleName;
-
     private String username;
 
-    @JsonIgnore
-    private String password;
-
-    private Boolean enabled;
-
-    private String email;
+    private String authority;
 }

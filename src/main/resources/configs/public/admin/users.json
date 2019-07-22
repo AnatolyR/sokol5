@@ -1,0 +1,32 @@
+{
+  "id": "users",
+  "name": "Пользователи",
+  "url": "users",
+  "addType": "user",
+  "fields": [
+    {
+      "id": "id",
+      "title": "ИД",
+      "visible": false
+    },
+    {
+      "id": "select",
+      "title": "Выделение",
+      "type": "checkbox",
+      "ref": "id",
+      "visible": true
+    },
+    {
+      "id": "username",
+      "title": "Логин",
+      "visible": true,
+      "type": "text"
+    },
+    {
+      "id": "title",
+      "title": "Сотрудник",
+      "visible": true,
+      "type": "link",
+      "path": "/user/"
+    }]
+}

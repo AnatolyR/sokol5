@@ -1,13 +1,17 @@
 package com.sokolsoft.ecm;
 
 import com.sokolsoft.ecm.core.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +19,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -24,6 +31,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.io.IOException;
 
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
@@ -33,8 +41,18 @@ public class EcmApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(EcmApplication.class, args);
 
+//        createSecuritySchema(context.getBean(DataSource.class));
 
         context.getBean(DemoData.class).uploadData();
+    }
+
+    private static void createSecuritySchema(DataSource dataSource) {
+        DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
+        dataSourceInitializer.setDataSource(dataSource);
+        ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
+        databasePopulator.addScript(new ClassPathResource("/db/users.sql"));
+        dataSourceInitializer.setDatabasePopulator(databasePopulator);
+        dataSourceInitializer.afterPropertiesSet();
     }
 
     @Bean
@@ -57,9 +75,25 @@ public class EcmApplication {
         };
     }
 
+    @Bean
+    @Autowired
+    public JdbcUserDetailsManager detailsManager(DataSource dataSource) {
+        return new JdbcUserDetailsManager(dataSource);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Configuration
     @EnableWebSecurity
     protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+        @Autowired
+        PasswordEncoder passwordEncoder;
+
+        @Autowired
+        DataSource dataSource;
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
@@ -99,35 +133,14 @@ public class EcmApplication {
                     .permitAll()
 //                  .and().requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
 //                    .anyRequest().permitAll()
-                  .and().logout();
+                  .and().logout().logoutUrl("/api/logout");
         }
 
         @Override
         public void configure(AuthenticationManagerBuilder auth)
                 throws Exception {
 
-            auth.inMemoryAuthentication()
-                    .withUser("admin")
-                    .password("{noop}admin")
-                    .roles("USER",
-                            "DIC_DELIVERY_METHODS",
-                            "DIC_DELIVERY_METHODS_SAVE",
-                            "DIC_DELIVERY_METHODS_DEL",
-                            "DIC_DOC_KINDS",
-                            "DIC_DOC_KINDS_DEL",
-                            "DIC_DOC_KINDS_SAVE",
-                            "DIC_CONTRAGENT_PERSONS",
-                            "DIC_CONTRAGENTS",
-                            "DIC_CONTRAGENTS_SAVE",
-                            "DIC_CONTRAGENTS_DEL",
-                            "DIC_USERS",
-                            "DIC_USERS_SAVE",
-                            "DIC_USERS_DEL"
-                            )
-                    .and()
-                    .withUser("user")
-                    .password("{noop}user")
-                    .roles("USER");
+            auth.jdbcAuthentication().dataSource(dataSource).passwordEncoder(passwordEncoder);
         }
 
     }

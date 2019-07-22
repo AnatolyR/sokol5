@@ -30,6 +30,9 @@
                         <!--<b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>-->
                     <!--</b-nav-form>-->
 
+
+                    <b-nav-item exact-active-class="active" to="/admin">Администрирование</b-nav-item>
+
                     <b-nav-item-dropdown right>
                         <template slot="button-content">{{user.name}}</template>
                         <b-dropdown-item href="#">Профиль</b-dropdown-item>

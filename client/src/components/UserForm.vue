@@ -39,6 +39,34 @@
                 errorMessage="Отчество не может быть пустым"
                 :state="() => state('middleName')"
         ></s-input-group>
+
+        <s-input-group
+                title="Логин"
+                id="usernameInput"
+                :fieldLevel="fieldsLevels.username"
+                :editMode="editMode"
+                v-model="user.username"
+                errorMessage="Логин должен быть пустым или содержать только латинские символы"
+                :state="() => state('username')"
+        ></s-input-group>
+
+        <s-input-group
+                title="Email"
+                id="emailInput"
+                :fieldLevel="fieldsLevels.email"
+                :editMode="editMode"
+                v-model="user.email"
+                errorMessage=""
+                :state="() => state('email')"
+        ></s-input-group>
+
+        <b-form-checkbox
+                id="enabledInput"
+                :disabled="!editMode || fieldsLevels.enabled === '1'"
+                v-model="user.enabled"
+        >
+            Активен
+        </b-form-checkbox>
     </div>
 </template>
 
@@ -107,7 +135,9 @@
                         title: null,
                         firstName: null,
                         lastName: null,
-                        middleName: null
+                        middleName: null,
+                        username: null,
+                        email: null
                     }
                 }
             },
@@ -119,7 +149,9 @@
                         title: "3",
                         firstName: "3",
                         lastName: "3",
-                        middleName: "2"
+                        middleName: "2",
+                        username: "2",
+                        email: "2"
                     }
                 }
             }
