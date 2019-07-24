@@ -27,6 +27,8 @@
 
                         <s-dictionary-value v-if="addType === 'string'" v-model="toAddValue" ref="addForm"></s-dictionary-value>
 
+                        <s-dictionary-value v-if="addType === 'role'" v-model="toAddValue" ref="addForm"></s-dictionary-value>
+
                         <s-user-form v-if="addType === 'user'" v-model="toAddValue" :edit-mode="true" ref="addForm"></s-user-form>
 
                         <s-contragent-form v-if="addType === 'contragent'" v-model="toAddValue" :edit-mode="true" ref="addForm"></s-contragent-form>
@@ -109,7 +111,7 @@
                                  target="_blank"
                                  :to="'/api/file/' + item.id">{{ item[col.id] }}</router-link>
 
-                    <b-form-checkbox v-if="col.type === 'checkbox'"
+                    <b-form-checkbox v-if="col.type === 'checkbox' && item.id"
                                      :class="`s-table-cell-${col.id}`"
                                      v-model="item.selected" @click.native="(e) => e.preventDefault()"></b-form-checkbox>
                 </td>
@@ -354,6 +356,9 @@
                         console.log(e);
                     });
                 } else {
+                    if (this.addType === 'role') {
+                        this.toAddValue['userId'] = this.objectId;
+                    }
 
                     axios.post(`/api/${this.addUrl}`, this.toAddValue).then((res) => {
                         this.$bvToast.toast(`Значение успешно добавлено`, {

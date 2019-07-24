@@ -47,6 +47,15 @@
                         Вложения <b-badge v-if="attachesCount > 0" style="top: -0.2em; position: relative;" variant="light">{{attachesCount}}</b-badge>
                     </a>
                 </li>
+                <li class="nav-item" v-if="buttons['edit']">
+                    <a class="nav-link"
+                       v-bind:class="{ active: tab === 'roles' }"
+                       data-toggle="tab"
+                       href="#"
+                       @click.prevent="showRoles">
+                        Роли
+                    </a>
+                </li>
 
             </ul>
 
@@ -69,6 +78,10 @@
 
             <div v-if="tab === 'attaches'">
                 Вложения
+            </div>
+
+            <div v-if="tab === 'roles'">
+                <s-roles-form :user-id="userId" :buttons="{add: buttons['role_add'], del: buttons['role_del']}"></s-roles-form>
             </div>
 
         </div>
@@ -121,12 +134,13 @@
     import axios from "axios";
     import SSelect from "../components/fields/Select";
     import SInputGroup from "../components/fields/InputGroup";
+    import SRolesForm from "../components/RolesForm";
 
     import SUserForm from "../components/UserForm";
 
     export default {
         // components: {SSelect, SDocumentForm},
-        components: {SSelect, SInputGroup, SUserForm},
+        components: {SSelect, SInputGroup, SUserForm, SRolesForm},
         mounted() {
             this.loadUser();
             this.loadActions();
@@ -230,6 +244,9 @@
             },
             showAttaches() {
                 this.tab = 'attaches';
+            },
+            showRoles() {
+                this.tab = 'roles';
             }
         },
         data() {
@@ -247,7 +264,15 @@
 
                 formState: null,
                 uncorrectFields: "",
-                buttons: {}
+                buttons: {
+                    edit: false,
+                    add: false,
+                    del: false,
+                    reset_pass: false,
+                    roles: false,
+                    role_add: false,
+                    role_del: false
+                }
             }
         }
     }

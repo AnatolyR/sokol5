@@ -13,6 +13,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.JdbcUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -140,7 +141,9 @@ public class EcmApplication {
         public void configure(AuthenticationManagerBuilder auth)
                 throws Exception {
 
-            auth.jdbcAuthentication().dataSource(dataSource).passwordEncoder(passwordEncoder);
+            JdbcUserDetailsManagerConfigurer<AuthenticationManagerBuilder> jdbcAuthentication = auth.jdbcAuthentication();
+            jdbcAuthentication.dataSource(dataSource).passwordEncoder(passwordEncoder);
+            jdbcAuthentication.getUserDetailsService().setEnableGroups(true);
         }
 
     }

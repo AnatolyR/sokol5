@@ -45,6 +45,8 @@ public class DemoData {
 
     private final AuthorityRepository authorityRepository;
 
+    private final GroupRepository groupRepository;
+
     public void uploadData() {
         SecurityContext securityContext = new SecurityContextImpl();
         
@@ -408,6 +410,9 @@ public class DemoData {
                 "ROLE_DIC_USERS",
                 "ROLE_DIC_USERS_SAVE",
                 "ROLE_DIC_USERS_RESET_PASS",
+                "ROLE_USER_ROLES_VIEW",
+                "ROLE_USER_ROLE_ADD",
+                "ROLE_USER_ROLE_DEL",
                 "ROLE_DIC_USERS_DEL").map(r -> {
             Authority authority = new Authority();
             authority.setUsername("admin");
@@ -431,5 +436,11 @@ public class DemoData {
 
 
         userRepository.saveAll(list);
+
+        Group group = new Group();
+        group.setGroupName("TEST_GROUP");
+        group.setAuthorities(Arrays.asList("ROLE_GROUP_1", "ROLE_GROUP_2"));
+        group.setMember(Arrays.asList("admin"));
+        groupRepository.save(group);
     }
 }
