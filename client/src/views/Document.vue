@@ -16,8 +16,8 @@
                 <b-button v-if="!editMode" @click="edit" size="sm">Редактировать</b-button>
                 <b-button v-if="editMode" variant="success" @click="save" size="sm">Сохранить</b-button>
                 <b-button v-if="editMode" variant="danger" @click="cancel" size="sm">Отменить</b-button>
-                <b-button size="sm">Подписать</b-button>
-                <b-button size="sm">Согласовать</b-button>
+
+                <b-button v-for="a in actions" @click="execute(a)" size="sm">{{a.title}}</b-button>
             </div>
 
 
@@ -107,6 +107,20 @@
                 </template>
             </b-modal>
 
+            <b-modal id="execution-modal" size="lg" ref="execution-modal" title="Создание поручения">
+                <p class="my-4">
+                    <s-execution-form ref="execution-form" :document-id="documentId" :action-id="form"></s-execution-form>
+                </p>
+                <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
+                    <b-button size="sm" variant="light" @click="cancel()">
+                        Отмена
+                    </b-button>
+                    <b-button size="sm" variant="success" @click="saveExecutionForm()">
+                        Сохранить
+                    </b-button>
+                </template>
+            </b-modal>
+
             <div v-if="tab === 'attaches'">
                 <s-attach-form :object-id="documentId" :object-type="'document'" @updateAttaches="updateAttachCount"></s-attach-form>
             </div>
@@ -169,13 +183,13 @@
     import SDocumentIncomingForm from "../components/DocumentIncomingForm";
     import SDocumentInnerForm from "../components/DocumentInnerForm";
     import SAttachForm from "../components/AttachForm";
+    import SExecutionForm from "../components/ExecutionForm";
 
     export default {
         // components: {SSelect, SDocumentForm},
-        components: {SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm},
+        components: {SExecutionForm, SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm},
         mounted() {
             this.loadDocument();
-            this.updateAttachCount();
         },
         props: [
             "documentId"
@@ -188,10 +202,56 @@
         watch: {
             documentId () {
                 this.loadDocument();
-                this.updateAttachCount();
             }
         },
         methods: {
+            loadActions() {
+                axios.get(`/api/document/${this.documentId}/actions`)
+                    .then((res) => {
+                        this.actions = res.data;
+                    });
+            },
+            execute(action) {
+                if (action.form) {
+                    this.showActionForm(action.form);
+                    return;
+                }
+                let actionId = action.id;
+                axios.post(`/api/document/${this.documentId}/actions/${actionId}`, {}).then(() => {
+                    this.$bvToast.toast(`Статус обновлен`, {
+                        variant: 'success',
+                        solid: true,
+                        autoHideDelay: 2000
+                    });
+                    this.loadDocument();
+                }).catch((err) => {
+                    console.log('err', err);
+                    this.errorMessage = 'Не удается изменить статус';
+                });
+            },
+            showActionForm(form) {
+                this.form = form;
+                this.$refs[`${form}-modal`].show();
+            },
+            saveExecutionForm() {
+                let executionData = this.$refs[`${this.form}-form`].getData();
+                executionData.actionId = this.actions.find(a => a.form === this.form).id;
+
+                axios.post(`/api/document/${this.documentId}/actions`, executionData).then(() => {
+                    this.$bvToast.toast(`Статус обновлен`, {
+                        variant: 'success',
+                        solid: true,
+                        autoHideDelay: 2000
+                    });
+                    this.loadDocument();
+                }).catch((err) => {
+                    console.log('err', err);
+                    this.errorMessage = 'Не удается изменить статус';
+                });
+
+                this.$refs[`${this.form}-modal`].hide();
+                this.form = null;
+            },
             updateAttachCount() {
                 axios.get(`/api/attaches/search/countByObjectId?objectId=${this.documentId}&objectType=document`).then((res) => {
                     this.attachesCount = res.data;
@@ -261,6 +321,9 @@
                 });
             },
             loadDocument() {
+                this.updateAttachCount();
+                this.loadActions();
+
                 this.editMode = false;
                 this.errorMessage = null;
                 this.loading = true;
@@ -343,7 +406,9 @@
                 linksCount: 3,
 
                 formState: null,
-                uncorrectFields: ""
+                uncorrectFields: "",
+                actions: [],
+                form: null
             }
         }
     }

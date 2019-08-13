@@ -17,4 +17,6 @@ public interface DocumentService {
     void checkForDraft(Document document, List<String> roles);
 
     UUID createDocument(String documentType);
+
+    void moveDocumentToState(UUID documentId, String title);
 }

@@ -35,7 +35,11 @@
 
             selectize.on("change", (val) => {
                 if (val !== this.value) {
-                    this.$emit('value', val);
+                    if (this.emitWithTitle) {
+                        this.$emit('value', {val: val, title: selectize.getItem(val).text()});
+                    } else {
+                        this.$emit('value', val);
+                    }
                 }
             });
 
@@ -50,7 +54,8 @@
             'config',
             'value',
             'valueTitle',
-            'depends'
+            'depends',
+            'emitWithTitle'
         ]
     }
 </script>

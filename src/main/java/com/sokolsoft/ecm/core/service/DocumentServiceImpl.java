@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.*;
@@ -134,6 +135,7 @@ public class DocumentServiceImpl implements DocumentService {
     public Document getDocument(UUID documentId) {
         Document document = documentRepository.findById(documentId).orElse(null);
         if (document != null) {
+            //todo check AR to read
             Document clearedDocument = createDocumentByType(document.getDocumentType());
 
             copyAccessibleProperties(document, clearedDocument);
@@ -162,7 +164,8 @@ public class DocumentServiceImpl implements DocumentService {
         checkForDraft(document, roles);
 
         Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
-        BeanUtils.copyProperties(document, clearedDocument, Utils.getNotAccessibleReadablePropertyNames(document, fieldsRights));
+//        BeanUtils.copyProperties(document, clearedDocument, Utils.getNotAccessibleReadablePropertyNames(document, fieldsRights));
+        BeanUtils.copyProperties(document, clearedDocument);
     }
 
     @Override
@@ -300,5 +303,12 @@ public class DocumentServiceImpl implements DocumentService {
         documentRepository.save(document);
 
         return id;
+    }
+
+    @Override
+    public void moveDocumentToState(UUID documentId, String state) {
+        Document document = documentRepository.getOne(documentId);
+        document.setStatus(state);
+        documentRepository.save(document);
     }
 }

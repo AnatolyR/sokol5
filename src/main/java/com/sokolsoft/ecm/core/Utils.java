@@ -63,4 +63,16 @@ public class Utils {
         });
         return result;
     }
+
+    public static boolean checkAccess(String secured, List<String> roles) {
+        ExpressionParser parser = new SpelExpressionParser();
+
+        Expression exp = parser.parseExpression(secured);
+        Boolean result = (Boolean) exp.getValue(new Object() {
+            public boolean hasRole(String role) {
+                return roles.stream().anyMatch(r -> r.equals(role));
+            }
+        });
+        return result;
+    }
 }

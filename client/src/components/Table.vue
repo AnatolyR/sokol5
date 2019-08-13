@@ -2,22 +2,22 @@
     <div>
         <div>
             <div class="s-folder-buttons-bar">
-                <b-button :disabled="!isPrevPage" size="sm" @click="prevPage"><font-awesome-icon icon="angle-left" /> Предыдущая</b-button>
+                <b-button v-if="buttons.pages !== false" :disabled="!isPrevPage" size="sm" @click="prevPage"><font-awesome-icon icon="angle-left" /> Предыдущая</b-button>
 
-                <b-dropdown id="dropdown-1" :text="currentPageItem" size="sm">
+                <b-dropdown v-if="buttons.pages !== false" id="dropdown-1" :text="currentPageItem" size="sm">
                     <b-dropdown-item v-for="item in pageItems" :key="item.title"
                                      :active="activePage(item.page)"
                                      boundary="viewport"
                                      @click="setPage(item.page)">{{item.title}}</b-dropdown-item>
                 </b-dropdown>
 
-                <b-button :disabled="!isNextPage" size="sm" @click="nextPage">Следующая <font-awesome-icon icon="angle-right" /></b-button>
+                <b-button v-if="buttons.pages !== false" :disabled="!isNextPage" size="sm" @click="nextPage">Следующая <font-awesome-icon icon="angle-right" /></b-button>
 
-                <b-dropdown id="dropdown-2" text="Колонки" size="sm">
+                <b-dropdown v-if="buttons.columns !== false" id="dropdown-2" text="Колонки" size="sm">
                     <div class="dropdown-item" v-for="col in columns"><b-form-checkbox style="width: 100%;" v-model="col.visible" boundary="viewport">{{col.title}}</b-form-checkbox></div>
                 </b-dropdown>
 
-                <b-button size="sm" @click="update">Обновить</b-button>
+                <b-button v-if="buttons.refresh !== false" size="sm" @click="update">Обновить</b-button>
                 <b-button v-if="buttons.filter" :variant="this.displayFilter ? 'outline-secondary' : (conditions && conditions.length > 0 ? 'warning' : '')" size="sm" @click="toggleFilter">Фильтр</b-button>
                 <b-button v-if="buttons.add" variant="success" size="sm" @click="showAddModal">Добавить</b-button>
                 <b-button v-if="buttons.del" :disabled="toDeleteItems === ''" variant="danger" size="sm" @click="showDelModal">Удалить</b-button>
@@ -95,11 +95,13 @@
             <tbody>
 
             <!-- ========================== -->
-            <tr v-for="item in data">
-                <td v-for="col in visibleColumns"
+            <tr v-for="item in data" :key="item.id">
+                <td v-for="col in visibleColumns" :style="{width: col.width ? col.width : ''}"
                     @click="() => {if (col.type === 'checkbox') item.selected = !item.selected}">
                     <span v-if="col.type !== 'link'
                         && col.type !== 'checkbox'
+                        && col.type !== 'userSelect'
+                        && col.type !== 'dateSelect'
                         && col.type !== 'fileLink'"
                           :class="`s-table-cell-${col.id}`">{{item[col.id]}}</span>
                     <router-link v-if="col.type === 'link'"
@@ -114,6 +116,20 @@
                     <b-form-checkbox v-if="col.type === 'checkbox' && item.id"
                                      :class="`s-table-cell-${col.id}`"
                                      v-model="item.selected" @click.native="(e) => e.preventDefault()"></b-form-checkbox>
+
+                    <s-select v-if="col.type === 'userSelect'"
+                              :config="userSelectConfig"
+                              :emit-with-title="true"
+                              @value="(val) => selectUser(val, item, col.id)"
+                              :value="item[col.id]"
+                              :valueTitle="item[col.id + 'Title']"
+                    ></s-select>
+
+                    <date-picker style="position:relative"
+                            v-if="col.type === 'dateSelect'"
+                            v-model="item.executionDate"
+                            :id="'datapicker-' + item.id"
+                            :config="dateConfig"/>
                 </td>
             </tr>
             <!-- ========================== -->
@@ -122,17 +138,17 @@
         </table>
         <div>
             <div class="s-folder-buttons-bar">
-                <b-button :disabled="!isPrevPage" size="sm" @click="prevPage"><font-awesome-icon icon="angle-left" /> Предыдущая</b-button>
+                <b-button v-if="buttons.pages !== false" :disabled="!isPrevPage" size="sm" @click="prevPage"><font-awesome-icon icon="angle-left" /> Предыдущая</b-button>
 
 
-                <b-dropdown id="dropdown-3" :text="currentPageItem" size="sm">
+                <b-dropdown v-if="buttons.pages !== false" id="dropdown-3" :text="currentPageItem" size="sm">
                     <b-dropdown-item v-for="item in pageItems" :key="item.title"
                                      :active="activePage(item.page)"
                                      boundary="viewport"
                                      @click="setPage(item.page)">{{item.title}}</b-dropdown-item>
                 </b-dropdown>
 
-                <b-button :disabled="!isNextPage" size="sm" @click="nextPage">Следующая <font-awesome-icon icon="angle-right" /></b-button>
+                <b-button v-if="buttons.pages !== false" :disabled="!isNextPage" size="sm" @click="nextPage">Следующая <font-awesome-icon icon="angle-right" /></b-button>
 
             </div>
         </div>
@@ -166,10 +182,13 @@
     import SUserForm from "../components/UserForm";
     import SContragentForm from "../components/ContragentForm";
     import SAddAttach from "./AddAttachForm";
+    import SSelect from "./fields/Select";
+    import datePicker from 'vue-bootstrap-datetimepicker';
+    import uuid from '../uuid.js';
 
     export default {
         name: 's-table',
-        components: {SAddAttach, SFilter, SDictionaryValue, SUserForm, SContragentForm},
+        components: {SAddAttach, SFilter, SDictionaryValue, SUserForm, SContragentForm, SSelect, datePicker},
         mounted() {
             this.update();
         },
@@ -209,7 +228,7 @@
                 }
             },
             toDeleteItems() {
-                return this.data.filter((i) => i.selected === true).map((i) => i.title).join(", ");
+                return this.deleteCallback ? (this.data.filter((i) => i.selected === true).length === 0 ? '' : null) : this.data.filter((i) => i.selected === true).map((i) => i.title).join(", ");
             }
         },
         props: {
@@ -228,7 +247,13 @@
                 default: 'default'
             },
             objectId: {},
-            objectType: {}
+            objectType: {},
+            deleteCallback: {
+                type: Function
+            },
+            addCallback: {
+                type: Function
+            }
         },
         methods: {
             update() {
@@ -290,6 +315,11 @@
                 this.displayFilter = !this.displayFilter;
             },
             showAddModal() {
+                if (this.addCallback) {
+                    this.addCallback();
+                    return;
+                }
+                
                 this.$refs['add-modal'].show();
             },
             hideAddModal() {
@@ -299,10 +329,20 @@
                 this.$refs['add-modal'].toggle('#toggle-btn');
             },
             showDelModal() {
+                if (this.deleteCallback) {
+                    this.deleteCallback(this.data.filter((i) => i.selected === true));
+                    return;
+                }
+
                 this.$refs['del-modal'].show();
             },
             deleteSelected() {
                 this.$refs['del-modal'].hide();
+
+                if (this.deleteCallback) {
+                    this.deleteCallback(this.data.filter((i) => i.selected === true));
+                    return;
+                }
                 
                 let ids = this.data.filter((i) => i.selected === true).map((i) => i.id);
                 axios.delete(`/api/${this.deleteUrl}/${ids.join(',')}`).then((res) => {
@@ -323,6 +363,11 @@
                 });
             },
             addValue() {
+                if (this.addCallback) {
+                    this.addCallback();
+                    return;
+                }
+
                 let fields = this.$refs.addForm && this.$refs.addForm.getFormState();
                 if (fields && fields.length > 0) {
                     this.uncorrectFields = fields.join(", ");
@@ -378,6 +423,13 @@
                     this.$refs.addForm.highlightErrors = false;
                 }
                 this.toAddValue = {};
+            },
+            selectUser(val, item, colId) {
+                item[colId] = val.val;
+                item[colId + "Title"] = val.title;
+            },
+            getData() {
+                return this.data;
             }
         },
         watch: {
@@ -398,7 +450,29 @@
                 displayFilter: false,
                 toAddValue: {},
                 addOneMore: false,
-                uncorrectFields: null
+                uncorrectFields: null,
+                userSelectConfig: {
+                    maxItems: 1,
+                    //plugins: ['remove_button'],
+                    valueField: 'id',
+                    labelField: 'title',
+                    searchField: 'title',
+                    preload: true,
+                    load(query, callback) {
+                        if (!query.length) {
+                            return callback();
+                        }
+                        axios.get(`/api/users/search/userByTitle?title=%25${query}%25`).then((res) => {
+                            const users = res.data._embedded.users;
+                            callback(users);
+                        }).catch(() => {
+                            callback();
+                        })
+                    }
+                },
+                dateConfig: {
+                    locale:'ru'
+                }
             }
         }
     }
