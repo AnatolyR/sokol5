@@ -103,15 +103,15 @@
                         && col.type !== 'userSelect'
                         && col.type !== 'dateSelect'
                         && col.type !== 'fileLink'"
-                          :class="`s-table-cell-${col.id}`">{{item[col.id]}}</span>
+                          :class="`s-table-cell-${col.id}`">{{getItemValue(item, col.id)}}</span>
                     <router-link v-if="col.type === 'link'"
                                  :class="`s-table-cell-${col.id}`"
-                                 :to="col.path + item.id">{{ item[col.id] }}</router-link>
+                                 :to="col.path + (col.idField ? getItemValue(item, col.idField) : item.id)">{{ getItemValue(item, col.id) }}</router-link>
 
                     <router-link v-if="col.type === 'fileLink'"
                                  :class="`s-table-cell-${col.id}`"
                                  target="_blank"
-                                 :to="'/api/file/' + item.id">{{ item[col.id] }}</router-link>
+                                 :to="'/api/file/' + item.id">{{ getItemValue(item, col.id) }}</router-link>
 
                     <b-form-checkbox v-if="col.type === 'checkbox' && item.id"
                                      :class="`s-table-cell-${col.id}`"
@@ -121,7 +121,7 @@
                               :config="userSelectConfig"
                               :emit-with-title="true"
                               @value="(val) => selectUser(val, item, col.id)"
-                              :value="item[col.id]"
+                              :value="getItemValue(item, col.id)"
                               :valueTitle="item[col.id + 'Title']"
                     ></s-select>
 
@@ -430,6 +430,14 @@
             },
             getData() {
                 return this.data;
+            },
+            getItemValue(item, id) {
+                if (id.indexOf(".") > 0) {
+                    let ids = id.split(".");
+                    return item[ids[0]][ids[1]];
+                } else {
+                    return item[id];
+                }
             }
         },
         watch: {

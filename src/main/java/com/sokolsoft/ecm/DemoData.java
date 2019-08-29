@@ -47,6 +47,8 @@ public class DemoData {
 
     private final GroupRepository groupRepository;
 
+    private final TaskRepository taskRepository;
+
     public void uploadData() {
         SecurityContext securityContext = new SecurityContextImpl();
         
@@ -214,7 +216,7 @@ public class DemoData {
         d2.setDocumentKind("Запрос");
         d2.setRegistrationDate(Instant.parse("2019-02-02T00:00:00.00Z"));
         d2.setDocumentNumber("144");
-        d2.setStatus("На согласовании");
+        d2.setStatus("Исполнение");
         d2.setCreateDate(Instant.now());
         documents.add(d2);
 
@@ -230,6 +232,50 @@ public class DemoData {
         documents.add(d3);
 
         documentRepository.saveAll(documents);
+
+//        IncomingDocument incomingDocument = new IncomingDocument();
+//        incomingDocument.setId(UUID.fromString("d595a410-52fc-4b87-af1f-0c73ed2e8924"));
+        Task task = Task.builder()
+                .userId(UUID.fromString("722b151c-f9d7-4222-b541-cfc554695510"))
+                .status("execution")
+                .description("Проверить и выполнить")
+                .author(UUID.fromString("5ca6d548-afa3-4c26-a72e-f0f19100e701"))
+                .authorTitle("Луков Б. П.")
+                .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
+                .type("execution")
+                .document(d3)
+                .build();
+        taskRepository.save(task);
+
+        Task task2 = Task.builder()
+                .userId(UUID.fromString("722b151c-f9d7-4222-b541-cfc554695510"))
+                .status("execution")
+                .description("Посмотреть")
+                .author(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"))
+                .authorTitle("Admin")
+                .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
+                .type("execution")
+                .document(d1)
+                .build();
+        taskRepository.save(task2);
+
+        Task task3 = Task.builder()
+                .userId(UUID.fromString("580f62b3-7b96-4109-a321-dc7d24109a1a"))
+                .status("execution")
+                .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
+                .type("execution")
+                .document(d1)
+                .build();
+        taskRepository.save(task3);
+
+        Task task4 = Task.builder()
+                .userId(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"))
+                .status("execution")
+                .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
+                .type("execution")
+                .document(d3)
+                .build();
+        taskRepository.save(task4);
 
         for (int i = 0; i < 100; i++) {
             String type = new String[]{"Входящий", "Исходящий", "Внутренний"}[new Random().nextInt(3)];
@@ -343,7 +389,7 @@ public class DemoData {
         List<User> list = new ArrayList<>();
 
         String[][] users = {{"580f62b3-7b96-4109-a321-dc7d24109a1a", "Поляков И. В.", null, null, "Иван", "Вячеславович", "Поляков"},
-            {"722b151c-f9d7-4222-b541-cfc554695510", "Ивашов В. Н.", "test", "749bc613e059779cc5e4c22e8fa7bba9", "Виктор", "Николаевич", "Ивашов"},
+            {"722b151c-f9d7-4222-b541-cfc554695510", "Ивашов В. Н.", "ivashov", passwordEncoder.encode("123"), "Виктор", "Николаевич", "Ивашов"},
         {"dc175f6e-b18d-495f-aca9-58c956e48a42", "Беломестов Г. В.", null, null, "Густав", "Валерьевич", "Беломестов"},
         {"e879c49c-4fdf-43a1-8507-7091f2dea03d", "Волков Б. П.", null, null, "Бронислав", "Петрович", "Волков"},
         {"3379db0f-8221-43fd-8d46-e05edcef9686", "Ивашов Н. В.", null, null, "Никита", "Валерьевич", "Ивашов"},
@@ -388,6 +434,13 @@ public class DemoData {
         for (String[] user : users) {
             User u = new User();
             u.setId(UUID.fromString(user[0]));
+
+            if (user[2] != null && user[3] != null) {
+                u.setUsername(user[2]);
+                u.setPassword(user[3]);
+                u.setEnabled(true);
+            }
+
             u.setTitle(user[1]);
             u.setFirstName(user[4]);
             u.setMiddleName(user[5]);
@@ -395,7 +448,7 @@ public class DemoData {
             list.add(u);
         }
 
-        List<Authority> authorities = Stream.of(
+        List<String> roles = Arrays.asList(
                 "ROLE_USER",
                 "ROLE_DIC_DELIVERY_METHODS",
                 "ROLE_DIC_DELIVERY_METHODS_SAVE",
@@ -413,13 +466,22 @@ public class DemoData {
                 "ROLE_USER_ROLES_VIEW",
                 "ROLE_USER_ROLE_ADD",
                 "ROLE_USER_ROLE_DEL",
-                "ROLE_DIC_USERS_DEL").map(r -> {
+                "ROLE_DIC_USERS_DEL");
+        List<Authority> authorities = roles.stream().map(r -> {
             Authority authority = new Authority();
             authority.setUsername("admin");
             authority.setAuthority(r);
             return authority;
         }).collect(Collectors.toList());
         authorityRepository.saveAll(authorities);
+
+        List<Authority> authorities2 = roles.stream().map(r -> {
+            Authority authority = new Authority();
+            authority.setUsername("ivashov");
+            authority.setAuthority(r);
+            return authority;
+        }).collect(Collectors.toList());
+        authorityRepository.saveAll(authorities2);
 
 
         User u = new User();

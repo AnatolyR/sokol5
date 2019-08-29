@@ -101,9 +101,9 @@ public class FlowServiceImpl implements FlowService {
         Task mainExecutorTask = new Task();
         mainExecutorTask.setType("execution");
         mainExecutorTask.setAuthor(userService.getCurrentUser().getId());
-        mainExecutorTask.setCreated(Instant.now());
+        mainExecutorTask.setCreateDate(Instant.now());
         mainExecutorTask.setDescription(action.getNote());
-        mainExecutorTask.setDocumentId(action.getDocumentId());
+        mainExecutorTask.setDocument(documentForId(action.getDocumentId()));
         mainExecutorTask.setDueDate(action.getExecutionDate());
         mainExecutorTask.setUserId(action.getMainExecutor());
         mainExecutorTask.setStatus("execution");
@@ -115,9 +115,9 @@ public class FlowServiceImpl implements FlowService {
             Task task = new Task();
             task.setType("execition");
             task.setAuthor(userService.getCurrentUser().getId());
-            task.setCreated(Instant.now());
+            task.setCreateDate(Instant.now());
             task.setDescription(action.getNote());
-            task.setDocumentId(action.getDocumentId());
+            task.setDocument(documentForId(action.getDocumentId()));
             task.setDueDate(e.getExecutionDate());
             task.setUserId(e.getExecutor());
             task.setStatus("execution");
@@ -129,5 +129,14 @@ public class FlowServiceImpl implements FlowService {
         taskRepository.saveAll(tasks);
 
         moveToState("execution", flow, documentId);
+    }
+
+    private Document documentForId(UUID id) {
+        return new Document() {
+            @Override
+            public UUID getId() {
+                return id;
+            }
+        };
     }
 }

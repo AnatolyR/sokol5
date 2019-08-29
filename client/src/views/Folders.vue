@@ -14,7 +14,14 @@
 
                         <div style="padding-top: 0.5em;">
                             <b-nav vertical pills style="text-align: left;">
-                                <b-nav-item class="s-folder-nav" exact-active-class="active" v-for="folder in folders" :key="folder.id" :to="'/folders/' + folder.id">{{folder.name}}</b-nav-item>
+                                <template v-for="folder in folders">
+                                    <b-nav-item v-if="!folder.type || folder.type !== '--'"
+                                                class="s-folder-nav"
+                                                exact-active-class="active"
+                                                :key="folder.id"
+                                                :to="'/folders/' + folder.id">{{folder.name}}</b-nav-item>
+                                    <div v-if="folder.type && folder.type === '--'" style="height: 1em;"></div>
+                                </template>
                             </b-nav>
                         </div>
 

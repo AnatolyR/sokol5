@@ -1,18 +1,21 @@
 package com.sokolsoft.ecm.core.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tasks")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -22,7 +25,8 @@ public class Task {
     )
     private UUID id;
 
-    private UUID documentId;
+    @ManyToOne
+    private Document document;
 
     private UUID listId;
 
@@ -38,9 +42,11 @@ public class Task {
 
     private String description;
 
-    private Instant created;
+    private Instant createDate;
 
     private UUID author;
+
+    private String authorTitle;
 
     private Instant dueDate;
 

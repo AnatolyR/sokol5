@@ -27,6 +27,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Override
     User getOne(UUID uuid);
 
+    @Secured({"ROLE_USER", "ROLE_SYSTEM"})
+    Optional<User> findByUsername(String username);
+
     @Secured({"ROLE_DIC_USERS", "ROLE_SYSTEM"})
     @Override
     Page<User> findAll(Pageable var1);

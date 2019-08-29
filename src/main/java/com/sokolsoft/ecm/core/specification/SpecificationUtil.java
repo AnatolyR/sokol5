@@ -12,12 +12,11 @@ package com.sokolsoft.ecm.core.specification;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.hibernate.metamodel.internal.EntityTypeImpl;
 import org.hibernate.metamodel.internal.PluralAttributeImpl;
+import org.hibernate.query.criteria.internal.path.SingularAttributeJoin;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
@@ -88,17 +87,27 @@ public class SpecificationUtil {
     }
 
     public static <T> org.springframework.data.jpa.domain.Specification<T> conditionToSpringSpecification(Condition condition, Class<T> c) {
-        org.springframework.data.jpa.domain.Specification<T> specification = (root, query, criteriaBuilder) ->
-            conditionToPredicate(condition, root, criteriaBuilder, c);
+        return conditionToSpringSpecification(condition, c, null);
+    }
+
+    public static <T> org.springframework.data.jpa.domain.Specification<T> conditionToSpringSpecification(Condition condition, Class<T> c, String joinAttribute) {
+        org.springframework.data.jpa.domain.Specification<T> specification = (root, query, criteriaBuilder) -> {
+            Join<Object, Object> join = null;
+            if (joinAttribute != null) {
+                join = root.join(joinAttribute);
+            }
+
+            return conditionToPredicate(condition, root, criteriaBuilder, c, (SingularAttributeJoin) join);
+        };
         return specification;
     }
 
-    public static Predicate conditionToPredicate(Condition condition, Root root, CriteriaBuilder criteriaBuilder, Class docClass) {
+    public static Predicate conditionToPredicate(Condition condition, Root root, CriteriaBuilder criteriaBuilder, Class docClass, SingularAttributeJoin join) {
 
         if (condition instanceof ContainerCondition) {
             List<Predicate> subconditions = new ArrayList<>();
             ((ContainerCondition) condition).getConditions().forEach(c -> {
-                Predicate p = conditionToPredicate(c, root, criteriaBuilder, docClass);
+                Predicate p = conditionToPredicate(c, root, criteriaBuilder, docClass, join);
                 if (p != null) {
                     subconditions.add(p);
                 }
@@ -113,9 +122,37 @@ public class SpecificationUtil {
             }
         } else if (condition instanceof ValueCondition) {
             ValueCondition valueCondition = (ValueCondition) condition;
-            Attribute attr = criteriaBuilder.treat(root, docClass).getModel().getAttribute(valueCondition.getField());
-            Expression path = attr instanceof SingularAttribute ? root.get((SingularAttribute) attr) : root.get((PluralAttribute) attr);
+            String field = valueCondition.getField();
+
+            Class joinClass = null;
+            if (field.contains(")")) {
+                String joinClassName = field.substring(1, field.indexOf(")"));
+                try {
+                    joinClass = Class.forName("com.sokolsoft.ecm.core.model." + joinClassName);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                field = field.substring(field.indexOf(")") + 1);
+            }
+
+            boolean useJoin = false;
+            if (field.contains(".")) {
+                useJoin = true;
+                field = field.substring(field.indexOf(".") + 1);
+            }
+            
+            Attribute attr = useJoin
+                    ? (
+                            joinClass != null
+                                    ? ((EntityTypeImpl) criteriaBuilder.treat(join, joinClass).getModel()).getAttribute(field)
+                                    : ((EntityTypeImpl) join.getModel()).getAttribute(field))
+                    : criteriaBuilder.treat(root, docClass).getModel().getAttribute(field);
+
+            Expression path = attr instanceof SingularAttribute
+                    ? (useJoin ? join.get((SingularAttribute) attr) : root.get((SingularAttribute) attr))
+                    : (useJoin ? join.get((PluralAttribute) attr) : root.get((PluralAttribute) attr));
             Predicate predicate;
+
             if (valueCondition.getOperation() == Operation.EQUAL) {
                 if (UUID.class.equals(attr.getJavaType())) {
                     predicate = criteriaBuilder.equal(path, UUID.fromString((String) valueCondition.getValue()));

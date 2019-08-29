@@ -25,7 +25,7 @@ public abstract class ConfigServiceBase implements ConfigService {
 
     private JsonNode processConfig(String configName, JsonNode config) {
         if (configName.startsWith("folderLists")) {
-            config = processFolderLists(config);
+            config = processLists(config, "folders");
         } else if (configName.startsWith("admin/index")) {
             config = processLists(config, "admin");
         } else if (configName.startsWith("dictionaries/index")) {
@@ -35,21 +35,21 @@ public abstract class ConfigServiceBase implements ConfigService {
     }
 
     private JsonNode processLists(JsonNode config, String type) {
-        ArrayNode filledDictionaries = mapper.createArrayNode();
+        ArrayNode filledFolders = mapper.createArrayNode();
         StreamSupport.stream(config.spliterator(), false).forEachOrdered(node -> {
             String folderName = node.asText();
             if ("--".equals(folderName)) {
                 ObjectNode delimiterNode = mapper.createObjectNode();
                 delimiterNode.put("type", "--");
-                filledDictionaries.add(delimiterNode);
+                filledFolders.add(delimiterNode);
             } else {
                 JsonNode folderConfig = getPublicRawConfig(type + "/" + folderName);
                 if (folderConfig != null) {
-                    filledDictionaries.add(folderConfig);
+                    filledFolders.add(folderConfig);
                     ArrayNode actions = ((ObjectNode) folderConfig).putArray("actions");
                     JsonNode privateConfig = getPrivateRawConfig(type + "/" + folderName);
                     if (privateConfig != null) {
-                        privateConfig.get("actions").forEach(a -> {
+                        privateConfig.findValues("actions").forEach(a -> {
                             if (Utils.checkAccess(a.get("secured").asText())) {
                                 actions.add(a.get("id").asText());
                             }
@@ -58,7 +58,7 @@ public abstract class ConfigServiceBase implements ConfigService {
                 }
             }
         });
-        return filledDictionaries;
+        return filledFolders;
     }
 
     private JsonNode processFolderLists(JsonNode config) {

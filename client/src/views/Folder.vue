@@ -69,6 +69,15 @@
                                     d.createDate = d.createDate ? new Date(d.createDate).toLocaleDateString("ru") : '';
                                     d.externalDate = d.externalDate ? new Date(d.externalDate).toLocaleDateString("ru") : '';
                                     d.executionDate = d.executionDate ? new Date(d.executionDate).toLocaleDateString("ru") : '';
+
+                                    d.dueDate = d.dueDate ? new Date(d.dueDate).toLocaleDateString("ru") : '';
+
+                                    if (d.document) {
+                                        d.document.registrationDate = d.document.registrationDate ? new Date(d.document.registrationDate).toLocaleDateString("ru") : '';
+                                        d.document.createDate = d.document.createDate ? new Date(d.document.createDate).toLocaleDateString("ru") : '';
+                                        d.document.externalDate = d.document.externalDate ? new Date(d.document.externalDate).toLocaleDateString("ru") : '';
+                                        d.document.executionDate = d.document.executionDate ? new Date(d.document.executionDate).toLocaleDateString("ru") : '';
+                                    }
                                 });
                             }
 

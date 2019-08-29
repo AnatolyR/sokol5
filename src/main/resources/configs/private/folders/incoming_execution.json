@@ -1,0 +1,26 @@
+{
+  "id": "incoming_execution",
+  "secured": "hasRole('ROLE_USER')",
+  "documentClass": "Task",
+  "join": "document",
+  "condition": [
+    {
+      "condition": "and_block"
+    },
+    {
+      "condition": "",
+      "column": "type",
+      "operation": "EQUAL",
+      "value": "execution"
+    },
+    {
+      "condition": "",
+      "column": "userId",
+      "operation": "EQUAL",
+      "template": "currentUserId"
+    },
+    {
+      "condition": "end_block"
+    }
+  ]
+}

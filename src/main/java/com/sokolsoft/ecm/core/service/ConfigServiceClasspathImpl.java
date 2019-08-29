@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Service
-@Profile("prod")
+@Profile({"prod", "test"})
 public class ConfigServiceClasspathImpl extends ConfigServiceBase {
     public ConfigServiceClasspathImpl(ObjectMapper mapper) {
         super(mapper);

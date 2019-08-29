@@ -2,13 +2,13 @@ package com.sokolsoft.ecm.core.service;
 
 import com.sokolsoft.ecm.core.Utils;
 import com.sokolsoft.ecm.core.model.*;
-import com.sokolsoft.ecm.core.repository.ContragentPersonRepository;
-import com.sokolsoft.ecm.core.repository.ContragentRepository;
-import com.sokolsoft.ecm.core.repository.DocumentRepository;
-import com.sokolsoft.ecm.core.repository.UserRepository;
+import com.sokolsoft.ecm.core.repository.*;
 import com.sokolsoft.ecm.core.specification.SortOrder;
 import com.sokolsoft.ecm.core.specification.Specification;
 import com.sokolsoft.ecm.core.specification.SpecificationUtil;
+import com.sun.jmx.snmp.tasks.TaskServer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -20,31 +20,21 @@ import java.time.Instant;
 import java.util.*;
 
 @Service
+@AllArgsConstructor
 public class DocumentServiceImpl implements DocumentService {
-    private DocumentRepository documentRepository;
+    private final DocumentRepository documentRepository;
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private ContragentRepository contragentRepository;
+    private final ContragentRepository contragentRepository;
 
-    private ContragentPersonRepository contragentPersonRepository;
+    private final ContragentPersonRepository contragentPersonRepository;
 
-    private UserService userService;
-    private SecurityService securityService;
+    private final UserService userService;
 
-    @Autowired
-    public DocumentServiceImpl(DocumentRepository documentRepository,
-                               UserRepository userRepository, ContragentRepository contragentRepository,
-                               ContragentPersonRepository contragentPersonRepository,
-                               UserService userService,
-                               SecurityService securityService) {
-        this.documentRepository = documentRepository;
-        this.userRepository = userRepository;
-        this.contragentRepository = contragentRepository;
-        this.contragentPersonRepository = contragentPersonRepository;
-        this.userService = userService;
-        this.securityService = securityService;
-    }
+    private final SecurityService securityService;
+
+    private final TaskRepository taskRepository;
 
     @Override
     public DocumentsPage getDocuments(Specification spec) {
@@ -60,24 +50,45 @@ public class DocumentServiceImpl implements DocumentService {
 
         PageRequest pageRequest = new PageRequest(pageNum, spec.getSize(), sort);
 
-        org.springframework.data.jpa.domain.Specification<Document> specification = null;
+        Class documentClass = spec.getDocumentClass() != null ? spec.getDocumentClass() : Document.class;
+
+        org.springframework.data.jpa.domain.Specification<?> specification = null;
         if (spec.getCondition() != null) {
             specification = SpecificationUtil.conditionToSpringSpecification(spec.getCondition(),
-                    spec.getDocumentClass() != null ? spec.getDocumentClass() : Document.class);
+                    documentClass, spec.getJoin());
         }
 
-        org.springframework.data.domain.Page<Document> repoPage = documentRepository.findAll(specification, pageRequest);
+        org.springframework.data.domain.Page repoPage = Task.class.equals(spec.getDocumentClass())
+                ? taskRepository.findAll((org.springframework.data.jpa.domain.Specification<Task>) specification, pageRequest)
+                : documentRepository.findAll((org.springframework.data.jpa.domain.Specification<Document>) specification, pageRequest);
 
         DocumentsPage page = new DocumentsPage();
         page.setTotalElements(repoPage.getTotalPages());
         page.setTotalPages(repoPage.getTotalPages());
         page.setSize(repoPage.getSize());
 
-        List<Document> content = repoPage.getContent();
-        List<Document> processedContent = processDocuments(content);
-        page.setContent(processedContent);
+        List<?> content = repoPage.getContent();
+        if (documentClass.equals(Document.class)) {
+            content = processDocuments((List<Document>) content);
+        }
+        if (documentClass.equals(Task.class)) {
+            content = processTasks((List<Task>) content);
+        }
+
+        page.setContent(content);
 
         return page;
+    }
+
+    private List<?> processTasks(List<Task> content) {
+        for (Task task : content) {
+            switch (task.getStatus()) {
+                case "execution": task.setStatus("Исполнение"); break;
+                case "done": task.setStatus("Завершена"); break;
+            }
+        }
+
+        return content;
     }
 
     private List<Document> processDocuments(List<Document> initialContent) {
@@ -92,43 +103,12 @@ public class DocumentServiceImpl implements DocumentService {
         return content;
     }
 
+    @Data
     public static class DocumentsPage {
         private Integer totalElements;
         private Integer totalPages;
         private Integer size;
-        private List<Document> content;
-
-        public Integer getTotalElements() {
-            return totalElements;
-        }
-
-        public void setTotalElements(Integer totalElements) {
-            this.totalElements = totalElements;
-        }
-
-        public Integer getTotalPages() {
-            return totalPages;
-        }
-
-        public void setTotalPages(Integer totalPages) {
-            this.totalPages = totalPages;
-        }
-
-        public Integer getSize() {
-            return size;
-        }
-
-        public void setSize(Integer size) {
-            this.size = size;
-        }
-
-        public List<Document> getContent() {
-            return content;
-        }
-
-        public void setContent(List<Document> content) {
-            this.content = content;
-        }
+        private List<?> content;
     }
 
     @Override
