@@ -32,7 +32,16 @@ export const router = new Router({
             path: '/document/:documentId',
             name: 'document',
             component: Document,
-            props: true
+            props: true,
+            children: [
+                {
+                    path: 'task/:taskId',
+                    name: 'task',
+                    component: Document,
+                    meta: {openAsTask: true},
+                    props: true
+                }
+            ]
         },
         {
             path: '/dictionaries',

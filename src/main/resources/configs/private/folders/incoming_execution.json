@@ -15,7 +15,7 @@
     },
     {
       "condition": "",
-      "column": "userId",
+      "column": "executorId",
       "operation": "EQUAL",
       "template": "currentUserId"
     },

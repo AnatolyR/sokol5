@@ -236,7 +236,8 @@ public class DemoData {
 //        IncomingDocument incomingDocument = new IncomingDocument();
 //        incomingDocument.setId(UUID.fromString("d595a410-52fc-4b87-af1f-0c73ed2e8924"));
         Task task = Task.builder()
-                .userId(UUID.fromString("722b151c-f9d7-4222-b541-cfc554695510"))
+                .executorId(UUID.fromString("722b151c-f9d7-4222-b541-cfc554695510"))
+                .executorTitle("Ивашов В. Н.")
                 .status("execution")
                 .description("Проверить и выполнить")
                 .author(UUID.fromString("5ca6d548-afa3-4c26-a72e-f0f19100e701"))
@@ -244,11 +245,14 @@ public class DemoData {
                 .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
                 .type("execution")
                 .document(d3)
+                .controllerId(UUID.fromString("d259e840-0b34-4512-bc2e-5b5498dc4171"))
+                .controllerTitle("Карандашов К. Н.")
                 .build();
         taskRepository.save(task);
 
         Task task2 = Task.builder()
-                .userId(UUID.fromString("722b151c-f9d7-4222-b541-cfc554695510"))
+                .executorId(UUID.fromString("722b151c-f9d7-4222-b541-cfc554695510"))
+                .executorTitle("Ивашов В. Н.")
                 .status("execution")
                 .description("Посмотреть")
                 .author(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"))
@@ -256,11 +260,13 @@ public class DemoData {
                 .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
                 .type("execution")
                 .document(d1)
+                .controllerId(UUID.fromString("d259e840-0b34-4512-bc2e-5b5498dc4171"))
+                .controllerTitle("Карандашов К. Н.")
                 .build();
         taskRepository.save(task2);
 
         Task task3 = Task.builder()
-                .userId(UUID.fromString("580f62b3-7b96-4109-a321-dc7d24109a1a"))
+                .executorId(UUID.fromString("580f62b3-7b96-4109-a321-dc7d24109a1a"))
                 .status("execution")
                 .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
                 .type("execution")
@@ -269,7 +275,7 @@ public class DemoData {
         taskRepository.save(task3);
 
         Task task4 = Task.builder()
-                .userId(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"))
+                .executorId(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"))
                 .status("execution")
                 .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
                 .type("execution")

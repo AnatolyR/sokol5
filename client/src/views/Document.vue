@@ -29,6 +29,15 @@
 
             <!-- TABS -->
             <ul class="s-document-tabs nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" v-if="taskId">
+                    <a class="nav-link"
+                       v-bind:class="{ active: tab === 'task' }"
+                       data-toggle="tab"
+                       href="#"
+                       @click.prevent="showTask">
+                        Задача
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link"
                        v-bind:class="{ active: tab === 'attributes' }"
@@ -75,6 +84,8 @@
                     </a>
                 </li>
             </ul>
+
+            <s-task-form v-if="tab === 'task' && taskId" :task-id="taskId"></s-task-form>
 
             <!-- FORM -->
             <!--<s-document-form ref="attributesForm" v-if="tab === 'attributes'" @formState="(val) => this.formState = val"-->
@@ -184,15 +195,20 @@
     import SDocumentInnerForm from "../components/DocumentInnerForm";
     import SAttachForm from "../components/AttachForm";
     import SExecutionForm from "../components/ExecutionForm";
+    import STaskForm from '../components/TaskForm';
 
     export default {
         // components: {SSelect, SDocumentForm},
-        components: {SExecutionForm, SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm},
+        components: {SExecutionForm, SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm, STaskForm},
         mounted() {
+            if (this.$route.meta.openAsTask === true) {
+                this.tab = 'task';
+            }
             this.loadDocument();
         },
         props: [
-            "documentId"
+            "documentId",
+            "taskId"
         ],
         computed: {
             openedFromFolder() {
@@ -373,6 +389,9 @@
                     this.loading = false;
                     this.errorMessage = 'Не удается загрузить данные';
                 });
+            },
+            showTask() {
+                this.tab = 'task';
             },
             showAttributes() {
                 this.tab = 'attributes';

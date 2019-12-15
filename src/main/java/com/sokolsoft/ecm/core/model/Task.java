@@ -30,7 +30,9 @@ public class Task {
 
     private UUID listId;
 
-    private UUID userId;
+    private UUID executorId;
+
+    private String executorTitle;
 
     private UUID executedByUser;
 
@@ -56,7 +58,9 @@ public class Task {
 
     private String result;
 
-    private UUID controller;
+    private UUID controllerId;
+
+    private String controllerTitle;
 
     private Boolean primal;
 }

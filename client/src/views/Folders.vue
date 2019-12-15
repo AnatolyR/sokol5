@@ -88,7 +88,16 @@
                     name: 'document',
                     component: Document,
                     meta: {openedFromFolder: true},
-                    props: true
+                    props: true,
+                    children: [
+                        {
+                            path: 'task/:taskId',
+                            name: 'task',
+                            component: Document,
+                            meta: {openedFromFolder: true, openAsTask: true},
+                            props: true
+                        }
+                    ]
                 }
             ]
             // linkActiveClass: "bg-blue-dark text-white"

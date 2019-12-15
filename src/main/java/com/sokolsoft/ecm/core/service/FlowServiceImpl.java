@@ -105,9 +105,9 @@ public class FlowServiceImpl implements FlowService {
         mainExecutorTask.setDescription(action.getNote());
         mainExecutorTask.setDocument(documentForId(action.getDocumentId()));
         mainExecutorTask.setDueDate(action.getExecutionDate());
-        mainExecutorTask.setUserId(action.getMainExecutor());
+        mainExecutorTask.setExecutorId(action.getMainExecutor());
         mainExecutorTask.setStatus("execution");
-        mainExecutorTask.setController(action.getController());
+        mainExecutorTask.setControllerId(action.getController());
         mainExecutorTask.setPrimal(true);
         tasks.add(mainExecutorTask);
 
@@ -119,9 +119,9 @@ public class FlowServiceImpl implements FlowService {
             task.setDescription(action.getNote());
             task.setDocument(documentForId(action.getDocumentId()));
             task.setDueDate(e.getExecutionDate());
-            task.setUserId(e.getExecutor());
+            task.setExecutorId(e.getExecutor());
             task.setStatus("execution");
-            task.setController(e.getController());
+            task.setControllerId(e.getController());
             task.setPrimal(false);
             tasks.add(task);
         });

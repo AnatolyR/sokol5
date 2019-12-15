@@ -102,11 +102,16 @@
                         && col.type !== 'checkbox'
                         && col.type !== 'userSelect'
                         && col.type !== 'dateSelect'
+                        && col.type !== 'taskLink'
                         && col.type !== 'fileLink'"
                           :class="`s-table-cell-${col.id}`">{{getItemValue(item, col.id)}}</span>
                     <router-link v-if="col.type === 'link'"
                                  :class="`s-table-cell-${col.id}`"
                                  :to="col.path + (col.idField ? getItemValue(item, col.idField) : item.id)">{{ getItemValue(item, col.id) }}</router-link>
+
+                    <router-link v-if="col.type === 'taskLink'"
+                                 :class="`s-table-cell-${col.id}`"
+                                 :to="'/document/' + getItemValue(item, 'document.id') + '/task/' + item.id">{{ getItemValue(item, col.id) }}</router-link>
 
                     <router-link v-if="col.type === 'fileLink'"
                                  :class="`s-table-cell-${col.id}`"
