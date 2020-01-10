@@ -19,9 +19,9 @@
                         <b-dropdown-item href="#">Договор</b-dropdown-item>
                     </b-nav-item-dropdown>
 
-                    <b-nav-item exact-active-class="active" to="/search">Поиск</b-nav-item>
+<!--                    <b-nav-item exact-active-class="active" to="/search">Поиск</b-nav-item>-->
                     <b-nav-item exact-active-class="active" to="/dictionaries">Справочники</b-nav-item>
-                    <b-nav-item exact-active-class="active" to="/reports">Отчеты</b-nav-item>
+<!--                    <b-nav-item exact-active-class="active" to="/reports">Отчеты</b-nav-item>-->
                 </b-navbar-nav>
 
                 <b-navbar-nav class="ml-auto">

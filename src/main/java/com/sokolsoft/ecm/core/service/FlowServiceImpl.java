@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,7 +38,8 @@ public class FlowServiceImpl implements FlowService {
         List<String> roles = accessRightsService.getRolesForObject(document.getId(), "document");
 
         String documentStatus = document.getStatus();
-        List<Action> actions = StreamSupport.stream(flow.get("states").spliterator(), false)
+        List<Action> actions = flow.get("states") != null
+                ? StreamSupport.stream(flow.get("states").spliterator(), false)
                 .filter(s -> s.get("title").asText().equals(documentStatus))
                 .filter(s -> s.get("actions") != null)
                 .flatMap(s -> StreamSupport.stream(s.get("actions").spliterator(), false))
@@ -47,7 +49,8 @@ public class FlowServiceImpl implements FlowService {
                         .title(a.get("title").asText())
                         .form(a.get("form") != null ? a.get("form").asText() : null)
                         .build())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                : Collections.emptyList();
 
         return actions;
     }

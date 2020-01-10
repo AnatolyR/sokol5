@@ -22,4 +22,8 @@ public interface ContragentPersonRepository extends JpaRepository<ContragentPers
 
     @Secured({"ROLE_DIC_CONTRAGENT_PERSONS", "ROLE_SYSTEM"})
     List<ContragentPerson> findByOrganizationIdAndTitle(@Param("organizationId") UUID organizationId, @Param("title") String title);
+
+    @Override
+    @Secured({"ROLE_DIC_CONTRAGENT_PERSONS", "ROLE_SYSTEM"})
+    <S extends ContragentPerson> S save(S entity);
 }
