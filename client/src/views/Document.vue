@@ -330,6 +330,9 @@
                         autoHideDelay: 2000
                     });
                     // setTimeout(() => this.successMessage = null, 3000);
+                    if (this.$route && this.$route.params && this.$route.params.isNew === true) {
+                        this.$route.params.isNew = false;
+                    }
                     this.loadDocument();
                 }).catch((err) => {
                     console.log('err', err);
@@ -340,7 +343,11 @@
                 this.updateAttachCount();
                 this.loadActions();
 
-                this.editMode = false;
+                if (this.$route.params.isNew === true) {
+                    this.editMode = true;
+                } else {
+                    this.editMode = false;
+                }
                 this.errorMessage = null;
                 this.loading = true;
                 axios.get(`/api/document/${this.documentId}`).then((response) => {

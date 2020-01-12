@@ -1,69 +1,20 @@
 package com.sokolsoft.stepdefs;
 
-import cucumber.api.Scenario;
-import cucumber.api.java.ru.Дано;
-import cucumber.api.java.ru.Если;
-import cucumber.api.java.ru.И;
-import cucumber.api.java.ru.То;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import io.cucumber.java.ru.Если;
+import io.cucumber.java.ru.И;
+import io.cucumber.java.ru.То;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
 //import io.cucumber.java.ru.*;
 
-import static org.junit.Assert.*;
 
 
-
-public class ContragentStepDefs {
-    private WebDriver driver;
-    private File screenshotDirectory;
-
-    {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("disable-infobars");
-        DesiredCapabilities dc = DesiredCapabilities.chrome();
-        dc.setCapability(ChromeOptions.CAPABILITY, options);
-        try {
-            driver = new RemoteWebDriver(new URL("http://127.0.0.1:9515/"), dc);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-
-        screenshotDirectory = new File("/Users/anatolii/sokol5/test/screenshots");
-    }
-
-    @Before
-    public void openBrowser() throws MalformedURLException {
-        driver.get("http://localhost:9090");
-        wait(d -> d.findElements(By.id("inputUser")).size() > 0);
-    }
-
-    @After(order = 1)
-    public void closeBrowser() {
-        driver.close();
-    }
-
-    @Дано("пользователь {string} с паролем {string} выполнивший вход")
-    public void пользовательВыполнившийВход(String userId, String userPass) {
-        driver.findElement(By.id("inputUser")).sendKeys(userId);
-        driver.findElement(By.id("inputPassword")).sendKeys(userPass);
-        driver.findElement(By.tagName("button")).click();
-        wait(d -> d.findElements(By.className("navbar")).size() > 0);
-    }
-
+public class ContragentStepDefs extends BaseSetpDefs {
     @Если("открыт Справочник контрагентов")
     public void открытСправочникКонтрагентов() {
         driver.findElement(By.linkText("Справочники")).click();
@@ -92,36 +43,6 @@ public class ContragentStepDefs {
         }
     }
 
-    protected void wait(ExpectedCondition<Boolean> condition) {
-        (new WebDriverWait(driver, 10)).until(condition);
-    }
-
-    protected void waitClass(String className) {
-        wait(d -> driver.findElements(By.className(className)).size() > 0);
-    }
-
-    @И("нажать кнопку {string}")
-    public void нажатьКнопку(String button) {
-        List<WebElement> buttonElements = driver.findElements(By.xpath("//button[contains(text(),'" + button + "')]"));
-        wait(d -> buttonElements.size() > 0);
-        buttonElements.get(0).click();
-    }
-
-    @И("в поле {string} ввести {string}")
-    public void вПолеВвести(String field, String value) {
-        wait(d -> driver.findElements(By.className("s-form-field")).size() > 0);
-        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 's-form-field')]/label[contains(text(),'" + field + "')]"));
-        WebElement inputDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
-
-        inputDiv.findElement(By.tagName("input")).sendKeys(value);
-    }
-
-    @То("будет выведено информационное сообщение {string}")
-    public void будетВыведеноИнформационноеСообщение(String message) {
-        wait(d -> driver.findElements(By.className("toast-body")).size() > 0);
-        assertEquals(message, driver.findElement(By.className("toast-body")).getText());
-    }
-
     @То("будет выведено модальное окно с заголовком {string} и сообщением {string}")
     public void будетВыведеноМодальноеОкно(String title, String message) {
         wait(d -> driver.findElements(By.className("s-modal-incorrect-fields")).size() > 0);
@@ -131,27 +52,7 @@ public class ContragentStepDefs {
         wait(d -> !dialog.findElements(By.className("modal-body")).get(0).findElement(By.tagName("p")).getText().isEmpty());
         assertEquals(message, dialog.findElements(By.className("modal-body")).get(0).findElement(By.tagName("p")).getText().trim());
     }
-
-    @After(order = 2)
-    public void afterScenario(Scenario scenario){
-        WebDriver augmentedDriver = new Augmenter().augment(driver);
-        File screenshot = ((TakesScreenshot)augmentedDriver).
-                getScreenshotAs(OutputType.FILE);
-
-//        String name = scenario.getName() + "." + screenshot.getName();
-        String name = scenario.getName() + ".png";
-        try {
-            FileUtils.copyFile(screenshot, new File(screenshotDirectory, name));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    
     @И("нажать значение справочника {string}")
     public void нажатьЗначениеСправочника(String linkText) {
         wait(d -> driver.findElements(By.className("s-dictionary-container")).size() > 0);
@@ -167,16 +68,6 @@ public class ContragentStepDefs {
         waitClass("s-contragent-header");
         waitClass("s-contragent-subheader");
         waitClass("s-contragent-form");
-    }
-
-    @И("в поле {string} будет {string}")
-    public void вПолеБудет(String title, String value) {
-        wait(d -> driver.findElements(By.className("s-form-field")).size() > 0);
-
-        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 's-form-field')]/label[contains(text(),'" + title + "')]"));
-
-        WebElement inputDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
-        assertEquals(value, inputDiv.findElement(By.tagName("input")).getAttribute("value"));
     }
 
     @И("кнопки карточки будут {string}")

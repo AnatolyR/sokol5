@@ -68,8 +68,13 @@
                 userService.logout();
             },
             createIncoming() {
+                // axios.post('/api/createDocument/Входящий', {})
+                //     .then((res) => this.$router.push({path: `/document/${res.data}`,
+                //         query: {isNew: true}}));
+
                 axios.post('/api/createDocument/Входящий', {})
-                    .then((res) => this.$router.push(`/document/${res.data}`));
+                    .then((res) => this.$router.push({name: 'document',
+                        params: {isNew: true, documentId: res.data}}));
             }
         }
     }

@@ -9,8 +9,8 @@ import java.io.File;
 import java.io.IOException;
 
 @RunWith(Cucumber.class)
-//@CucumberOptions(plugin = "pretty", features = "src/test/features", tags = "@current")
-@CucumberOptions(plugin = "pretty", features = "src/test/features")
+@CucumberOptions(plugin = "pretty", features = "src/test/features", tags = "@current")
+//@CucumberOptions(plugin = "pretty", features = "src/test/features")
 public class CucumberTest {
     public CucumberTest() {
         File screenshotDirectory = new File("/Users/anatolii/sokol5/test/screenshots");
