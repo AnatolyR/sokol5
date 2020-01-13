@@ -37,7 +37,9 @@
         data() {
             return {
                 dateConfig: {
-                    locale:'ru'
+                    locale:'ru',
+                    useCurrent:false,
+                    // format: "L"
                 }
             }
         },

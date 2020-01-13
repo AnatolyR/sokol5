@@ -55,6 +55,23 @@ public class DocumentStepDefs extends BaseSetpDefs {
         selectDiv.findElement(By.tagName("input")).sendKeys(Keys.ENTER);
     }
 
+    @И("в селекторе с возможностью добавления {string} ввести {string}")
+    public void вСелекторСВозможжностьюДобавленияВвести(String field, String value) {
+        wait(d -> driver.findElements(By.className("form-group")).size() > 0);
+        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[contains(text(),'" + field + "')]"));
+        WebElement selectDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
+
+        selectDiv.click();
+        selectDiv.findElement(By.tagName("input")).sendKeys(value);
+        wait(d -> selectDiv.findElements(By.className("selectize-dropdown")).size() > 0);
+        wait(d -> selectDiv.findElement(By.className("selectize-dropdown")).isDisplayed());
+        wait(d -> selectDiv.findElement(
+                By.className("selectize-dropdown"))
+                .findElements(By.className("option")).size() > 0);
+
+        selectDiv.findElement(By.tagName("input")).sendKeys(Keys.ENTER);
+    }
+
     @И("в селекторе {string} будет {string}")
     public void вСелектореБудет(String title, String value) {
         wait(d -> driver.findElements(By.className("s-form-field")).size() > 0);

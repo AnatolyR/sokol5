@@ -8,7 +8,7 @@
             :valueTitle="dataSource.document[name + 'Str'] || dataSource.document[name]"
             :errorMessage="title + ' не может быть пустой'"
             :state="() => dataSource.state(name)"
-    ></s-date-group>
+    />
 </template>
 
 <style>

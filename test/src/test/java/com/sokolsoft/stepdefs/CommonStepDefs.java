@@ -92,4 +92,27 @@ public class CommonStepDefs extends BaseSetpDefs {
         WebElement inputDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
         assertEquals(value, inputDiv.findElement(By.tagName("input")).getAttribute("value"));
     }
+
+    @И("прокрутить страницу наверх")
+    public void прокрутитьСтраницуНаверх() {
+        ((JavascriptExecutor) driver)
+                .executeScript("window.scrollTo(0, 0)");
+    }
+
+    @И("в поле даты {string} ввести {string}")
+    public void вПолеДатыИсходящаяДатаВвести(String field, String value) {
+        wait(d -> driver.findElements(By.className("form-group")).size() > 0);
+        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[contains(text(),'" + field + "')]"));
+        WebElement selectDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
+
+        selectDiv.click();
+        WebElement input = selectDiv.findElement(By.tagName("input"));
+        wait(d -> selectDiv.findElements(By.className("dropdown-menu")).size() > 0);
+        wait(d -> selectDiv.findElement(By.className("dropdown-menu")).isDisplayed());
+
+        input.clear();
+
+        input.sendKeys(value);
+        input.sendKeys(Keys.ENTER);
+    }
 }
