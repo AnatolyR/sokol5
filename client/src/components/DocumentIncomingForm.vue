@@ -25,7 +25,7 @@
                 <s-select-field name="externalSigner" title="Кем подписано" />
             </b-col>
             <b-col>
-                <s-select-field name="externalExecutor" title="Исполнитель" />
+                <s-select-field name="externalExecutor" title="Исполнитель (исх)" />
             </b-col>
         </b-row>
 
@@ -65,7 +65,7 @@
                 <s-date-field name="registrationDate" title="Дата регистрации" />
             </b-col>
             <b-col>
-                <s-select-field name="registrar" title="Адресат" />
+                <s-select-field name="registrar" title="Регистратор" />
             </b-col>
         </b-row>
 

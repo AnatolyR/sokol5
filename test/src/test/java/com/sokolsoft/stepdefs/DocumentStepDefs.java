@@ -44,9 +44,16 @@ public class DocumentStepDefs extends BaseSetpDefs {
 
     @И("в селектор {string} ввести {string}")
     public void вСелекторВвести(String field, String value) {
+        int index = 0;
+        if (field.contains("|")) {
+            String[] vals = field.split("\\|");
+            field = vals[0];
+            index = Integer.parseInt(vals[1]) - 1;
+        }
         wait(d -> driver.findElements(By.className("form-group")).size() > 0);
-        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[contains(text(),'" + field + "')]"));
-        WebElement selectDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
+//        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[contains(text(),'" + field + "')]"));
+        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[.//text()='" + field + "']"));
+        WebElement selectDiv = fieldLabel.get(index).findElement(By.xpath("following-sibling::*"));
 
         selectDiv.click();
         selectDiv.findElement(By.tagName("input")).sendKeys(value);
@@ -76,7 +83,8 @@ public class DocumentStepDefs extends BaseSetpDefs {
     public void вСелектореБудет(String title, String value) {
         wait(d -> driver.findElements(By.className("s-form-field")).size() > 0);
 
-        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[contains(text(),'" + title + "')]"));
+//        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[contains(text(),'" + title + "')]"));
+        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[.//text()='" + title + "']"));
 
         WebElement inputDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
         assertEquals(value, inputDiv.findElement(By.tagName("input")).getAttribute("value"));
