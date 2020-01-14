@@ -1,0 +1,12 @@
+{
+  "id": "mydocs",
+  "secured": "hasRole('ROLE_USER')",
+  "condition": [
+    {
+      "condition": "",
+      "column": "creator",
+      "operation": "EQUAL",
+      "template": "currentUserId"
+    }
+  ]
+}
