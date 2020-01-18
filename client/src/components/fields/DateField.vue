@@ -2,7 +2,7 @@
     <s-date-group
             :title="title"
             :id="name + 'Input'"
-            :fieldLevel="dataSource.fieldsLevels[name]"
+            :fieldLevel="dataSource.fieldsLevels[name] || dataSource.fieldsLevels['*']"
             :editMode="dataSource.editMode"
             v-model="dataSource.document[name]"
             :valueTitle="dataSource.document[name + 'Str'] || dataSource.document[name]"

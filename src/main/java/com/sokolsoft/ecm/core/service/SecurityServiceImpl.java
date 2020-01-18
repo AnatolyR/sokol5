@@ -17,11 +17,12 @@ import java.util.stream.Collectors;
 public class SecurityServiceImpl implements SecurityService {
     private String file;
 
-    @Value( "${sokol.documentSecurityRightsStore}" )
+    @Value("${sokol.documentSecurityRightsStore}")
     public void setFile(String file) {
         this.file = file;
     }
 
+    //todo add cache
     @Override
     public Map<String, String> getFieldsRights(String documentType, String documentStatus, String role) {
         try {
@@ -35,19 +36,38 @@ public class SecurityServiceImpl implements SecurityService {
             inputStream.close();
             Map<String, String> levels = new HashMap<>();
             for (String line : lines) {
-                String path = documentType + "/" + documentStatus + "/" + role + "/";
-                if (line.startsWith(path)) {
-                    String[] fieldAndLevel = line.substring(path.length()).split("=");
-                    String field = fieldAndLevel[0];
-                    String level = fieldAndLevel[1];
-                    levels.put(field, level);
-                }
+                List<String> paths = getPaths(documentType, documentStatus, role);
+                paths.forEach(path -> {
+                    if (line.startsWith(path)) {
+                        String[] fieldAndLevel = line.substring(path.length()).split("=");
+                        String field = fieldAndLevel[0];
+                        String level = fieldAndLevel[1];
+
+                        String prevLevel = levels.get(field);
+                        if (prevLevel == null || level.compareTo(prevLevel) > 0 || level.endsWith("!")) {
+                            levels.put(field, level.endsWith("!") ? level.substring(0, level.length() - 2) : level);
+                        }
+                    }
+                });
             }
             return levels;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<String> getPaths(String documentType, String documentStatus, String role) {
+        return Arrays.asList(
+                documentType + "/" + documentStatus + "/" + role + "/",
+                documentType + "/" + documentStatus + "/" + "*" + "/",
+                documentType + "/" + "*" + "/" + role + "/",
+                documentType + "/" + "*" + "/" + "*" + "/",
+                "*" + "/" + documentStatus + "/" + role + "/",
+                "*" + "/" + documentStatus + "/" + "*" + "/",
+                "*" + "/" + "*" + "/" + role + "/",
+                "*" + "/" + "*" + "/" + "*" + "/"
+        );
     }
 
     @Override

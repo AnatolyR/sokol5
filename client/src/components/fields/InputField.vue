@@ -2,7 +2,7 @@
     <s-input-group
             :title="title"
             :id="name + 'Input'"
-            :fieldLevel="dataSource.fieldsLevels[name]"
+            :fieldLevel="dataSource.fieldsLevels[name] || dataSource.fieldsLevels['*']"
             :editMode="dataSource.editMode"
             v-model="dataSource.document[name]"
             :errorMessage="title + ' не может быть пустой'"

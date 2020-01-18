@@ -2,7 +2,7 @@
     <s-multi-select-group
             :title="title"
             :id="name + 'Input'"
-            :fieldLevel="dataSource.fieldsLevels[name]"
+            :fieldLevel="dataSource.fieldsLevels[name] || dataSource.fieldsLevels['*']"
             :editMode="dataSource.editMode"
             v-model="dataSource.document[name]"
             :valueTitle="dataSource.document[name + 'Title'] || dataSource.document[name + 'Titles'] || dataSource.document[name]"

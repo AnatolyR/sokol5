@@ -34,6 +34,9 @@ public class FlowServiceImpl implements FlowService {
         String documentType = document.getDocumentType();
 
         JsonNode flow = configService.getPrivateConfig("flows/" + documentType);
+        if (flow == null) {
+            return Collections.emptyList();
+        }
 
         List<String> roles = accessRightsService.getRolesForObject(document.getId(), "document");
 

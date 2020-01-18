@@ -6,18 +6,18 @@ import com.sokolsoft.ecm.core.repository.*;
 import com.sokolsoft.ecm.core.specification.SortOrder;
 import com.sokolsoft.ecm.core.specification.Specification;
 import com.sokolsoft.ecm.core.specification.SpecificationUtil;
-import com.sun.jmx.snmp.tasks.TaskServer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -68,11 +68,12 @@ public class DocumentServiceImpl implements DocumentService {
         page.setSize(repoPage.getSize());
 
         List<?> content = repoPage.getContent();
-        if (documentClass.equals(Document.class)) {
+        if (Document.class.isAssignableFrom(documentClass)) {
             content = processDocuments((List<Document>) content);
-        }
-        if (documentClass.equals(Task.class)) {
+        } else if (documentClass.equals(Task.class)) {
             content = processTasks((List<Task>) content);
+        } else {
+            throw new RuntimeException("Cannot get content");
         }
 
         page.setContent(content);
@@ -144,8 +145,8 @@ public class DocumentServiceImpl implements DocumentService {
         checkForDraft(document, roles);
 
         Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
-//        BeanUtils.copyProperties(document, clearedDocument, Utils.getNotAccessibleReadablePropertyNames(document, fieldsRights));
-        BeanUtils.copyProperties(document, clearedDocument);
+        BeanUtils.copyProperties(document, clearedDocument, Utils.getNotAccessibleReadablePropertyNames(document, fieldsRights));
+//        BeanUtils.copyProperties(document, clearedDocument);
     }
 
     @Override

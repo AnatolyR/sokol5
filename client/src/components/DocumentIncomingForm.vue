@@ -205,7 +205,11 @@
                     return null;
                 }
 
-                return (this.fieldsLevels[field] === '3' && !this.document[field]) ? false : null;
+                if (this.fieldsLevels[field]) {
+                    return (this.fieldsLevels[field] === '3' && !this.document[field]) ? false : null;
+                } else {
+                    return (this.fieldsLevels['*'] === '3' && !this.document[field]) ? false : null;
+                }
             },
             isNormalInteger(str) {
                 return /^\+?(0|[1-9]\d*)$/.test(str);

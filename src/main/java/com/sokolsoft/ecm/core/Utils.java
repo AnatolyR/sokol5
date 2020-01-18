@@ -1,17 +1,17 @@
 package com.sokolsoft.ecm.core;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Utils {
     public static String[] getNullPropertyNames (Object source) {
@@ -39,6 +39,9 @@ public class Utils {
         for(java.beans.PropertyDescriptor pd : pds) {
             String propertyName = pd.getName();
             String level = fieldsLevels.get(propertyName);
+            if (level == null) {
+                level = fieldsLevels.get("*");
+            }
             
             if (level == null || level.equals("0") || (writable && level.equals("1"))) {
                 emptyNames.add(propertyName);
