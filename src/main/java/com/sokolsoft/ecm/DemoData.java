@@ -434,6 +434,7 @@ public class DemoData {
         {"cc1b2ba7-c245-4680-bc15-97b04be8b50e", "Грибова А. С.", null, null, "Антонина", "Сергеевна", "Грибова"},
         {"697660a9-8bed-4548-a15e-757282776ebb", "Карандашова А. В.", null, null, "Анна", "Вячеславовна", "Карандашова"},
         {"a4cff11c-936a-45e1-889f-f478f27fcc20", "Зверева А. М.", null, null, "Антонина", "Михайловна", "Зверева"},
+        {"be4fea69-18b8-48b3-b159-3d1343d017ae", "Test 1", "test1", passwordEncoder.encode("test1"), "Test1", "Test1", "Test1"},
 //        {"52cc85b5-fab7-4365-a9cd-94afac1f0e8d", "Admin", null, null, "Admin", "Admin", "Admin"},
         {"a4fa069b-64ac-4a7e-ba5f-a3dc3e84c66e", "Карандашова Д. Г.", null, null, "Дарья", "Георгиевна", "Карандашова"}};
 
@@ -488,6 +489,13 @@ public class DemoData {
             return authority;
         }).collect(Collectors.toList());
         authorityRepository.saveAll(authorities2);
+
+        authorityRepository.saveAll(Stream.of("ROLE_USER", "ROLE_TEST1").map(r -> {
+            Authority authority = new Authority();
+            authority.setUsername("test1");
+            authority.setAuthority(r);
+            return authority;
+        }).collect(Collectors.toList()));
 
 
         User u = new User();

@@ -107,7 +107,7 @@
                              :edit-mode="editMode" v-model="document"
                              :fieldsLevels="fieldsLevels"/>
 
-            <b-modal id="info-modal" ref="info-modal" title="Некорректно заполненные поля">
+            <b-modal id="info-modal" ref="info-modal" modal-class="s-modal-incorrect-fields" title="Некорректно заполненные поля">
                 <p class="my-4">
                     {{uncorrectFields}}
                 </p>

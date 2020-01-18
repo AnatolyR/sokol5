@@ -115,4 +115,14 @@ public class CommonStepDefs extends BaseSetpDefs {
         input.sendKeys(value);
         input.sendKeys(Keys.ENTER);
     }
+
+    @То("будет выведено модальное окно с заголовком {string} и сообщением {string}")
+    public void будетВыведеноМодальноеОкно(String title, String message) {
+        wait(d -> driver.findElements(By.className("s-modal-incorrect-fields")).size() > 0);
+        WebElement dialog = driver.findElement(By.className("s-modal-incorrect-fields"));
+        wait(d -> !dialog.findElements(By.className("modal-title")).get(0).getText().isEmpty());
+        assertEquals(title, dialog.findElements(By.className("modal-title")).get(0).getText());
+        wait(d -> !dialog.findElements(By.className("modal-body")).get(0).findElement(By.tagName("p")).getText().isEmpty());
+        assertEquals(message, dialog.findElements(By.className("modal-body")).get(0).findElement(By.tagName("p")).getText().trim());
+    }
 }
