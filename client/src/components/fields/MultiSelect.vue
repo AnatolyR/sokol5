@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="s-select-fix">
          <select ref="select"></select>
     </div>
 </template>

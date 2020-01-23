@@ -12,7 +12,10 @@ import org.openqa.selenium.remote.Augmenter;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -27,6 +30,7 @@ public class CommonStepDefs extends BaseSetpDefs {
     @After(order = 1)
     public void closeBrowser() {
 //        driver.close();
+        driver.manage().deleteAllCookies();
     }
 
     @After(order = 2)
@@ -124,5 +128,64 @@ public class CommonStepDefs extends BaseSetpDefs {
         assertEquals(title, dialog.findElements(By.className("modal-title")).get(0).getText());
         wait(d -> !dialog.findElements(By.className("modal-body")).get(0).findElement(By.tagName("p")).getText().isEmpty());
         assertEquals(message, dialog.findElements(By.className("modal-body")).get(0).findElement(By.tagName("p")).getText().trim());
+    }
+
+    @И("очистить поле {string}")
+    public void очиститьПоле(String field) {
+        wait(d -> driver.findElements(By.className("s-form-field")).size() > 0);
+        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 's-form-field')]/label[contains(text(),'" + field + "')]"));
+        WebElement inputDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
+
+        inputDiv.findElement(By.tagName("input")).clear();
+    }
+
+    @И("очистить селектор {string}")
+    public void очиститьСелектор(String field) {
+        wait(d -> driver.findElements(By.className("form-group")).size() > 0);
+        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[.//text()='" + field + "']"));
+        WebElement selectDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
+
+        String id = selectDiv.findElement(By.className("s-select-fix")).getAttribute("id");
+
+        ((JavascriptExecutor)driver).executeScript("document.getElementById(\"" + id + "\").getElementsByClassName(\"selectized\")[0].selectize.clear()");
+
+//        selectDiv.click();
+//        wait(d -> selectDiv.findElements(By.className("selectize-dropdown")).size() > 0);
+//        wait(d -> selectDiv.findElement(By.className("selectize-dropdown")).isDisplayed());
+//        new Select(selectDiv.findElement(By.tagName("select"))).
+    }
+
+    @И("в селектор {string} ввести {string}")
+    public void вСелекторВвести(String field, String value) {
+        int index = 0;
+        if (field.contains("|")) {
+            String[] vals = field.split("\\|");
+            field = vals[0];
+            index = Integer.parseInt(vals[1]) - 1;
+        }
+        wait(d -> driver.findElements(By.className("form-group")).size() > 0);
+//        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[contains(text(),'" + field + "')]"));
+        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[.//text()='" + field + "']"));
+        WebElement selectDiv = fieldLabel.get(index).findElement(By.xpath("following-sibling::*"));
+
+        selectDiv.click();
+        selectDiv.findElement(By.tagName("input")).sendKeys(value);
+        wait(d -> selectDiv.findElements(By.className("selectize-dropdown")).size() > 0);
+        wait(d -> selectDiv.findElement(By.className("selectize-dropdown")).isDisplayed());
+        selectDiv.findElement(By.tagName("input")).sendKeys(Keys.ENTER);
+    }
+
+    @И("очистить дату {string}")
+    public void очиститьДату(String field) {
+        wait(d -> driver.findElements(By.className("form-group")).size() > 0);
+        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[contains(text(),'" + field + "')]"));
+        WebElement selectDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
+
+        selectDiv.click();
+        WebElement input = selectDiv.findElement(By.tagName("input"));
+        wait(d -> selectDiv.findElements(By.className("dropdown-menu")).size() > 0);
+        wait(d -> selectDiv.findElement(By.className("dropdown-menu")).isDisplayed());
+
+        input.clear();
     }
 }

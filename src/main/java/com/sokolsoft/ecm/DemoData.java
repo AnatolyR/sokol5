@@ -60,6 +60,7 @@ public class DemoData {
         SecurityContextHolder.setContext(securityContext);
 
         uploadDocuments();
+        uploadDocumentsForTest();
         uploadContragents();
         uploadEmployees();
         uploadDeliveryMethods();
@@ -126,6 +127,51 @@ public class DemoData {
             deliveryMethod.setTitle(m[1]);
             deliveryMethodRepository.save(deliveryMethod);
         });
+    }
+
+    public void uploadDocumentsForTest() {
+        for (int i = 1; i < 3; i++) {
+            uploadDocumentForTest(i);
+        }
+    }
+
+    private void uploadDocumentForTest(int i) {
+        IncomingDocument d1 = new IncomingDocument();
+        d1.setId(UUID.randomUUID());
+        d1.setTitle("Запрос даных для выполнения работ " + i);
+        d1.setDocumentType("Входящий");
+        d1.setDocumentKind("Запрос");
+        d1.setRegistrationDate(Instant.parse("2019-03-03T00:00:00.00Z"));
+        d1.setDocumentNumber("131");
+        d1.setStatus("Черновик");
+        d1.setAddressee(UUID.fromString("9bb42bab-8965-49d2-b134-cec0d1505cc3"));
+        d1.setAddresseeTitle("Ивашова А. Е.");
+
+        d1.setAddresseeCopies(Arrays.asList(UUID.fromString("b1fea135-9e3e-4e41-ad6d-492841868fd5"), UUID.fromString("335938f6-877b-4754-b20e-ea5dc2d4f1b4")));
+        d1.setAddresseeCopiesTitles(Arrays.asList("Агапов Н. В.", "Виноградова А. А."));
+
+        d1.setExternalOrganization(UUID.fromString("60d3fde7-c523-4afb-8a56-e713775a3be1"));
+        d1.setExternalOrganizationTitle("КАПИТАЛ, деловой центр");
+        d1.setExternalExecutor("Кирилченко И. П.");
+        d1.setExternalSigner("Васин И. Ю.");
+        d1.setExternalNumber("0012");
+        d1.setExternalDate(Instant.parse("2019-02-14T00:00:00.00Z"));
+        d1.setCreateDate(Instant.parse("2019-03-03T00:00:00.00Z"));
+        d1.setComment("Необходимо предоставить все нужные данные");
+        d1.setPageCount(3);
+        d1.setAppendixCount(1);
+        d1.setCaseNumber("52 Запросы");
+        d1.setRegistrar(UUID.fromString("c90b9c9f-ca1a-4b7c-bc77-3557c908f8d7"));
+        d1.setRegistrarTitle("Енотина А. В.");
+        d1.setDeliveryMethod("Почта");
+        d1.setExecutionDate(Instant.parse("2019-08-14T00:00:00.00Z"));
+        d1.setExecutor(UUID.fromString("5ca6d548-afa3-4c26-a72e-f0f19100e701"));
+        d1.setExecutorTitle("Луков Б. П.");
+        d1.setController(UUID.fromString("d259e840-0b34-4512-bc2e-5b5498dc4171"));
+        d1.setControllerTitle("Карандашов К. Н.");
+        d1.setCreator(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"));
+        d1.setCreatorTitle("Admin");
+        documentRepository.save(d1);
     }
 
     public void uploadDocuments() {

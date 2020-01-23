@@ -42,26 +42,6 @@ public class DocumentStepDefs extends BaseSetpDefs {
         assertEquals(data.get(2).get(0), column3.get(0).getText());
     }
 
-    @И("в селектор {string} ввести {string}")
-    public void вСелекторВвести(String field, String value) {
-        int index = 0;
-        if (field.contains("|")) {
-            String[] vals = field.split("\\|");
-            field = vals[0];
-            index = Integer.parseInt(vals[1]) - 1;
-        }
-        wait(d -> driver.findElements(By.className("form-group")).size() > 0);
-//        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[contains(text(),'" + field + "')]"));
-        List<WebElement> fieldLabel = driver.findElements(By.xpath("//div[contains(@class, 'form-group')]/label[.//text()='" + field + "']"));
-        WebElement selectDiv = fieldLabel.get(index).findElement(By.xpath("following-sibling::*"));
-
-        selectDiv.click();
-        selectDiv.findElement(By.tagName("input")).sendKeys(value);
-        wait(d -> selectDiv.findElements(By.className("selectize-dropdown")).size() > 0);
-        wait(d -> selectDiv.findElement(By.className("selectize-dropdown")).isDisplayed());
-        selectDiv.findElement(By.tagName("input")).sendKeys(Keys.ENTER);
-    }
-
     @И("в селекторе с возможностью добавления {string} ввести {string}")
     public void вСелекторСВозможжностьюДобавленияВвести(String field, String value) {
         wait(d -> driver.findElements(By.className("form-group")).size() > 0);
@@ -88,5 +68,19 @@ public class DocumentStepDefs extends BaseSetpDefs {
 
         WebElement inputDiv = fieldLabel.get(0).findElement(By.xpath("following-sibling::*"));
         assertEquals(value, inputDiv.findElement(By.tagName("input")).getAttribute("value"));
+    }
+
+    @И("открыть папку {string}")
+    public void открытьПапку(String folderName) {
+        driver.findElement(By.linkText(folderName)).click();
+        wait(d -> d.findElements(By.className("s-folder-container")).size() > 0);
+    }
+
+    @И("нажать на название документа {string}")
+    public void нажатьНаНазваниеДокумента(String title) {
+        wait(d -> driver.findElements(By.className("s-folder-container")).size() > 0);
+        WebElement container = driver.findElement(By.className("s-folder-container"));
+        wait(d -> driver.findElements(By.linkText(title)).size() > 0);
+        container.findElement(By.linkText(title)).click();
     }
 }
