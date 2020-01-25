@@ -48,8 +48,8 @@ public abstract class ConfigServiceBase implements ConfigService {
                     filledFolders.add(folderConfig);
                     ArrayNode actions = ((ObjectNode) folderConfig).putArray("actions");
                     JsonNode privateConfig = getPrivateRawConfig(type + "/" + folderName);
-                    if (privateConfig != null) {
-                        privateConfig.findValues("actions").forEach(a -> {
+                    if (privateConfig != null && privateConfig.has("actions")) {
+                        privateConfig.findValue("actions").forEach(a -> {
                             if (a.get("secured") != null && Utils.checkAccess(a.get("secured").asText())) {
                                 actions.add(a.get("id").asText());
                             }
