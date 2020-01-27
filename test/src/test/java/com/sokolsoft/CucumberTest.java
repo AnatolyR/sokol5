@@ -12,7 +12,8 @@ import java.io.IOException;
 
 @RunWith(Cucumber.class)
 //@CucumberOptions(plugin = {"pretty", "html:target/cucumber-reports"}, features = "src/test/features", tags = "@current")
-@CucumberOptions(plugin = "pretty", features = "src/test/features")
+//@CucumberOptions(plugin = "pretty", features = "src/test/features")
+@CucumberOptions(plugin = "pretty", features = "src/test/features", tags = "@current")
 public class CucumberTest {
     public CucumberTest() {
         File screenshotDirectory = new File("/Users/anatolii/sokol5/test/screenshots");

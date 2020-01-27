@@ -97,10 +97,13 @@
                                       :edit-mode="editMode" v-model="document"
                                       :fieldsLevels="fieldsLevels"/>
 
-            <s-document-incoming-form v-if="tab === 'attributes' && document.documentType === 'Входящий'" ref="attributesForm"
+            <s-document-incoming-form v-if="tab === 'attributes' && document.documentType === 'Входящий'"
+                                      ref="attributesForm"
                                       @formState="(val) => this.formState = val"
-                             :edit-mode="editMode" v-model="document"
-                             :fieldsLevels="fieldsLevels"/>
+                                      :edit-mode="editMode"
+                                      v-model="document"
+                                      :dictionariesConfigs="dictionariesConfigs"
+                                      :fieldsLevels="fieldsLevels"/>
 
             <s-document-inner-form v-if="tab === 'attributes' && document.documentType === 'Внутренний'" ref="attributesForm"
                                    @formState="(val) => this.formState = val"
@@ -196,6 +199,13 @@
     import SAttachForm from "../components/AttachForm";
     import SExecutionForm from "../components/ExecutionForm";
     import STaskForm from '../components/TaskForm';
+
+    import {UserSelectConfig} from "../configs/UserSelectConfig";
+    import {DocumentKindConfig} from "../configs/DocumentKindConfig";
+    import {AddresseeCopiesSelectConfig} from "../configs/AddresseeCopiesSelectConfig";
+    import {ExternalOrganizationConfig} from "../configs/ExternalOrganizationConfig";
+    import {ExternalOrganizationPersonConfig} from "../configs/ExternalOrganizationPersonConfig";
+    import {DeliveryMethodConfig} from "../configs/DeliveryMethodConfig";
 
     export default {
         // components: {SSelect, SDocumentForm},
@@ -434,7 +444,16 @@
                 formState: null,
                 uncorrectFields: "",
                 actions: [],
-                form: null
+                form: null,
+
+                dictionariesConfigs: {
+                    userSelectConfig: UserSelectConfig(),
+                    documentKindConfig: DocumentKindConfig(),
+                    addresseeCopiesSelectConfig: AddresseeCopiesSelectConfig(),
+                    externalOrganizationConfig: ExternalOrganizationConfig(),
+                    externalOrganizationPersonConfig: ExternalOrganizationPersonConfig(),
+                    deliveryMethodConfig: DeliveryMethodConfig()
+                }
             }
         }
     }

@@ -136,7 +136,8 @@
         props: {
             value: {},
             editMode: {},
-            fieldsLevels: {}
+            fieldsLevels: {},
+            dictionariesConfigs: {}
         },
         computed: {
             titleState() {
@@ -158,16 +159,16 @@
                         fieldsLevels: this.fieldsLevels,
                         document: this.document,
                         state: this.state.bind(this),
-                        documentKindConfig: this.documentKindConfig,
-                        addresseeConfig: this.userSelectConfig,
-                        addresseeCopiesConfig: this.addresseeCopiesSelectConfig,
-                        externalOrganizationConfig: this.externalOrganizationConfig,
-                        externalSignerConfig: this.externalOrganizationPersonConfig,
-                        externalExecutorConfig: this.externalOrganizationPersonConfig,
-                        registrarConfig: this.userSelectConfig,
-                        executorConfig: this.userSelectConfig,
-                        controllerConfig: this.userSelectConfig,
-                        deliveryMethodConfig: this.deliveryMethodConfig
+                        documentKindConfig: this.dictionariesConfigs.documentKindConfig,
+                        addresseeConfig: this.dictionariesConfigs.userSelectConfig,
+                        addresseeCopiesConfig: this.dictionariesConfigs.addresseeCopiesSelectConfig,
+                        externalOrganizationConfig: this.dictionariesConfigs.externalOrganizationConfig,
+                        externalSignerConfig: this.dictionariesConfigs.externalOrganizationPersonConfig,
+                        externalExecutorConfig: this.dictionariesConfigs.externalOrganizationPersonConfig,
+                        registrarConfig: this.dictionariesConfigs.userSelectConfig,
+                        executorConfig: this.dictionariesConfigs.userSelectConfig,
+                        controllerConfig: this.dictionariesConfigs.userSelectConfig,
+                        deliveryMethodConfig: this.dictionariesConfigs.deliveryMethodConfig
                     }
                 }
             }
@@ -242,130 +243,9 @@
                     registrationDate: "Дата регистрации",
                     title: "Заголовок"
                 },
-                userSelectConfig: {
-                    maxItems: 1,
-                    //plugins: ['remove_button'],
-                    valueField: 'id',
-                    labelField: 'title',
-                    searchField: 'title',
-                    preload: true,
-                    load(query, callback) {
-                        if (!query.length) {
-                            return callback();
-                        }
-                        axios.get(`/api/users/search/userByTitle?title=%25${query}%25`).then((res) => {
-                            const users = res.data._embedded.users;
-                            callback(users);
-                        }).catch(() => {
-                            callback();
-                        })
-                    }
-                },
 
-                addresseeCopiesSelectConfig: {
-                    maxItems: 100,
-                    plugins: ['restore_on_backspace', 'remove_button'],
-                    valueField: 'id',
-                    labelField: 'title',
-                    searchField: 'title',
-                    create: false,
-                    closeAfterSelect: true,
-                    load(query, callback) {
-                        if (!query.length) {
-                            return callback();
-                        }
-                        axios.get(`/api/users/search/userByTitle?title=%25${query}%25`).then((res) => {
-                            const users = res.data._embedded.users;
-                            callback(users);
-                        }).catch(() => {
-                            callback();
-                        })
-                    }
-                },
                 dateConfig: {
                     locale:'ru'
-                },
-
-                externalOrganizationConfig: {
-                    maxItems: 1,
-                    //plugins: ['remove_button'],
-                    valueField: 'id',
-                    labelField: 'title',
-                    searchField: 'title',
-                    preload: true,
-                    load(query, callback) {
-                        if (!query.length) {
-                            return callback();
-                        }
-                        axios.get(`/api/contragents/search/userByTitle?title=%25${query}%25`).then((res) => {
-                            const users = res.data._embedded.contragents;
-                            callback(users);
-                        }).catch(() => {
-                            callback();
-                        })
-                    }
-                },
-
-                externalOrganizationPersonConfig: {
-                    maxItems: 1,
-                    //plugins: ['remove_button'],
-                    valueField: 'title',
-                    labelField: 'title',
-                    searchField: 'title',
-                    preload: true,
-                    create: true,
-                    load(query, callback) {
-                        if (!query.length) {
-                            return callback();
-                        }
-                        axios.get(`/api/contragentpersons/search/personByTitle?organizationId=${this.depends.externalOrganization}&title=%25${query}%25`).then((res) => {
-                            const users = res.data._embedded.contragentPersons;
-                            callback(users);
-                        }).catch(() => {
-                            callback();
-                        })
-                    }
-                },
-
-                deliveryMethodConfig: {
-                    maxItems: 1,
-                    //plugins: ['remove_button'],
-                    valueField: 'title',
-                    labelField: 'title',
-                    searchField: 'title',
-                    preload: true,
-                    // create: true,
-                    load(query, callback) {
-                        // if (!query.length) {
-                        //     return callback();
-                        // }
-                        // axios.get(`/api/deliveryMethods/search/methodByTitle?title=%25${query}%25`).then((res) => {
-                        axios.get(`/api/deliveryMethods?size=100`).then((res) => {
-                            this.settings.load = null;
-                            const users = res.data._embedded.deliveryMethods;
-                            callback(users);
-                        }).catch(() => {
-                            callback();
-                        })
-                    }
-                },
-                documentKindConfig: {
-                    maxItems: 1,
-                    //plugins: ['remove_button'],
-                    valueField: 'title',
-                    labelField: 'title',
-                    searchField: 'title',
-                    preload: true,
-                    // create: true,
-                    load(query, callback) {
-                        axios.get(`/api/documentKinds?size=100`).then((res) => {
-                            this.settings.load = null;
-                            const users = res.data._embedded.documentKinds;
-                            callback(users);
-                        }).catch(() => {
-                            callback();
-                        })
-                    }
                 }
 
             }
