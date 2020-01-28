@@ -157,6 +157,7 @@ public class DocumentServiceImpl implements DocumentService {
         checkForDraft(document, roles);
 
         Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
+        //todo check mandatory fields #SOKOL-1020
         BeanUtils.copyProperties(document, oldDocument, Utils.getNotAccessibleWritablePropertyNames(document, fieldsRights));
 
         if (oldDocument instanceof IncomingDocument) {

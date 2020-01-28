@@ -27,6 +27,9 @@
             name: {},
             title: {},
         },
+        mounted() {
+            this.dataSource.fieldTitles[this.name] = this.title;
+        },
         computed: {
             dataSource() {return this.$parent.dataSource;}
         },

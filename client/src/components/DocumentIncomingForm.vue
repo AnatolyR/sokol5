@@ -121,11 +121,13 @@
     import SInputField from "../components/fields/InputField"
     import SDateGroup from "../components/fields/DateGroup"
     import SDateField from "../components/fields/DateField"
+    import DocumentFormBase from "./DocumentFormBase";
     import axios from 'axios';
 
     import datePicker from 'vue-bootstrap-datetimepicker';
 
     export default {
+        extends: DocumentFormBase,
         components: {SSelect, SMultiSelect, SMultiSelectField, datePicker,
             SSelectGroup, SSelectField, SInputGroup, SInputField, SMultiSelectGroup,
             SDateGroup, SDateField},
@@ -158,6 +160,7 @@
                         editMode: this.editMode,
                         fieldsLevels: this.fieldsLevels,
                         document: this.document,
+                        fieldTitles: this.fieldTitles,
                         state: this.state.bind(this),
                         documentKindConfig: this.dictionariesConfigs.documentKindConfig,
                         addresseeConfig: this.dictionariesConfigs.userSelectConfig,
@@ -174,80 +177,15 @@
             }
         },
         methods: {
-            getFormState() {
-                let result = [];
-                this.showState = true;
-                for (let field in this.document) {
-                    let state = this.state(field);
-                    if (state !== null) {
-                        result.push(this.fieldTitles[field]);
-                    }
-                }
 
-                return result;
-            },
-            state(field) {
-                if (!this.showState) {
-                    return null;
-                }
-
-                if (field === 'title') {
-                    return this.document.title && this.document.title.length > 0 ? null : false;
-                }
-
-                if (field === 'pageCount' || field === 'appendixCount') {
-                    if (this.document[field]) {
-                        if (!(this.isNormalInteger(this.document[field]) && this.document[field] >= 0)) {
-                            return false;
-                        }
-                    } else if (this.fieldsLevels[field] === '3') {
-                        return false;
-                    }
-                    return null;
-                }
-
-                if (this.fieldsLevels[field]) {
-                    return (this.fieldsLevels[field] === '3' && !this.document[field]) ? false : null;
-                } else {
-                    return (this.fieldsLevels['*'] === '3' && !this.document[field]) ? false : null;
-                }
-            },
-            isNormalInteger(str) {
-                return /^\+?(0|[1-9]\d*)$/.test(str);
-            }
         },
         data() {
             const documentData = this.document;
             return {
                 showState: false,
                 fieldTitles: {
-                    addressee: "Адресат",
-                    addresseeCopies: "Адресаты (копии)",
-                    appendixCount: "Количество приложений",
-                    caseNumber: "Дело",
-                    comment: "Комментарий",
-                    controller: "Контроллер",
-                    deliveryMethod: "Способ доставки",
-                    documentKind: "Вид документа",
-                    documentNumber: "Номер документа",
-                    documentType: "Тестовый",
-                    executionDate: "Дата исполнения",
-                    executor: "Исполнитель",
-                    externalDate: "Исходящая дата",
-                    externalExecutor: "Исполнитель",
-                    externalNumber: "Исходящий номер",
-                    externalOrganization: "Корреспондент",
-                    externalSigner: "Кем подписано",
-                    pageCount: "Количество листов",
-                    registrar: "Регистратор",
-                    registrationDate: "Дата регистрации",
-                    title: "Заголовок"
-                },
 
-                dateConfig: {
-                    locale:'ru'
                 }
-
             }
         }
     }
