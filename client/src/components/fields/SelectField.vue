@@ -9,7 +9,7 @@
             :errorMessage="title + ' не может быть пустой'"
             :depends="dataSource.document"
             :state="() => dataSource.state(name)"
-            :selectConfig="dataSource[name + 'Config']"
+            :selectConfig="dataSource.dictionariesConfigs[config]"
     ></s-select-group>
 </template>
 
@@ -26,6 +26,7 @@
         props: {
             name: {},
             title: {},
+            config: {}
         },
         mounted() {
             this.dataSource.fieldTitles[this.name] = this.title;

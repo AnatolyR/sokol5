@@ -8,7 +8,7 @@
             :valueTitle="dataSource.document[name + 'Title'] || dataSource.document[name + 'Titles'] || dataSource.document[name]"
             :errorMessage="title + ' не может быть пустой'"
             :state="() => dataSource.state(name)"
-            :selectConfig="dataSource[name + 'Config']"
+            :selectConfig="dataSource.dictionariesConfigs[config]"
     ></s-multi-select-group>
 </template>
 
@@ -25,6 +25,7 @@
         props: {
             name: {},
             title: {},
+            config: {}
         },
         mounted() {
             this.dataSource.fieldTitles[this.name] = this.title;

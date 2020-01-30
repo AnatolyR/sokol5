@@ -6,26 +6,26 @@
 
         <b-row>
             <b-col>
-                <s-select-field name="documentKind" title="Вид документа" />
+                <s-select-field name="documentKind" title="Вид документа" config="documentKindConfig"/>
             </b-col>
 
             <b-col>
-                <s-select-field name="addressee" title="Адресат" />
+                <s-select-field name="addressee" title="Адресат" config="userSelectConfig"/>
             </b-col>
         </b-row>
 
-        <s-multi-select-field name="addresseeCopies" title="Адресаты (копии)" />
+        <s-multi-select-field name="addresseeCopies" title="Адресаты (копии)" config="addresseeCopiesSelectConfig"/>
 
         <div class="s-document-block-delimiter"></div>
 
-        <s-select-field name="externalOrganization" title="Корреспондент" />
+        <s-select-field name="externalOrganization" title="Корреспондент" config="externalOrganizationConfig"/>
 
         <b-row>
             <b-col>
-                <s-select-field name="externalSigner" title="Кем подписано" />
+                <s-select-field name="externalSigner" title="Кем подписано" config="externalOrganizationPersonConfig"/>
             </b-col>
             <b-col>
-                <s-select-field name="externalExecutor" title="Исполнитель (исх)" />
+                <s-select-field name="externalExecutor" title="Исполнитель (исх)" config="externalOrganizationPersonConfig"/>
             </b-col>
         </b-row>
 
@@ -65,7 +65,7 @@
                 <s-date-field name="registrationDate" title="Дата регистрации" />
             </b-col>
             <b-col>
-                <s-select-field name="registrar" title="Регистратор" />
+                <s-select-field name="registrar" title="Регистратор" config="userSelectConfig"/>
             </b-col>
         </b-row>
 
@@ -74,16 +74,16 @@
                 <s-date-field name="executionDate" title="Дата исполнения" />
             </b-col>
             <b-col>
-                <s-select-field name="executor" title="Исполнитель" />
+                <s-select-field name="executor" title="Исполнитель" config="userSelectConfig"/>
             </b-col>
         </b-row>
 
         <b-row>
             <b-col>
-                <s-select-field name="controller" title="Контроллер" />
+                <s-select-field name="controller" title="Контроллер" config="userSelectConfig"/>
             </b-col>
             <b-col>
-                <s-select-field name="deliveryMethod" title="Способ доставки" />
+                <s-select-field name="deliveryMethod" title="Способ доставки" config="deliveryMethodConfig"/>
             </b-col>
         </b-row>
 
@@ -162,16 +162,7 @@
                         document: this.document,
                         fieldTitles: this.fieldTitles,
                         state: this.state.bind(this),
-                        documentKindConfig: this.dictionariesConfigs.documentKindConfig,
-                        addresseeConfig: this.dictionariesConfigs.userSelectConfig,
-                        addresseeCopiesConfig: this.dictionariesConfigs.addresseeCopiesSelectConfig,
-                        externalOrganizationConfig: this.dictionariesConfigs.externalOrganizationConfig,
-                        externalSignerConfig: this.dictionariesConfigs.externalOrganizationPersonConfig,
-                        externalExecutorConfig: this.dictionariesConfigs.externalOrganizationPersonConfig,
-                        registrarConfig: this.dictionariesConfigs.userSelectConfig,
-                        executorConfig: this.dictionariesConfigs.userSelectConfig,
-                        controllerConfig: this.dictionariesConfigs.userSelectConfig,
-                        deliveryMethodConfig: this.dictionariesConfigs.deliveryMethodConfig
+                        dictionariesConfigs: this.dictionariesConfigs
                     }
                 }
             }
