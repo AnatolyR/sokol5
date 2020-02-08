@@ -9,15 +9,17 @@ import com.sokolsoft.ecm.core.specification.SpecificationUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -35,6 +37,8 @@ public class DocumentServiceImpl implements DocumentService {
     private final SecurityService securityService;
 
     private final TaskRepository taskRepository;
+
+    private final ApplicationContext applicationContext;
 
     @Override
     public DocumentsPage getDocuments(Specification spec) {
@@ -84,8 +88,12 @@ public class DocumentServiceImpl implements DocumentService {
     private List<?> processTasks(List<Task> content) {
         for (Task task : content) {
             switch (task.getStatus()) {
-                case "execution": task.setStatus("Исполнение"); break;
-                case "done": task.setStatus("Завершена"); break;
+                case "execution":
+                    task.setStatus("Исполнение");
+                    break;
+                case "done":
+                    task.setStatus("Завершена");
+                    break;
             }
         }
 
@@ -131,10 +139,18 @@ public class DocumentServiceImpl implements DocumentService {
         Document document = null;
 
         switch (documentType) {
-            case "Входящий": document = new IncomingDocument(); break;
-            case "Тестовый": document = new IncomingDocument(); break;
-            case "Исходящий": document = new OutgoingDocument(); break;
-            case "Внутренний": document = new InnerDocument(); break;
+            case "Входящий":
+                document = new IncomingDocument();
+                break;
+            case "Тестовый":
+                document = new IncomingDocument();
+                break;
+            case "Исходящий":
+                document = new OutgoingDocument();
+                break;
+            case "Внутренний":
+                document = new InnerDocument();
+                break;
         }
 
         return document;
@@ -160,8 +176,9 @@ public class DocumentServiceImpl implements DocumentService {
         //todo check mandatory fields #SOKOL-1020
         BeanUtils.copyProperties(document, oldDocument, Utils.getNotAccessibleWritablePropertyNames(document, fieldsRights));
 
+        fillTitles(oldDocument);
+
         if (oldDocument instanceof IncomingDocument) {
-            fillTitles((IncomingDocument) oldDocument);
             createExternalOrganizationPersons((IncomingDocument) oldDocument);
         }
 
@@ -209,67 +226,68 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
-    private void fillTitles(IncomingDocument document) {
-        UUID addresseeId = document.getAddressee();
-        if (addresseeId != null) {
-            User addressee = userRepository.getOne(addresseeId);
-            document.setAddresseeTitle(addressee.getTitle());
-        } else {
-            document.setAddresseeTitle(null);
-        }
+    private void fillTitles(Document document) {
 
-        List<UUID> addresseeCopiesIds = document.getAddresseeCopies();
-        List<String> addresseeCopiesTitles = new ArrayList<>();
-        for (UUID addresseeCopyId : addresseeCopiesIds) {
-            if (addresseeCopyId != null) {
-                User addressee = userRepository.getOne(addresseeCopyId);
-                addresseeCopiesTitles.add(addressee.getTitle());
+        Class<? extends Document> documentClass = document.getClass();
+        List<Field> fields = new ArrayList<>();
+        Class cl = documentClass;
+        do {
+            fields.addAll(Arrays.asList(cl.getDeclaredFields()));
+            cl = cl.getSuperclass();
+        } while (cl != null);
+        Map<String, Field> fieldsMap = fields.stream().collect(Collectors.toMap(Field::getName, f -> f));
+
+        fields.forEach(f -> {
+            if (f.isAnnotationPresent(TitleField.class)) {
+                TitleField titleField = f.getAnnotation(TitleField.class);
+                String idFieldName = titleField.idField();
+                String titleFieldName = titleField.titleField();
+                Class<? extends CrudRepository> repositoryClass = titleField.repository();
+                CrudRepository repository = applicationContext.getBean(repositoryClass);
+                Function<Object, Object> fillValue = idValue -> {
+                    Object object = repository.findById(idValue).orElse(null);
+                    if (object == null) {
+                        return null;
+                    }
+                    try {
+                        Field targetTitleField = object.getClass().getDeclaredField(titleFieldName);
+                        targetTitleField.setAccessible(true);
+                        Object titleValue = targetTitleField.get(object);
+
+                        return titleValue;
+                    } catch (IllegalAccessException | NoSuchFieldException e) {
+                        throw new RuntimeException(e);
+                    }
+                };
+
+                try {
+                    Field field = fieldsMap.get(idFieldName);
+                    field.setAccessible(true);
+                    Object idValue = field.get(document);
+
+                    if (idValue == null) {
+                        return;
+                    }
+
+                    f.setAccessible(true);
+                    f.set(document, idValue instanceof List
+                            ? ((List) idValue).stream().map(fillValue).collect(Collectors.toList())
+                            : Optional.of(idValue).map(fillValue).orElse(null));
+                    
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
-        }
-        document.setAddresseeCopiesTitles(addresseeCopiesTitles);
-
-        UUID externalOrganizationId = document.getExternalOrganization();
-        if (externalOrganizationId != null) {
-            Contragent externalOrganization = contragentRepository.getOne(externalOrganizationId);
-            document.setExternalOrganizationTitle(externalOrganization.getTitle());
-        } else {
-            document.setExternalOrganizationTitle(null);
-        }
-
-        UUID registrarId = document.getRegistrar();
-        if (registrarId != null) {
-            User registrar = userRepository.getOne(registrarId);
-            document.setRegistrarTitle(registrar.getTitle());
-        } else {
-            document.setRegistrarTitle(null);
-        }
-
-        UUID executorId = document.getExecutor();
-        if (executorId != null) {
-            User executor = userRepository.getOne(executorId);
-            document.setExecutorTitle(executor.getTitle());
-        } else {
-            document.setExecutorTitle(null);
-        }
-
-        UUID controllerId = document.getController();
-        if (controllerId != null) {
-            User controller = userRepository.getOne(controllerId);
-            document.setControllerTitle(controller.getTitle());
-        } else {
-            document.setControllerTitle(null);
-        }
+        });
     }
 
     @Override
     public UUID createDocument(String documentType) {
         Document document = null;
 
-        switch (documentType) {
-            case "Входящий": document = new IncomingDocument(); break;
-            case "Исходящий": document = new OutgoingDocument(); break;
-            case "Внутренний": document = new InnerDocument(); break;
-        }
+        document = createDocumentByType(documentType);
+
         UUID id = UUID.randomUUID();
         document.setId(id);
         document.setTitle("Новый документ");

@@ -92,9 +92,11 @@
                              <!--:edit-mode="editMode" v-model="document"-->
                              <!--:fieldsLevels="fieldsLevels"/>-->
 
-            <s-document-incoming-form v-if="tab === 'attributes' && document.documentType === 'Тестовый'" ref="attributesForm"
+            <s-document-incoming-form v-if="tab === 'attributes' && document.documentType === 'Тестовый'"
+                                      ref="attributesForm"
                                       @formState="(val) => this.formState = val"
-                                      :edit-mode="editMode" v-model="document"
+                                      :edit-mode="editMode"
+                                      v-model="document"
                                       :fieldsLevels="fieldsLevels"/>
 
             <s-document-incoming-form v-if="tab === 'attributes' && document.documentType === 'Входящий'"
@@ -105,10 +107,13 @@
                                       :dictionariesConfigs="dictionariesConfigs"
                                       :fieldsLevels="fieldsLevels"/>
 
-            <s-document-inner-form v-if="tab === 'attributes' && document.documentType === 'Внутренний'" ref="attributesForm"
+            <s-document-inner-form v-if="tab === 'attributes' && document.documentType === 'Внутренний'"
+                                   ref="attributesForm"
                                    @formState="(val) => this.formState = val"
-                             :edit-mode="editMode" v-model="document"
-                             :fieldsLevels="fieldsLevels"/>
+                                   :edit-mode="editMode"
+                                   v-model="document"
+                                   :dictionariesConfigs="dictionariesConfigs"
+                                   :fieldsLevels="fieldsLevels"/>
 
             <b-modal id="info-modal" ref="info-modal" modal-class="s-modal-incorrect-fields" title="Некорректно заполненные поля">
                 <p class="my-4">

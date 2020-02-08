@@ -1,5 +1,6 @@
 package com.sokolsoft.ecm.core.model;
 
+import com.sokolsoft.ecm.core.repository.UserRepository;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ public abstract class Document implements Serializable {
 
     protected UUID addressee;
 
+    @TitleField(idField = "addressee", repository = UserRepository.class)
     protected String addresseeTitle;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -30,6 +32,7 @@ public abstract class Document implements Serializable {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @OrderColumn
+    @TitleField(idField = "addresseeCopies", repository = UserRepository.class)
     protected List<String> addresseeCopiesTitles;
 
     protected String documentKind;
@@ -52,6 +55,7 @@ public abstract class Document implements Serializable {
 
     protected UUID registrar;
 
+    @TitleField(idField = "registrar", repository = UserRepository.class)
     protected String registrarTitle;
 
     protected String documentNumber;
@@ -62,10 +66,12 @@ public abstract class Document implements Serializable {
 
     protected UUID executor;
 
+    @TitleField(idField = "executor", repository = UserRepository.class)
     protected String executorTitle;
 
     protected UUID controller;
 
+    @TitleField(idField = "controller", repository = UserRepository.class)
     protected String controllerTitle;
 
     protected String status;
@@ -74,6 +80,7 @@ public abstract class Document implements Serializable {
 
     protected UUID creator;
 
+    @TitleField(idField = "creator", repository = UserRepository.class)
     protected String creatorTitle;
 
     private String documentGroup;

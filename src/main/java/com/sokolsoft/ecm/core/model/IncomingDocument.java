@@ -1,5 +1,6 @@
 package com.sokolsoft.ecm.core.model;
 
+import com.sokolsoft.ecm.core.repository.ContragentRepository;
 import lombok.Data;
 import lombok.ToString;
 
@@ -23,5 +24,6 @@ public class IncomingDocument extends Document {
 
     protected UUID externalOrganization;
 
+    @TitleField(idField = "externalOrganization", repository = ContragentRepository.class)
     protected String externalOrganizationTitle;
 }

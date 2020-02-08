@@ -15,7 +15,7 @@
                     <b-nav-item-dropdown text="Создать" right>
                         <b-dropdown-item @click="createIncoming" href="#">Входящий</b-dropdown-item>
                         <b-dropdown-item href="#">Исходящий</b-dropdown-item>
-                        <b-dropdown-item href="#">Внутренний</b-dropdown-item>
+                        <b-dropdown-item @click="createInner" href="#">Внутренний</b-dropdown-item>
                         <b-dropdown-item href="#">Договор</b-dropdown-item>
                     </b-nav-item-dropdown>
 
@@ -73,6 +73,11 @@
                 //         query: {isNew: true}}));
 
                 axios.post('/api/createDocument/Входящий', {})
+                    .then((res) => this.$router.push({name: 'document',
+                        params: {isNew: true, documentId: res.data}}));
+            },
+            createInner() {
+                axios.post('/api/createDocument/Внутренний', {})
                     .then((res) => this.$router.push({name: 'document',
                         params: {isNew: true, documentId: res.data}}));
             }

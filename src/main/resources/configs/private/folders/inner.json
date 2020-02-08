@@ -1,6 +1,7 @@
 {
   "id": "inner",
   "secured": "hasRole('ROLE_USER')",
+  "documentClass": "InnerDocument",
   "condition": [
     {
       "condition": "",
