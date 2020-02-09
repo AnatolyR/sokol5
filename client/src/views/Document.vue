@@ -318,15 +318,14 @@
                 }
 
                 const document = JSON.parse(JSON.stringify(this.document));
-                if (document.registrationDate) {
-                    document.registrationDate = new Date(document.registrationDate).toISOString();
-                }
-                if (document.externalDate) {
-                    document.externalDate = new Date(document.externalDate).toISOString();
-                }
-                if (document.executionDate) {
-                    document.executionDate = new Date(document.executionDate).toISOString();
-                }
+
+                this.fieldsDescriptions.forEach((f) => {
+                    if (f.type === 'Instant') {
+                        if (document[f.name]) {
+                            document[f.name] = new Date(document[f.name]).toISOString();
+                        }
+                    }
+                });
 
                 let saveUrl;
                 if (this.document.documentType === "Входящий") {
@@ -368,38 +367,25 @@
                 axios.get(`/api/document/${this.documentId}`).then((response) => {
                     const document = response.data.document;
                     const fieldsLevels = response.data.fields;
+                    const fieldsDescriptions = response.data.fieldsDescriptions;
                     this.fieldsLevels = fieldsLevels;
+                    this.fieldsDescriptions = fieldsDescriptions;
 
-                    try {
-                        const registrationDate = Date.parse(document.registrationDate);
-                        if (!isNaN(registrationDate)) {
-                            const registrationDateStr = new Date(registrationDate).toLocaleDateString("ru-RU");
-                            document.registrationDate = new Date(registrationDate);
-                            document.registrationDateStr = registrationDateStr;
-                        }
-                    } catch (e) {
+                    fieldsDescriptions.forEach((f) => {
+                       if (f.type === 'Instant') {
+                           try {
+                               const date = Date.parse(document[f.name]);
+                               if (!isNaN(date)) {
+                                   const dateStr = new Date(date).toLocaleDateString("ru-RU");
+                                   document[f.name] = new Date(date);
+                                   document[f.name + 'Str'] = dateStr;
+                               }
+                           } catch (e) {
 
-                    }
-                    try {
-                        const externalDate = Date.parse(document.externalDate);
-                        if (!isNaN(externalDate)) {
-                            const externalDateStr = new Date(externalDate).toLocaleDateString("ru-RU");
-                            document.externalDate = new Date(externalDate);
-                            document.externalDateStr = externalDateStr;
-                        }
-                    } catch (e) {
+                           }
+                       }
+                    });
 
-                    }
-                    try {
-                        const executionDate = Date.parse(document.executionDate);
-                        if (!isNaN(executionDate)) {
-                            const executionDateStr = new Date(executionDate).toLocaleDateString("ru-RU");
-                            document.executionDate = new Date(executionDate);
-                            document.executionDateStr = executionDateStr;
-                        }
-                    } catch (e) {
-
-                    }
                     this.document = document;
                     this.documentBackup = JSON.stringify(document);
                     // if (this.document.status === "Черновик") {

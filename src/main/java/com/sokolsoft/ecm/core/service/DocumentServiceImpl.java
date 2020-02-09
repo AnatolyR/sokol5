@@ -229,12 +229,7 @@ public class DocumentServiceImpl implements DocumentService {
     private void fillTitles(Document document) {
 
         Class<? extends Document> documentClass = document.getClass();
-        List<Field> fields = new ArrayList<>();
-        Class cl = documentClass;
-        do {
-            fields.addAll(Arrays.asList(cl.getDeclaredFields()));
-            cl = cl.getSuperclass();
-        } while (cl != null);
+        List<Field> fields = Utils.getFields(documentClass);
         Map<String, Field> fieldsMap = fields.stream().collect(Collectors.toMap(Field::getName, f -> f));
 
         fields.forEach(f -> {

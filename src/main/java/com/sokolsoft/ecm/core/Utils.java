@@ -8,10 +8,8 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.*;
 
 public class Utils {
     public static String[] getNullPropertyNames (Object source) {
@@ -77,5 +75,14 @@ public class Utils {
             }
         });
         return result;
+    }
+
+    public static List<Field> getFields(Class cl) {
+        List<Field> fields = new ArrayList<>();
+        do {
+            fields.addAll(Arrays.asList(cl.getDeclaredFields()));
+            cl = cl.getSuperclass();
+        } while (cl != null);
+        return fields;
     }
 }

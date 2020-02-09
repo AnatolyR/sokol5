@@ -1,14 +1,23 @@
 package com.sokolsoft.ecm.core.web;
 
-import com.sokolsoft.ecm.core.model.*;
+import com.sokolsoft.ecm.core.Utils;
+import com.sokolsoft.ecm.core.model.Document;
+import com.sokolsoft.ecm.core.model.IncomingDocument;
+import com.sokolsoft.ecm.core.model.InnerDocument;
+import com.sokolsoft.ecm.core.model.OutgoingDocument;
 import com.sokolsoft.ecm.core.service.DocumentService;
 import com.sokolsoft.ecm.core.service.SecurityService;
 import com.sokolsoft.ecm.core.service.UserService;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,7 +55,16 @@ public class DocumentController {
         Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
         response.setFields(fieldsRights);
 
+        response.setFieldsDescriptions(getFieldsDescriptions(document.getClass()));
+
         return response;
+    }
+
+    private List<FieldDescription> getFieldsDescriptions(Class documentClass) {
+        return Utils.getFields(documentClass).stream()
+                .filter(f -> f.getType().equals(Instant.class))
+                .map(f -> FieldDescription.builder().name(f.getName()).type(f.getType().getSimpleName()).build())
+                .collect(Collectors.toList());
     }
 
 //    @PostMapping("document")
@@ -75,24 +93,19 @@ public class DocumentController {
         return documentId.toString();
     }
 
+    @Data
     public static class DocumentResponse {
         private Document document;
         private Map<String, String> fields;
+        private List<FieldDescription> fieldsDescriptions;
+    }
 
-        public Document getDocument() {
-            return document;
-        }
-
-        public void setDocument(Document document) {
-            this.document = document;
-        }
-
-        public Map<String, String> getFields() {
-            return fields;
-        }
-
-        public void setFields(Map<String, String> fields) {
-            this.fields = fields;
-        }
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class FieldDescription {
+        private String name;
+        private String type;
     }
 }

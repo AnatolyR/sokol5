@@ -24,7 +24,7 @@
 
         <b-row>
             <b-col>
-                <s-input-field name="documentNumber" title="Рег. документа" />
+                <s-input-field name="documentNumber" title="Номер документа" />
             </b-col>
             <b-col>
                 <s-input-field name="caseNumber" title="Дело" />
