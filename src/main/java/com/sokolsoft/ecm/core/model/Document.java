@@ -1,5 +1,7 @@
 package com.sokolsoft.ecm.core.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.sokolsoft.ecm.core.repository.UserRepository;
 import lombok.Data;
 
@@ -16,6 +18,13 @@ import java.util.UUID;
 @Table(name = "document")
 //@org.springframework.data.elasticsearch.annotations.Document(indexName = "document")
 @Data
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = IncomingDocument.class, name = "Входящий"),
+        @JsonSubTypes.Type(value = IncomingDocument.class, name = "Тестовый"),
+        @JsonSubTypes.Type(value = OutgoingDocument.class, name = "Исходящий"),
+        @JsonSubTypes.Type(value = InnerDocument.class, name = "Внутренний")
+})
 public abstract class Document implements Serializable {
 
     @Id

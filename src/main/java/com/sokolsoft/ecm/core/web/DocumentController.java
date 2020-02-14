@@ -2,9 +2,6 @@ package com.sokolsoft.ecm.core.web;
 
 import com.sokolsoft.ecm.core.Utils;
 import com.sokolsoft.ecm.core.model.Document;
-import com.sokolsoft.ecm.core.model.IncomingDocument;
-import com.sokolsoft.ecm.core.model.InnerDocument;
-import com.sokolsoft.ecm.core.model.OutgoingDocument;
 import com.sokolsoft.ecm.core.service.DocumentService;
 import com.sokolsoft.ecm.core.service.SecurityService;
 import com.sokolsoft.ecm.core.service.UserService;
@@ -67,23 +64,8 @@ public class DocumentController {
                 .collect(Collectors.toList());
     }
 
-//    @PostMapping("document")
-//    public Document save(@RequestBody Document document) {
-//        return documentService.save(document);
-//    }
-
-    @PostMapping("/api/incomingDocument")
-    public Document save(@RequestBody IncomingDocument document) {
-        return documentService.save(document);
-    }
-
-    @PostMapping("/api/outgoingDocument")
-    public Document save(@RequestBody OutgoingDocument document) {
-        return documentService.save(document);
-    }
-
-    @PostMapping("/api/innerDocument")
-    public Document save(@RequestBody InnerDocument document) {
+    @PostMapping("/api/document")
+    public Document save(@RequestBody Document document) {
         return documentService.save(document);
     }
 

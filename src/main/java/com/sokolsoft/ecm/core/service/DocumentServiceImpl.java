@@ -1,5 +1,6 @@
 package com.sokolsoft.ecm.core.service;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.sokolsoft.ecm.core.Utils;
 import com.sokolsoft.ecm.core.model.*;
 import com.sokolsoft.ecm.core.repository.*;
@@ -16,6 +17,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
@@ -136,24 +138,17 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     protected Document createDocumentByType(String documentType) {
-        Document document = null;
-
-        switch (documentType) {
-            case "Входящий":
-                document = new IncomingDocument();
-                break;
-            case "Тестовый":
-                document = new IncomingDocument();
-                break;
-            case "Исходящий":
-                document = new OutgoingDocument();
-                break;
-            case "Внутренний":
-                document = new InnerDocument();
-                break;
+        try {
+            return (Document) Arrays.stream(Document.class.getAnnotation(JsonSubTypes.class).value())
+                    .filter(t -> t.name().equals(documentType))
+                    .map(JsonSubTypes.Type::value)
+                    .findAny()
+                    .orElseThrow(() -> new RuntimeException("Cannot find document type"))
+                    .getConstructor()
+                    .newInstance();
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Cannot find document type", e);
         }
-
-        return document;
     }
 
     protected void copyAccessibleProperties(Document document, Document clearedDocument) {

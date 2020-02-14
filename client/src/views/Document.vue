@@ -326,15 +326,8 @@
                         }
                     }
                 });
-
-                let saveUrl;
-                if (this.document.documentType === "Входящий") {
-                    saveUrl = '/api/incomingDocument';
-                } else if (this.document.documentType === "Исходящий") {
-                    saveUrl = '/api/outgoingDocument';
-                } else if (this.document.documentType === "Внутренний") {
-                    saveUrl = '/api/innerDocument';
-                }
+                this.document.type = this.document.documentType;
+                let saveUrl = '/api/document';
 
                 axios.post(saveUrl, document).then(() => {
                     // this.successMessage = 'Документ сохранен';
