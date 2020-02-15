@@ -47,10 +47,11 @@
             },
             loadData(spec) {
                 let url = `/api/${this.url}?objectId=${this.objectId}&objectType=${this.objectType}&size=${spec.size}&page=${spec.page}`;
-                if (spec.sortProperty && spec.sortDirection) {
-                    url += `&sortProperty=${spec.sortProperty}`;
+                let sortProperty = spec.sortProperty === 'sizeStr' ? 'size' : spec.sortProperty;
+                if (sortProperty && spec.sortDirection) {
+                    url += `&sortProperty=${sortProperty}`;
 
-                    url += `&sort=${spec.sortProperty},${spec.sortDirection}`;
+                    url += `&sort=${sortProperty},${spec.sortDirection}`;
                 }
                 if (spec.sortDirection) {
                     url += `&sortDirection=${spec.sortDirection}`;
@@ -103,7 +104,12 @@
                         "type": "fileLink"
                     },
                     {
-                        id: "size",
+                        id: "version",
+                        title: "Версия",
+                        visible: true
+                    },
+                    {
+                        id: "sizeStr",
                         title: "Размер",
                         visible: true
                     },
@@ -115,7 +121,8 @@
                     {
                         id: "created",
                         title: "Дата создания",
-                        visible: true
+                        visible: true,
+                        type: 'datetime'
                     }
                 ]
             }

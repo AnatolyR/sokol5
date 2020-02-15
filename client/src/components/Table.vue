@@ -103,8 +103,17 @@
                         && col.type !== 'userSelect'
                         && col.type !== 'dateSelect'
                         && col.type !== 'taskLink'
+                        && col.type !== 'date'
+                        && col.type !== 'datetime'
                         && (col.type !== 'fileLink' || !buttons['view'])"
                           :class="`s-table-cell-${col.id}`">{{getItemValue(item, col.id)}}</span>
+
+                    <span v-if="col.type === 'date'"
+                          :class="`s-table-cell-${col.id}`">{{getDateValue(item, col.id)}}</span>
+
+                    <span v-if="col.type === 'datetime'"
+                          :class="`s-table-cell-${col.id}`">{{getDateTimeValue(item, col.id)}}</span>
+
                     <router-link v-if="col.type === 'link'"
                                  :class="`s-table-cell-${col.id}`"
                                  :to="col.path + (col.idField ? getItemValue(item, col.idField) : item.id)">{{ getItemValue(item, col.id) }}</router-link>
@@ -190,6 +199,7 @@
     import SSelect from "./fields/Select";
     import datePicker from 'vue-bootstrap-datetimepicker';
     import uuid from '../uuid.js';
+    import moment from 'moment';
 
     export default {
         name: 's-table',
@@ -443,6 +453,14 @@
                 } else {
                     return item[id];
                 }
+            },
+            getDateValue(item, id) {
+                let val = this.getItemValue(item, id);
+                return val ? new Date(val).toLocaleDateString("ru") : '';
+            },
+            getDateTimeValue(item, id) {
+                let val = this.getItemValue(item, id);
+                return val ? moment(new Date(val)).format("DD.MM.YYYY HH:mm") : '';
             }
         },
         watch: {

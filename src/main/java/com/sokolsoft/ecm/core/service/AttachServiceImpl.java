@@ -5,13 +5,14 @@ import com.sokolsoft.ecm.core.model.AttachContent;
 import com.sokolsoft.ecm.core.model.User;
 import com.sokolsoft.ecm.core.repository.AttachContentRepository;
 import com.sokolsoft.ecm.core.repository.AttachRepository;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletResponse;
-import java.net.URLEncoder;
+import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -55,6 +56,18 @@ public class AttachServiceImpl implements AttachService {
         attach.setId(UUID.randomUUID());
         attach.setTitle(originalFileName);
         attach.setSize(content.length);
+        attach.setSizeStr(FileUtils.byteCountToDisplaySize(content.length));
+        attach.setCreated(Instant.now());
+
+        attach.setVersion(attachRepository.findByObjectIdEqualsAndObjectTypeEquals(objectId, objectType, null).getContent()
+                .stream()
+                .filter(a -> a.getTitle().equals(originalFileName))
+                .map(Attach::getVersion)
+                .filter(Objects::nonNull)
+                .max(Integer::compareTo)
+                .map(v -> v + 1)
+                .orElse(1));
+
         attach.setObjectId(objectId);
         attach.setObjectType(objectType);
 

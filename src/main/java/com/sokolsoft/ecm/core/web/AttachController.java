@@ -55,7 +55,7 @@ public class AttachController {
 
     @GetMapping(path = "/api/attaches/search/attachesByObjectId")
     @ResponseBody
-    Page findByObjectIdEquals(@Param("objectId") String objectId, @Param("objectType") String objectType, Pageable p) {
+    public Page getAttaches(@Param("objectId") String objectId, @Param("objectType") String objectType, Pageable p) {
         List<String> rolesForObject = accessRightsService.getRolesForObject(UUID.fromString(objectId), objectType);
         if (rolesForObject.contains("ROLE_ATTACH_LIST")) {
             return attachRepository.findByObjectIdEqualsAndObjectTypeEquals(UUID.fromString(objectId), objectType, p);

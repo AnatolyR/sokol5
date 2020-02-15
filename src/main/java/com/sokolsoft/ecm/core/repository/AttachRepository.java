@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface AttachRepository extends JpaRepository<Attach, UUID> {
-    Page findByObjectIdEqualsAndObjectTypeEquals(@Param("objectId") UUID objectId,
+    Page<Attach> findByObjectIdEqualsAndObjectTypeEquals(@Param("objectId") UUID objectId,
                                                  @Param("objectType") String objectType,
                                                  Pageable p);
 
