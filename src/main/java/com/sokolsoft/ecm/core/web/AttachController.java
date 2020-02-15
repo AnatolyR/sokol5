@@ -146,6 +146,9 @@ public class AttachController {
         if (rolesForObject.contains("ROLE_ATTACH_DEL")) {
             actions.add("del");
         }
+        if (rolesForObject.contains("ROLE_ATTACH_CONTENT")) {
+            actions.add("view");
+        }
         return actions;
     }
 }
