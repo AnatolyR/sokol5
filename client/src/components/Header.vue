@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-navbar fixed="top" v-if="loggedIn" toggleable="lg" type="dark" variant="dark" class="navbar-fixed-top">
-            <b-navbar-brand href="#">
+            <b-navbar-brand href="/">
                 <img src="../assets/icon.png" class="d-inline-block align-top" alt="SOKOL" />
                 СОКОЛ
             </b-navbar-brand>
@@ -10,7 +10,7 @@
 
             <b-collapse is-nav id="nav_collapse">
                 <b-navbar-nav>
-                    <b-nav-item exact-active-class="active" to="/">Папки</b-nav-item>
+                    <b-nav-item exact-active-class="active" to="/folders">Папки</b-nav-item>
 
                     <b-nav-item-dropdown text="Создать" right>
                         <b-dropdown-item @click="createIncoming" href="#">Входящий</b-dropdown-item>

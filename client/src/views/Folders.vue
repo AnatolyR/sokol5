@@ -84,6 +84,10 @@
             mode: 'history',
             routes: [
                 {
+                    path: '/folders',
+                    redirect: '/folders/mydocs'
+                },
+                {
                     path: '/document/:documentId',
                     name: 'document',
                     component: Document,

@@ -24,6 +24,10 @@ export const router = new Router({
     routes: [
         {
             path: '/',
+            redirect: '/folders'
+        },
+        {
+            path: '/folders',
             name: 'folders',
             component: Folders,
             alias: '/folders/*'
