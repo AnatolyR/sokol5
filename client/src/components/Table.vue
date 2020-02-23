@@ -34,6 +34,8 @@
                         <s-contragent-form v-if="addType === 'contragent'" v-model="toAddValue" :edit-mode="true" ref="addForm"></s-contragent-form>
 
                         <s-add-attach v-if="addType === 'attach'" v-model="toAddValue" ref="addForm"></s-add-attach>
+
+                        <s-add-link v-if="addType === 'link'" v-model="toAddValue" ref="addForm"></s-add-link>
                     </p>
                     <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
                         <b-form-checkbox v-model="addOneMore"
@@ -127,7 +129,7 @@
                                  target="_blank"
                                  :to="'/api/file/' + item.id">{{ getItemValue(item, col.id) }}</router-link>
 
-                    <b-form-checkbox v-if="col.type === 'checkbox' && item.id"
+                    <b-form-checkbox v-if="col.type === 'checkbox' && (item.id || col.ref)"
                                      :class="`s-table-cell-${col.id}`"
                                      v-model="item.selected" @click.native="(e) => e.preventDefault()"></b-form-checkbox>
 
@@ -196,6 +198,7 @@
     import SUserForm from "../components/UserForm";
     import SContragentForm from "../components/ContragentForm";
     import SAddAttach from "./AddAttachForm";
+    import SAddLink from "./AddLinkForm";
     import SSelect from "./fields/Select";
     import datePicker from 'vue-bootstrap-datetimepicker';
     import uuid from '../uuid.js';
@@ -203,7 +206,7 @@
 
     export default {
         name: 's-table',
-        components: {SAddAttach, SFilter, SDictionaryValue, SUserForm, SContragentForm, SSelect, datePicker},
+        components: {SAddAttach, SFilter, SDictionaryValue, SUserForm, SContragentForm, SSelect, datePicker, SAddLink},
         mounted() {
             this.update();
         },
@@ -418,6 +421,8 @@
                 } else {
                     if (this.addType === 'role') {
                         this.toAddValue['userId'] = this.objectId;
+                    } else if (this.addType === 'link') {
+                        this.toAddValue['fromDocument'] = this.objectId;
                     }
 
                     axios.post(`/api/${this.addUrl}`, this.toAddValue).then((res) => {

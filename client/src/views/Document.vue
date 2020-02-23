@@ -147,7 +147,7 @@
                 Процесс
             </div>
             <div v-if="tab === 'links'">
-                Связи
+                <s-linked-documents-form :object-id="documentId" :object-type="'document'" @updateLinks="updateLinksCount"></s-linked-documents-form>
             </div>
             <div v-if="tab === 'history'">
                 История
@@ -202,6 +202,7 @@
     import SDocumentIncomingForm from "../components/DocumentIncomingForm";
     import SDocumentInnerForm from "../components/DocumentInnerForm";
     import SAttachForm from "../components/AttachForm";
+    import SLinkedDocumentsForm from "../components/LinkedDocumentsForm";
     import SExecutionForm from "../components/ExecutionForm";
     import STaskForm from '../components/TaskForm';
 
@@ -214,7 +215,7 @@
 
     export default {
         // components: {SSelect, SDocumentForm},
-        components: {SExecutionForm, SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm, STaskForm},
+        components: {SExecutionForm, SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm, STaskForm, SLinkedDocumentsForm},
         mounted() {
             if (this.$route.meta.openAsTask === true) {
                 this.tab = 'task';
@@ -288,6 +289,11 @@
                     this.attachesCount = res.data;
                 });
             },
+            updateLinksCount() {
+                axios.get(`/api/links/search/countByObjectId?objectId=${this.documentId}&objectType=document`).then((res) => {
+                    this.linksCount = res.data;
+                });
+            },
             goBack() {
                 this.$router.go(-1);
             },
@@ -348,6 +354,7 @@
             },
             loadDocument() {
                 this.updateAttachCount();
+                this.updateLinksCount();
                 this.loadActions();
 
                 if (this.$route.params.isNew === true) {
@@ -421,9 +428,9 @@
                 tab: 'attributes',
                 editMode: false,
 
-                attachesCount: 0,
-                processCount: 2,
-                linksCount: 3,
+                attachesCount: "",
+                processCount: "",
+                linksCount: "",
 
                 formState: null,
                 uncorrectFields: "",

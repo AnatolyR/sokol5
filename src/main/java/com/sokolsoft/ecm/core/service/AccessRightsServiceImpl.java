@@ -43,16 +43,26 @@ public class AccessRightsServiceImpl implements AccessRightsService {
                 roles.add("ROLE_INVOLVED");
                 roles.add("ROLE_ATTACH_ADD");
                 roles.add("ROLE_ATTACH_CONTENT");
+
+                roles.add("ROLE_LINK_ADD");
+                roles.add("ROLE_LINK_CONTENT");
             }
 
             if ("Черновик".equals(document.getStatus()) && roles.contains("ROLE_AUTHOR")) {
                 roles.add("ROLE_ATTACH_ADD");
                 roles.add("ROLE_ATTACH_DEL");
                 roles.add("ROLE_ATTACH_CONTENT");
+
+                roles.add("ROLE_LINK_ADD");
+                roles.add("ROLE_LINK_DEL");
+                roles.add("ROLE_LINK_CONTENT");
             }
 
             roles.add("ROLE_ATTACH_COUNT");
             roles.add("ROLE_ATTACH_LIST");
+
+            roles.add("ROLE_LINK_COUNT");
+            roles.add("ROLE_LINK_LIST");
             
         }
 

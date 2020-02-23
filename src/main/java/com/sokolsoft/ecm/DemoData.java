@@ -49,6 +49,8 @@ public class DemoData {
 
     private final TaskRepository taskRepository;
 
+    private final LinkRepository linkRepository;
+
     public void uploadData() {
         SecurityContext securityContext = new SecurityContextImpl();
         
@@ -135,9 +137,11 @@ public class DemoData {
         }
     }
 
+    private List<UUID> poolsIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+
     private void uploadDocumentForTest(int i) {
         IncomingDocument d1 = new IncomingDocument();
-        d1.setId(UUID.randomUUID());
+        d1.setId(poolsIds.get(i));
         d1.setTitle("Запрос даных для выполнения работ " + i);
         d1.setDocumentType("Входящий");
         d1.setDocumentKind("Запрос");
@@ -213,6 +217,9 @@ public class DemoData {
         d1.setCreator(UUID.fromString("c90b9c9f-ca1a-4b7c-bc77-3557c908f8d7"));
         d1.setCreatorTitle("Енотина А. В.");
         documents.add(d1);
+
+        linkRepository.save(Link.builder().fromDocument(UUID.fromString("c32a1bdd-d6a4-4a09-8e7b-249d6c7fd673")).toDocument(poolsIds.get(1)).type("Тест").build());
+        linkRepository.save(Link.builder().fromDocument(UUID.fromString("c32a1bdd-d6a4-4a09-8e7b-249d6c7fd673")).toDocument(poolsIds.get(2)).type("Тест").build());
 
         AttachContent attachContent1 = new AttachContent();
         byte[] content1 = "Тестовое содержимое 1".getBytes();
