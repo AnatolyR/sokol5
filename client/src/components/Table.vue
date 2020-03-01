@@ -271,7 +271,9 @@
             },
             addCallback: {
                 type: Function
-            }
+            },
+            sortDirection: null,
+            sortProperty: null
         },
         methods: {
             update() {

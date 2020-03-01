@@ -1,6 +1,8 @@
 {
   "id": "incoming",
   "name": "Входящие",
+  "sortField": "createDate",
+  "sortDirection": "DESC",
   "fields": [
     {
       "id": "id",
