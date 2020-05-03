@@ -1,5 +1,7 @@
 package com.sokolsoft.ecm.core.web;
 
+import com.sokolsoft.ecm.core.SokolException;
+import com.sokolsoft.ecm.core.SokolSecurityException;
 import com.sokolsoft.ecm.core.model.Document;
 import com.sokolsoft.ecm.core.model.Link;
 import com.sokolsoft.ecm.core.repository.LinkRepository;
@@ -66,16 +68,22 @@ public class LinksController {
     }
 
     @PostMapping(path = "/api/links/search/linksByObjectId")
-    public void getLinks(@RequestBody Link link) {
+    public void addLink(@RequestBody Link link) {
         //todo check AR for toDocument
         if (linkRepository.countByFromDocumentEqualsAndToDocumentEquals(link.getFromDocument(), link.getToDocument()) != 0) {
-            throw new RuntimeException("Document already linked");
+            throw new SokolException("012", "Документы уже связаны");
+        }
+        if (documentService.getDocument(link.getFromDocument()) == null) {
+            throw new SokolException("013", "Документ для связи не существует");
+        }
+        if (documentService.getDocument(link.getToDocument()) == null) {
+            throw new SokolException("014", "Документ для связи не существует");
         }
         List<String> rolesForObject = accessRightsService.getRolesForObject(UUID.fromString(link.getFromDocument().toString()), "document");
         if (rolesForObject.contains("ROLE_LINK_ADD")) {
             linkRepository.save(link);
         } else {
-            throw new RuntimeException("No access rights to add link");
+            throw new SokolSecurityException("ROLE_LINK_ADD", "Нет прав на связывание документа");
         }
     }
 

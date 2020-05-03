@@ -395,6 +395,21 @@
                     return;
                 }
 
+                let errorHandler = (error) => {
+                    this.loading = false;
+                    if (error.response && error.response.status === 403) {
+                        this.$bvToast.toast(`Недостаточно прав для добавления значения`, {
+                            variant: 'danger',
+                            solid: true
+                        });
+                    } else {
+                        this.$bvToast.toast(`Не удается добавить значение`, {
+                            variant: 'danger',
+                            solid: true
+                        });
+                    }
+                };
+
                 if (this.addType === 'attach') {
                     let formData = new FormData();
                     formData.append('file', this.toAddValue.file);
@@ -417,9 +432,7 @@
 
                         this.update();
                     })
-                    .catch((e) => {
-                        console.log(e);
-                    });
+                    .catch(errorHandler);
                 } else {
                     if (this.addType === 'role') {
                         this.toAddValue['userId'] = this.objectId;
@@ -435,7 +448,7 @@
                         });
 
                         this.update();
-                    });
+                    }).catch(errorHandler);
                 }
 
                 if (!this.addOneMore) {
