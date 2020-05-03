@@ -2,16 +2,16 @@
     <div>
         <div>
             <div class="s-folder-buttons-bar">
-                <b-button v-if="buttons.pages !== false" :disabled="!isPrevPage" size="sm" @click="prevPage"><font-awesome-icon icon="angle-left" /> Предыдущая</b-button>
+                <b-button v-if="buttons.pages !== false && pagesCount > 1" :disabled="!isPrevPage" size="sm" @click="prevPage"><font-awesome-icon icon="angle-left" /> Предыдущая</b-button>
 
-                <b-dropdown v-if="buttons.pages !== false" id="dropdown-1" :text="currentPageItem" size="sm">
+                <b-dropdown v-if="buttons.pages !== false && pagesCount > 2" id="dropdown-1" :text="currentPageItem" size="sm">
                     <b-dropdown-item v-for="item in pageItems" :key="item.title"
                                      :active="activePage(item.page)"
                                      boundary="viewport"
                                      @click="setPage(item.page)">{{item.title}}</b-dropdown-item>
                 </b-dropdown>
 
-                <b-button v-if="buttons.pages !== false" :disabled="!isNextPage" size="sm" @click="nextPage">Следующая <font-awesome-icon icon="angle-right" /></b-button>
+                <b-button v-if="buttons.pages !== false && pagesCount > 1" :disabled="!isNextPage" size="sm" @click="nextPage">Следующая <font-awesome-icon icon="angle-right" /></b-button>
 
                 <b-dropdown v-if="buttons.columns !== false" id="dropdown-2" text="Колонки" size="sm">
                     <div class="dropdown-item" v-for="col in columns"><b-form-checkbox style="width: 100%;" v-model="col.visible" boundary="viewport">{{col.title}}</b-form-checkbox></div>
@@ -154,17 +154,17 @@
         </table>
         <div>
             <div class="s-folder-buttons-bar">
-                <b-button v-if="buttons.pages !== false" :disabled="!isPrevPage" size="sm" @click="prevPage"><font-awesome-icon icon="angle-left" /> Предыдущая</b-button>
+                <b-button v-if="buttons.pages !== false && pagesCount > 1" :disabled="!isPrevPage" size="sm" @click="prevPage"><font-awesome-icon icon="angle-left" /> Предыдущая</b-button>
 
 
-                <b-dropdown v-if="buttons.pages !== false" id="dropdown-3" :text="currentPageItem" size="sm">
+                <b-dropdown v-if="buttons.pages !== false && pagesCount > 1" id="dropdown-3" :text="currentPageItem" size="sm">
                     <b-dropdown-item v-for="item in pageItems" :key="item.title"
                                      :active="activePage(item.page)"
                                      boundary="viewport"
                                      @click="setPage(item.page)">{{item.title}}</b-dropdown-item>
                 </b-dropdown>
 
-                <b-button v-if="buttons.pages !== false" :disabled="!isNextPage" size="sm" @click="nextPage">Следующая <font-awesome-icon icon="angle-right" /></b-button>
+                <b-button v-if="buttons.pages !== false && pagesCount > 1" :disabled="!isNextPage" size="sm" @click="nextPage">Следующая <font-awesome-icon icon="angle-right" /></b-button>
 
             </div>
         </div>
@@ -216,6 +216,9 @@
             },
             items() {
                 return this.data;
+            },
+            pagesCount() {
+                return this.totalPages;
             },
             isNextPage() {
                 return this.page < this.totalPages - 1;
