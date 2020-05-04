@@ -1,6 +1,7 @@
 package com.sokolsoft.ecm.core.service;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.sokolsoft.ecm.core.SokolException;
 import com.sokolsoft.ecm.core.Utils;
 import com.sokolsoft.ecm.core.model.*;
 import com.sokolsoft.ecm.core.repository.*;
@@ -9,12 +10,14 @@ import com.sokolsoft.ecm.core.specification.Specification;
 import com.sokolsoft.ecm.core.specification.SpecificationUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class DocumentServiceImpl implements DocumentService {
     private final DocumentRepository documentRepository;
 
@@ -168,7 +172,8 @@ public class DocumentServiceImpl implements DocumentService {
         checkForDraft(document, roles);
 
         Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
-        //todo check mandatory fields #SOKOL-1020
+
+        checkMandatoryFields(document, fieldsRights);
         BeanUtils.copyProperties(document, oldDocument, Utils.getNotAccessibleWritablePropertyNames(document, fieldsRights));
 
         fillTitles(oldDocument);
@@ -178,6 +183,29 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         return (Document) documentRepository.save(oldDocument);
+    }
+
+    private void checkMandatoryFields(Document document, Map<String, String> fieldsRights) {
+        /*
+        В целом данный метод вызывается только для дополнительной проверке на стороне сервера,
+        так как проверка должна производится на клиенте.
+         */
+        Class<? extends Document> documentClass = document.getClass();
+        List<Field> fields = Utils.getFields(documentClass);
+        fields.forEach(f -> {
+            String ar = fieldsRights.containsKey(f.getName()) ? fieldsRights.get(f.getName()) : fieldsRights.get("*");
+            if ("3".equals(ar)) {
+                try {
+                    f.setAccessible(true);
+                    Object value = f.get(document);
+                    if (value == null || (value instanceof String && StringUtils.isEmpty(value))) {
+                        throw new SokolException("101", "Не заполнено обязательное поле \"" + f.getName() + "\"");
+                    }
+                } catch (IllegalAccessException e) {
+                    log.error("Cannot access field", e);
+                }
+            }
+        });
     }
 
     public void checkForDraft(Document document, List<String> roles) {
@@ -263,7 +291,7 @@ public class DocumentServiceImpl implements DocumentService {
                     f.set(document, idValue instanceof List
                             ? ((List) idValue).stream().map(fillValue).collect(Collectors.toList())
                             : Optional.of(idValue).map(fillValue).orElse(null));
-                    
+
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
