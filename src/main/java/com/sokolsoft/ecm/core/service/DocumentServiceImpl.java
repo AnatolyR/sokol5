@@ -1,8 +1,13 @@
 package com.sokolsoft.ecm.core.service;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sokolsoft.ecm.core.SokolException;
 import com.sokolsoft.ecm.core.Utils;
+import com.sokolsoft.ecm.core.enums.AuditRecordType;
 import com.sokolsoft.ecm.core.model.*;
 import com.sokolsoft.ecm.core.repository.*;
 import com.sokolsoft.ecm.core.specification.SortOrder;
@@ -10,15 +15,20 @@ import com.sokolsoft.ecm.core.specification.Specification;
 import com.sokolsoft.ecm.core.specification.SpecificationUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
@@ -45,6 +55,12 @@ public class DocumentServiceImpl implements DocumentService {
     private final TaskRepository taskRepository;
 
     private final ApplicationContext applicationContext;
+
+    private final AuditRecordRepository auditRecordRepository;
+
+    private final ConfigService configService;
+
+    private final ObjectMapper objectMapper;
 
     @Override
     public DocumentsPage getDocuments(Specification spec) {
@@ -164,9 +180,11 @@ public class DocumentServiceImpl implements DocumentService {
 //        BeanUtils.copyProperties(document, clearedDocument);
     }
 
+    @SneakyThrows
     @Override
     public Document save(Document document) {
         Document oldDocument = documentRepository.findById(document.getId()).orElse(null);
+        ObjectNode oldDocumentAsNode = objectMapper.valueToTree(oldDocument);
 
         List<String> roles = securityService.getCurrentUserRoles();
         checkForDraft(document, roles);
@@ -181,8 +199,39 @@ public class DocumentServiceImpl implements DocumentService {
         if (oldDocument instanceof IncomingDocument) {
             createExternalOrganizationPersons((IncomingDocument) oldDocument);
         }
+        ObjectNode documentAsNode = objectMapper.valueToTree(oldDocument);
+        saveHistory(document.getId(), oldDocumentAsNode, documentAsNode);
 
         return (Document) documentRepository.save(oldDocument);
+    }
+
+    @SneakyThrows
+    @Transactional
+    protected void saveHistory(UUID documentId, ObjectNode oldDocument, ObjectNode document) {
+        Set<String> fields = new LinkedHashSet<>();
+        oldDocument.fieldNames().forEachRemaining(fields::add);
+        document.fieldNames().forEachRemaining(fields::add);
+        fields.forEach(f -> {
+            JsonNode oldValue = oldDocument.get(f);
+            JsonNode value = document.get(f);
+            if (oldValue.equals(value)) {
+                oldDocument.remove(f);
+                document.remove(f);
+            }
+        });
+
+        User currentUser = userService.getCurrentUser();
+        ObjectNode data = objectMapper.createObjectNode();
+        data.set("prev", oldDocument);
+        data.set("current", document);
+        auditRecordRepository.save(AuditRecord.builder()
+                .objectId(documentId)
+                .userId(currentUser.getId())
+                .userTitle(currentUser.getTitle())
+                .type(AuditRecordType.DOCUMENT_CHANGE)
+                .createDate(Instant.now())
+                .data(objectMapper.writeValueAsString(data))
+                .build());
     }
 
     private void checkMandatoryFields(Document document, Map<String, String> fieldsRights) {
@@ -328,5 +377,67 @@ public class DocumentServiceImpl implements DocumentService {
         Document document = documentRepository.getOne(documentId);
         document.setStatus(state);
         documentRepository.save(document);
+    }
+
+    @Override
+    public Page<AuditRecord> getDocumentHistory(UUID documentId, Pageable pageable) {
+        Document document = documentRepository.findById(documentId).orElse(null);
+        if (document != null) {
+            //todo check AR to read
+            Page<AuditRecord> auditRecords = auditRecordRepository.findAllByObjectId(documentId, pageable);
+            auditRecords.forEach(r -> {
+                try {
+                    ObjectNode node = objectMapper.readValue(r.getData(), ObjectNode.class);
+                    ObjectNode prev = (ObjectNode) node.get("prev");
+                    ObjectNode current = (ObjectNode) node.get("current");
+
+                    Set<String> fields = new LinkedHashSet<>();
+                    prev.fieldNames().forEachRemaining(fields::add);
+                    current.fieldNames().forEachRemaining(fields::add);
+                    ArrayNode fieldsArray = node.putArray("fields");
+                    JsonNode documentType = configService.getPublicConfig("types/" + document.getDocumentType());
+                    documentType.get("fields").forEach(f -> {
+                        String id = f.get("id").asText();
+                        if (fields.contains(id)) {
+                            String title = f.get("title").asText();
+                            ObjectNode field = objectMapper.createObjectNode();
+                            field.put("id", id);
+                            field.put("title", title);
+
+                            fieldsArray.add(field);
+                        }
+                    });
+
+                    //todo extract to method
+                    List<String> roles = securityService.getCurrentUserRoles();
+                    checkForDraft(document, roles);
+                    Map<String, String> fieldsRights = securityService.getFieldsRights(document.getDocumentType(), document.getStatus(), roles);
+                    
+                    fields.forEach(f -> {
+                        String level = fieldsRights.get(f);
+                        if (level == null) {
+                            level = fieldsRights.get("*");
+                        }
+                        if (!"1".equals(level)
+                                && !"2".equals(level)
+                                && !"3".equals(level)) {
+                            if (prev.has(f)) {
+                                prev.remove(f);
+                            }
+                            if (current.has(f)) {
+                                current.remove(f);
+                            }
+                        }
+                    });
+                    r.setData(objectMapper.writeValueAsString(node));
+                } catch (IOException e) {
+                    log.error("Cannot read document history object", e);
+                    r.setData(null);
+                }
+            });
+            return auditRecords;
+        } else {
+            throw new RuntimeException("Document not exist or no access rights");
+        }
     }
 }

@@ -1,0 +1,84 @@
+{
+  "fields": [
+    {
+      "id": "addressee",
+      "title": "Адресат"
+    },
+    {
+      "id": "addresseeCopies",
+      "title": "Адресаты (копии)"
+    },
+    {
+      "id": "appendixCount",
+      "title": "Количество приложений"
+    },
+    {
+      "id": "caseNumber",
+      "title": "Дело"
+    },
+    {
+      "id": "comment",
+      "title": "Комментарий"
+    },
+    {
+      "id": "controller",
+      "title": "Контроллер"
+    },
+    {
+      "id": "deliveryMethod",
+      "title": "Способ доставки"
+    },
+    {
+      "id": "documentKind",
+      "title": "Вид документа"
+    },
+    {
+      "id": "documentNumber",
+      "title": "Номер документа"
+    },
+    {
+      "id": "executionDate",
+      "title": "Дата исполнения"
+    },
+    {
+      "id": "executor",
+      "title": "Исполнитель"
+    },
+    {
+      "id": "externalDate",
+      "title": "Исходящая дата"
+    },
+    {
+      "id": "externalExecutor",
+      "title": "Исполнитель (исх)"
+    },
+    {
+      "id": "externalNumber",
+      "title": "Исходящий номер"
+    },
+    {
+      "id": "externalOrganization",
+      "title": "Корреспондент"
+    },
+    {
+      "id": "externalSigner",
+      "title": "Кем подписано"
+    },
+    {
+      "id": "pageCount",
+      "title": "Количество листов"
+    },
+    {
+      "id": "registrar",
+      "title": "Регистратор"
+    },
+    {
+      "id": "registrationDate",
+      "title": "Дата регистрации"
+    },
+    {
+      "id": "title",
+      "title": "Заголовок"
+    }
+  ]
+}

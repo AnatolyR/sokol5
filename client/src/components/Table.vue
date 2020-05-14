@@ -97,7 +97,8 @@
             <tbody>
 
             <!-- ========================== -->
-            <tr v-for="item in data" :key="item.id">
+            <template v-for="item in data">
+            <tr :key="item.id">
                 <td v-for="col in visibleColumns" :style="{width: col.width ? col.width : ''}"
                     @click="() => {if (col.type === 'checkbox') item.selected = !item.selected}">
                     <span v-if="col.type !== 'link'
@@ -107,6 +108,7 @@
                         && col.type !== 'taskLink'
                         && col.type !== 'date'
                         && col.type !== 'datetime'
+                        && col.type !== 'detailsRow'
                         && (col.type !== 'fileLink' || !buttons['view'])"
                           :class="`s-table-cell-${col.id}`">{{getItemValue(item, col.id)}}</span>
 
@@ -133,6 +135,10 @@
                                      :class="`s-table-cell-${col.id}`"
                                      v-model="item.selected" @click.native="(e) => e.preventDefault()"></b-form-checkbox>
 
+                    <b-button size="sm" variant="light" v-if="col.type === 'detailsRow'"
+                                     :class="`s-table-cell-${col.id}`"
+                              :pressed.sync="item.selected" @click.native="(e) => e.preventDefault()">{{item.selected ? 'Скрыть' : 'Показать'}}</b-button>
+
                     <s-select v-if="col.type === 'userSelect'"
                               :config="userSelectConfig"
                               :emit-with-title="true"
@@ -148,6 +154,23 @@
                             :config="dateConfig"/>
                 </td>
             </tr>
+            <tr :key="item.id + '_details'">
+                <td colspan="10" v-if="item.selected">
+                    <table>
+                        <tr>
+                            <th>Поле</th>
+                            <th>Старое значение</th>
+                            <th>Новое значение</th>
+                        </tr>
+                        <tr v-for="f in getItemInfo(item)">
+                            <td>{{f.title}}</td>
+                            <td>{{f.prev}}</td>
+                            <td>{{f.current}}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            </template>
             <!-- ========================== -->
             
             </tbody>
@@ -285,9 +308,9 @@
                         conditions: this.conditions}).then((res) => {
                     let fullData = res.data;
 
-                    if (this.buttons.del) {
+                    // if (this.buttons.del) {
                         fullData.content.forEach(i => i.selected = false);
-                    }
+                    // }
 
                     this.data = fullData.content;
                     this.totalPages = fullData.totalPages;
@@ -477,6 +500,20 @@
                     return item[id];
                 }
             },
+            getItemInfo(item) {
+                let changes = JSON.parse(this.getItemValue(item, "data"));
+                let fields = [];
+                let prev  = changes["prev"];
+                let current  = changes["current"];
+                changes["fields"].forEach(f => {
+                    fields.push({
+                        title: f.title,
+                        prev: prev[f.id] ? prev[f.id] : "",
+                        current: current[f.id] ? current[f.id] : ""
+                    });
+                });
+                return fields;
+            },
             getDateValue(item, id) {
                 let val = this.getItemValue(item, id);
                 return val ? new Date(val).toLocaleDateString("ru") : '';
@@ -498,8 +535,6 @@
                 totalPages: null,
                 totalElements: null,
                 data: [],
-                sortProperty: null,
-                sortDirection: null,
                 conditions: null,
                 displayFilter: false,
                 toAddValue: {},

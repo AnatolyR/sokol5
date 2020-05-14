@@ -1,6 +1,7 @@
 package com.sokolsoft.ecm.core.web;
 
 import com.sokolsoft.ecm.core.Utils;
+import com.sokolsoft.ecm.core.model.AuditRecord;
 import com.sokolsoft.ecm.core.model.Document;
 import com.sokolsoft.ecm.core.service.DocumentService;
 import com.sokolsoft.ecm.core.service.SecurityService;
@@ -10,6 +11,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
@@ -73,6 +76,11 @@ public class DocumentController {
     public String createDocument(@PathVariable("documentType") String documentType) {
         UUID documentId = documentService.createDocument(documentType);
         return documentId.toString();
+    }
+
+    @GetMapping("/api/document/{documentId}/history")
+    public Page<AuditRecord> getDocumentHistory(@PathVariable("documentId") UUID documentId, Pageable pageable) {
+        return documentService.getDocumentHistory(documentId, pageable);
     }
 
     @Data

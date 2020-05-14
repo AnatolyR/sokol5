@@ -150,7 +150,7 @@
                 <s-linked-documents-form :object-id="documentId" :object-type="'document'" @updateLinks="updateLinksCount"></s-linked-documents-form>
             </div>
             <div v-if="tab === 'history'">
-                История
+                <s-history-form :object-id="documentId" :object-type="'document'"></s-history-form>
             </div>
 
         </div>
@@ -202,6 +202,7 @@
     import SDocumentIncomingForm from "../components/DocumentIncomingForm";
     import SDocumentInnerForm from "../components/DocumentInnerForm";
     import SAttachForm from "../components/AttachForm";
+    import SHistoryForm from "../components/HistoryForm";
     import SLinkedDocumentsForm from "../components/LinkedDocumentsForm";
     import SExecutionForm from "../components/ExecutionForm";
     import STaskForm from '../components/TaskForm';
@@ -215,7 +216,7 @@
 
     export default {
         // components: {SSelect, SDocumentForm},
-        components: {SExecutionForm, SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm, STaskForm, SLinkedDocumentsForm},
+        components: {SExecutionForm, SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm, SHistoryForm, STaskForm, SLinkedDocumentsForm},
         mounted() {
             if (this.$route.meta.openAsTask === true) {
                 this.tab = 'task';

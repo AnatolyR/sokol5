@@ -9,3 +9,7 @@ Content-Type: application/json
 }
 
 ###
+
+GET http://localhost:8080/api/document/c32a1bdd-d6a4-4a09-8e7b-249d6c7fd673/history
+
+###
