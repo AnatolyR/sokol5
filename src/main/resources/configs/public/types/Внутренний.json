@@ -1,0 +1,64 @@
+{
+  "fields": [
+    {
+      "id": "addresseeCopies",
+      "title": "Получатели"
+    },
+    {
+      "id": "appendixCount",
+      "title": "Количество приложений"
+    },
+    {
+      "id": "approvers",
+      "title": "Согласование"
+    },
+    {
+      "id": "caseNumber",
+      "title": "Дело"
+    },
+    {
+      "id": "comment",
+      "title": "Комментарий"
+    },
+    {
+      "id": "documentKind",
+      "title": "Вид документа"
+    },
+    {
+      "id": "documentNumber",
+      "title": "Номер документа"
+    },
+    {
+      "id": "executor",
+      "title": "Исполнитель"
+    },
+    {
+      "id": "forDocumentNumber",
+      "title": "На №"
+    },
+    {
+      "id": "forRegistrationDate",
+      "title": "На дату"
+    },
+    {
+      "id": "pageCount",
+      "title": "Количество листов"
+    },
+    {
+      "id": "registrar",
+      "title": "Регистратор"
+    },
+    {
+      "id": "registrationDate",
+      "title": "Дата регистрации"
+    },
+    {
+      "id": "signers",
+      "title": "Подписание"
+    },
+    {
+      "id": "title",
+      "title": "Заголовок"
+    }
+  ]
+}
