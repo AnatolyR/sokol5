@@ -93,4 +93,11 @@ public abstract class Document implements Serializable {
     protected String creatorTitle;
 
     private String documentGroup;
+
+    private Boolean publicAccessible;
+
+    private String folder;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<UUID> involvedUsers;
 }

@@ -1,5 +1,6 @@
 package com.sokolsoft.ecm.core.service;
 
+import com.sokolsoft.ecm.core.SokolSecurityException;
 import com.sokolsoft.ecm.core.model.Attach;
 import com.sokolsoft.ecm.core.model.AttachContent;
 import com.sokolsoft.ecm.core.model.User;
@@ -39,9 +40,9 @@ public class AttachServiceImpl implements AttachService {
     @Override
     @Transactional
     public UUID saveFile(byte[] content, String originalFileName, UUID objectId, String objectType) {
-        List<String> rolesForObject = accessRightsService.getRolesForObject(objectId, objectType);
-        if (!rolesForObject.contains("ROLE_ATTACH_ADD")) {
-            throw new RuntimeException("No access rights to add file");
+
+        if (!accessRightsService.isActionAvailable(objectId, objectType, "@addAttach")) {
+            throw new SokolSecurityException("Нет прав на добавление файла");
         }
 
         UUID contentId = UUID.randomUUID();

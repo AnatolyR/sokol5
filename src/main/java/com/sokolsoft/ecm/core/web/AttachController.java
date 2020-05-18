@@ -1,5 +1,6 @@
 package com.sokolsoft.ecm.core.web;
 
+import com.sokolsoft.ecm.core.SokolSecurityException;
 import com.sokolsoft.ecm.core.model.Attach;
 import com.sokolsoft.ecm.core.model.AttachContent;
 import com.sokolsoft.ecm.core.repository.AttachContentRepository;
@@ -56,8 +57,7 @@ public class AttachController {
     @GetMapping(path = "/api/attaches/search/attachesByObjectId")
     @ResponseBody
     public Page getAttaches(@Param("objectId") String objectId, @Param("objectType") String objectType, Pageable p) {
-        List<String> rolesForObject = accessRightsService.getRolesForObject(UUID.fromString(objectId), objectType);
-        if (rolesForObject.contains("ROLE_ATTACH_LIST")) {
+        if (accessRightsService.isActionAvailable(UUID.fromString(objectId), objectType, "@listAttaches")) {
             return attachRepository.findByObjectIdEqualsAndObjectTypeEquals(UUID.fromString(objectId), objectType, p);
         } else {
             return Page.empty();
@@ -68,8 +68,7 @@ public class AttachController {
     @GetMapping(path = "/api/attaches/search/countByObjectId")
     @ResponseBody
     public long countByObjectId(@Param("objectId") String objectId, @Param("objectType") String objectType) {
-        List<String> rolesForObject = accessRightsService.getRolesForObject(UUID.fromString(objectId), objectType);
-        if (rolesForObject.contains("ROLE_ATTACH_COUNT")) {
+        if (accessRightsService.isActionAvailable(UUID.fromString(objectId), objectType, "@countAttaches")) {
             return attachRepository.countByObjectIdEqualsAndObjectTypeEquals(UUID.fromString(objectId), objectType);
         } else {
             return 0;
@@ -102,6 +101,10 @@ public class AttachController {
         Attach attach = attachRepository.findById(attachId)
                 .orElseThrow(() -> new RuntimeException("Cannot find attach"));
 
+        if (!accessRightsService.isActionAvailable(attach.getObjectId(), attach.getObjectType(), "@viewAttach")) {
+            throw new SokolSecurityException("Нет прав на просмотр файла");
+        }
+
         String fileName = attach.getTitle();
         String fileNameAdditional = URLEncoder.encode(fileName);
         fileNameAdditional = fileNameAdditional.replace("+", " ");
@@ -119,9 +122,8 @@ public class AttachController {
                 .collect(Collectors.toList()));
 
         attaches.forEach(a -> {
-            List<String> rolesForObject = accessRightsService.getRolesForObject(a.getObjectId(), a.getObjectType());
-            if (!rolesForObject.contains("ROLE_ATTACH_DEL")) {
-                throw new RuntimeException("No access rights to delete file");
+            if (!accessRightsService.isActionAvailable(a.getObjectId(), a.getObjectType(), "@deleteAttach")) {
+                throw new SokolSecurityException("Нет прав на удаление файла");
             }
         });
 
@@ -138,17 +140,17 @@ public class AttachController {
     @GetMapping(path = "/api/attaches/availableActions")
     @ResponseBody
     public List<String> getAvailableActions(@Param("objectId") String objectId, @Param("objectType") String objectType) {
-        List<String> rolesForObject = accessRightsService.getRolesForObject(UUID.fromString(objectId), objectType);
-        List<String> actions = new ArrayList<>();
-        if (rolesForObject.contains("ROLE_ATTACH_ADD")) {
-            actions.add("add");
+        List<String> actions = accessRightsService.getActionsForObject(UUID.fromString(objectId), objectType);
+        List<String> attachActions = new ArrayList<>();
+        if (actions.contains("@addAttach")) {
+            attachActions.add("add");
         }
-        if (rolesForObject.contains("ROLE_ATTACH_DEL")) {
-            actions.add("del");
+        if (actions.contains("@deleteAttach")) {
+            attachActions.add("del");
         }
-        if (rolesForObject.contains("ROLE_ATTACH_CONTENT")) {
-            actions.add("view");
+        if (actions.contains("@viewAttach")) {
+            attachActions.add("view");
         }
-        return actions;
+        return attachActions;
     }
 }

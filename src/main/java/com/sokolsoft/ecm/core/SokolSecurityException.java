@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class SokolSecurityException extends RuntimeException {
     private String missedRole;
 
+    public SokolSecurityException(String message) {
+        super(message);
+    }
+
     public SokolSecurityException(String missedRole, String message) {
         super(message);
         this.missedRole = missedRole;

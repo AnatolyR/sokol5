@@ -13,7 +13,7 @@
             <!-- BUTTONS -->
             <div class="s-document-button-bar">
                 <b-button v-if="openedFromFolder" size="sm" variant="light" @click="back"><font-awesome-icon icon="angle-left" /> Назад</b-button>
-                <b-button v-if="!editMode" @click="edit" size="sm">Редактировать</b-button>
+                <b-button v-if="!editMode && canEdit" @click="edit" size="sm">Редактировать</b-button>
                 <b-button v-if="editMode" variant="success" @click="save" size="sm">Сохранить</b-button>
                 <b-button v-if="editMode" variant="danger" @click="cancel" size="sm">Отменить</b-button>
 
@@ -241,7 +241,8 @@
             loadActions() {
                 axios.get(`/api/document/${this.documentId}/actions`)
                     .then((res) => {
-                        this.actions = res.data;
+                        this.actions = res.data.filter(a => a.id !== "edit");
+                        this.canEdit = res.data.findIndex(a => a.id === "edit") >= 0;
                     });
             },
             execute(action) {
@@ -437,6 +438,8 @@
                 uncorrectFields: "",
                 actions: [],
                 form: null,
+
+                canEdit: false,
 
                 dictionariesConfigs: {
                     userSelectConfig: UserSelectConfig(),

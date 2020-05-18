@@ -38,7 +38,7 @@ public class FlowServiceImpl implements FlowService {
             return Collections.emptyList();
         }
 
-        List<String> roles = accessRightsService.getRolesForObject(document.getId(), "document");
+        List<String> availableActions = accessRightsService.getActionsForObject(document.getId(), "document");
 
         String documentStatus = document.getStatus();
         List<Action> actions = flow.get("states") != null
@@ -47,6 +47,7 @@ public class FlowServiceImpl implements FlowService {
                 .filter(s -> s.get("actions") != null)
                 .flatMap(s -> StreamSupport.stream(s.get("actions").spliterator(), false))
 //                .filter(a -> Utils.checkAccess(a.get("secured").asText(), roles))
+                .filter(a -> availableActions.contains("@" + a.get("id").asText()))
                 .map(a -> Action.builder()
                         .id(a.get("id").asText())
                         .title(a.get("title").asText())
@@ -54,6 +55,13 @@ public class FlowServiceImpl implements FlowService {
                         .build())
                 .collect(Collectors.toList())
                 : Collections.emptyList();
+
+        if (availableActions.contains("@edit")) {
+            actions = new ArrayList<>(actions);
+            actions.add(Action.builder()
+                    .id("edit")
+                    .build());
+        }
 
         return actions;
     }
