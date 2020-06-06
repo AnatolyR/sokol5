@@ -44,6 +44,11 @@
 Входящий/Черновик/ROLE_AUTHOR/@viewAttach=1
 Входящий/Черновик/ROLE_AUTHOR/@listAttaches=1
 Входящий/Черновик/ROLE_AUTHOR/@countAttaches=1
+
+Входящий/Черновик/ROLE_AUTHOR/@addLink=1
+Входящий/Черновик/ROLE_AUTHOR/@deleteLink=1
+Входящий/Черновик/ROLE_AUTHOR/@viewLink=1
+
 Входящий/Черновик/ROLE_AUTHOR/@edit=1
 Входящий/Черновик/ROLE_AUTHOR/@doregistration=1
 Входящий/*/ROLE_AUTHOR/@toreview=1

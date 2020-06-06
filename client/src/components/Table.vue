@@ -226,14 +226,16 @@
     import SAddLink from "./AddLinkForm";
     import SSelect from "./fields/Select";
     import datePicker from 'vue-bootstrap-datetimepicker';
-    import SExecutionForm from "../components/ExecutionForm";
     import uuid from '../uuid.js';
     import moment from 'moment';
 
     export default {
         name: 's-table',
-        components: {SAddAttach, SFilter, SDictionaryValue, SUserForm,
-            SContragentForm, SSelect, datePicker, SAddLink, SExecutionForm},
+        components: {
+            SAddAttach, SFilter, SDictionaryValue, SUserForm,
+            SContragentForm, SSelect, datePicker, SAddLink,
+            SExecutionForm: () => import("../components/ExecutionForm")
+        },
         mounted() {
             this.update();
         },

@@ -26,6 +26,7 @@
 <script>
     import STable from '../components/Table';
     import axios from 'axios';
+    import Vue from "vue";
 
     export default {
         name: 's-linked-documents-form',
@@ -42,7 +43,7 @@
             loadActions() {
                 axios.get(`/api/links/availableActions?objectId=${this.objectId}&objectType=${this.objectType}`)
                     .then((res) => {
-                        res.data.forEach((a) => this.buttons[a] = true);
+                        res.data.forEach((a) => Vue.set(this.buttons, a, true));
                     });
             },
             loadData(spec) {
