@@ -23,6 +23,7 @@
             </b-form-group>
 
             <b-form-group
+                    v-if="!addTasks"
                     label="Ответственный исполнитель"
                     label-for="main-executor-input">
                 <s-select
@@ -79,7 +80,6 @@
 </style>
 
 <script>
-    import STable from '../components/Table';
     import axios from 'axios';
     import uuid from '../uuid.js';
     import SAttachForm from "../components/AttachForm";
@@ -88,10 +88,18 @@
 
     export default {
         name: 's-execution-form',
-        components: {STable, SAttachForm, SSelect, datePicker},
+        components: {
+            STable: () => import('../components/Table'),
+            SAttachForm,
+            SSelect,
+            datePicker
+        },
         props: {
             documentId: {},
-            actionId: {}
+            actionId: {},
+            addTasks: {
+                default: false
+            }
         },
         mounted() {
             this.loading = false;
@@ -133,6 +141,9 @@
                     executionDate: this.executionDate ? new Date(this.executionDate).toISOString() : null,
                     executors: executors
                 }
+            },
+            getFormState() {
+                return null;
             }
         },
         data() {

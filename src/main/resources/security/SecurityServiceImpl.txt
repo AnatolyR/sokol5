@@ -46,5 +46,15 @@
 Входящий/Черновик/ROLE_AUTHOR/@countAttaches=1
 Входящий/Черновик/ROLE_AUTHOR/@edit=1
 Входящий/Черновик/ROLE_AUTHOR/@doregistration=1
+Входящий/*/ROLE_AUTHOR/@toreview=1
+Входящий/*/ROLE_AUTHOR/@doresolution=1
+Входящий/*/ROLE_AUTHOR/@executed=1
+Входящий/*/ROLE_AUTHOR/@tocase=1
+
+Входящий/*/ROLE_AUTHOR/@addtasks=1
+Входящий/*/ROLE_AUTHOR/@viewtasks=1
+
+Входящий/На исполнении/ROLE_AUTHOR/@deleteTask=1
+Входящий/На исполнении/ROLE_AUTHOR/@editTask=1
 
 

@@ -1,20 +1,14 @@
 package com.sokolsoft.ecm.core.web;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.sokolsoft.ecm.core.Utils;
-import com.sokolsoft.ecm.core.model.Document;
 import com.sokolsoft.ecm.core.model.Task;
-import com.sokolsoft.ecm.core.service.*;
-import lombok.Builder;
-import lombok.Data;
+import com.sokolsoft.ecm.core.service.FlowService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,5 +35,22 @@ public class FlowController {
     @PostMapping("/api/document/{documentId}/actions")
     public void executeExtendedAction(@RequestBody FlowService.ExtendedAction action) {
         flowService.executeAction(action);
+    }
+
+    @GetMapping("/api/document/{documentId}/tasks")
+    public Page<Task> getTasks(@PathVariable("documentId") UUID documentId) {
+        return flowService.getTasks(documentId);
+    }
+
+    @GetMapping(path = "/api/tasks/availableActions")
+    @ResponseBody
+    public List<String> getAvailableActions(@Param("objectId") String objectId, @Param("objectType") String objectType) {
+        return flowService.getAvailableActions(objectId, objectType);
+    }
+
+    @DeleteMapping(value = "/api/delete/tasks/{ids}")
+    @Transactional
+    public void deleteFiles(@PathVariable String ids) {
+        flowService.deleteTasks(Arrays.asList(ids.split(",")));
     }
 }

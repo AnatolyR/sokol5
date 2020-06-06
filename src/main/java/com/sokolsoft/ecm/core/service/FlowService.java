@@ -1,7 +1,9 @@
 package com.sokolsoft.ecm.core.service;
 
+import com.sokolsoft.ecm.core.model.Task;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.domain.Page;
 
 import java.time.Instant;
 import java.util.List;
@@ -12,6 +14,12 @@ public interface FlowService {
     List<Action> getActions(UUID documentId);
 
     void executeAction(ExtendedAction action);
+
+    Page<Task> getTasks(UUID documentId);
+
+    List<String> getAvailableActions(String objectId, String objectType);
+
+    void deleteTasks(List<String> ids);
 
     @Data
     @Builder

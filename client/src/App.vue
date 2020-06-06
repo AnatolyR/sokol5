@@ -13,11 +13,11 @@
         <input v-model="user" id="inputUser" class="form-control" placeholder="Имя пользователя" required autofocus>
         <label for="inputPassword" class="sr-only">Пароль</label>
         <input v-model="password" type="password" id="inputPassword" class="form-control" placeholder="Пароль" required>
-        <!--<div class="checkbox mb-3">-->
-        <!--<label>-->
-        <!--<input type="checkbox" value="remember-me"> Запомнить-->
-        <!--</label>-->
-        <!--</div>-->
+        <div class="checkbox mb-3">
+          <label>
+            <input type="checkbox" value="remember-me" v-model="rememberMe"> Запомнить
+          </label>
+        </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
       </form>
       <div slot="modal-footer" class="w-100"></div>
@@ -65,6 +65,7 @@ a .nav-link.router-link-exact-active {
           return {
               user: null,
               password: null,
+              rememberMe: null,
               errorMessage: null
           }
       },
@@ -81,7 +82,7 @@ a .nav-link.router-link-exact-active {
               e.preventDefault();
           },
           handleSubmit () {
-              userService.login(this.user, this.password).then(() => {
+              userService.login(this.user, this.password, this.rememberMe).then(() => {
                   axios.get('/api/currentUser').then((res) => {
                       const user = res.data;
                       store.dispatch("setUser", user);

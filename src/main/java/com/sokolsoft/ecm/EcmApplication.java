@@ -26,6 +26,8 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -134,7 +136,16 @@ public class EcmApplication {
                     .permitAll()
 //                  .and().requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests()
 //                    .anyRequest().permitAll()
+                    .and()
+                    .rememberMe().tokenRepository(tokenRepository()).key("GH7646VONJT53O")
                   .and().logout().logoutUrl("/api/logout");
+        }
+
+        @Bean
+        public PersistentTokenRepository tokenRepository() {
+            JdbcTokenRepositoryImpl jdbcTokenRepositoryImpl=new JdbcTokenRepositoryImpl();
+            jdbcTokenRepositoryImpl.setDataSource(dataSource);
+            return jdbcTokenRepositoryImpl;
         }
 
         @Override

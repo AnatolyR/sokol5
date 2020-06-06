@@ -17,7 +17,7 @@
                 <b-button v-if="editMode" variant="success" @click="save" size="sm">Сохранить</b-button>
                 <b-button v-if="editMode" variant="danger" @click="cancel" size="sm">Отменить</b-button>
 
-                <b-button v-for="a in actions" @click="execute(a)" size="sm">{{a.title}}</b-button>
+                <b-button v-if="!editMode" v-for="a in actions" @click="execute(a)" size="sm">{{a.title}}</b-button>
             </div>
 
 
@@ -62,7 +62,7 @@
                        data-toggle="tab"
                        href="#"
                        @click.prevent="showProcess">
-                        Процесс <b-badge v-if="processCount > 0" style="top: -0.2em; position: relative;" variant="light">{{processCount}}</b-badge>
+                        Исполнение <b-badge v-if="processCount > 0" style="top: -0.2em; position: relative;" variant="light">{{processCount}}</b-badge>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -144,7 +144,7 @@
                 <s-attach-form :object-id="documentId" :object-type="'document'" @updateAttaches="updateAttachCount"></s-attach-form>
             </div>
             <div v-if="tab === 'process'">
-                Процесс
+                <s-process-form :object-id="documentId" :object-type="'document'"></s-process-form>
             </div>
             <div v-if="tab === 'links'">
                 <s-linked-documents-form :object-id="documentId" :object-type="'document'" @updateLinks="updateLinksCount"></s-linked-documents-form>
@@ -203,6 +203,7 @@
     import SDocumentInnerForm from "../components/DocumentInnerForm";
     import SAttachForm from "../components/AttachForm";
     import SHistoryForm from "../components/HistoryForm";
+    import SProcessForm from "../components/ProcessForm";
     import SLinkedDocumentsForm from "../components/LinkedDocumentsForm";
     import SExecutionForm from "../components/ExecutionForm";
     import STaskForm from '../components/TaskForm';
@@ -216,7 +217,7 @@
 
     export default {
         // components: {SSelect, SDocumentForm},
-        components: {SExecutionForm, SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm, SHistoryForm, STaskForm, SLinkedDocumentsForm},
+        components: {SExecutionForm, SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm, SHistoryForm, SProcessForm, STaskForm, SLinkedDocumentsForm},
         mounted() {
             if (this.$route.meta.openAsTask === true) {
                 this.tab = 'task';
@@ -355,6 +356,7 @@
                 });
             },
             loadDocument() {
+                this.tab = "attributes";
                 this.updateAttachCount();
                 this.updateLinksCount();
                 this.loadActions();

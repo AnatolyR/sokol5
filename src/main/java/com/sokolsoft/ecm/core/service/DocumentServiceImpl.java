@@ -298,9 +298,9 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
-    private void fillTitles(Document document) {
+    public void fillTitles(Object document) {
 
-        Class<? extends Document> documentClass = document.getClass();
+        Class<?> documentClass = document.getClass();
         List<Field> fields = Utils.getFields(documentClass);
         Map<String, Field> fieldsMap = fields.stream().collect(Collectors.toMap(Field::getName, f -> f));
 

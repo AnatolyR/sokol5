@@ -1,5 +1,6 @@
 package com.sokolsoft.ecm.core.model;
 
+import com.sokolsoft.ecm.core.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,6 +33,7 @@ public class Task {
 
     private UUID executorId;
 
+    @TitleField(idField = "executorId", repository = UserRepository.class)
     private String executorTitle;
 
     private UUID executedByUser;
@@ -39,6 +41,8 @@ public class Task {
     private String type;
 
     private String status;
+
+    private String statusTitle;
 
     private String stage;
 
@@ -48,6 +52,7 @@ public class Task {
 
     private UUID author;
 
+    @TitleField(idField = "author", repository = UserRepository.class)
     private String authorTitle;
 
     private Instant dueDate;
@@ -60,6 +65,7 @@ public class Task {
 
     private UUID controllerId;
 
+    @TitleField(idField = "controllerId", repository = UserRepository.class)
     private String controllerTitle;
 
     private Boolean primal;

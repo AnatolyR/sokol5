@@ -40,7 +40,7 @@
     },
     {
       "id": "execution",
-      "title": "Исполнение",
+      "title": "На исполнении",
       "actions": [
         {
           "id": "executed",

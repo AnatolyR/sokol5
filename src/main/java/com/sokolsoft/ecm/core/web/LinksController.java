@@ -91,18 +91,18 @@ public class LinksController {
     @GetMapping(path = "/api/links/availableActions")
     @ResponseBody
     public List<String> getAvailableActions(@Param("objectId") String objectId, @Param("objectType") String objectType) {
-        List<String> rolesForObject = accessRightsService.getRolesForObject(UUID.fromString(objectId), objectType);
-        List<String> actions = new ArrayList<>();
-        if (rolesForObject.contains("ROLE_LINK_ADD")) {
-            actions.add("add");
+        List<String> actions = accessRightsService.getActionsForObject(UUID.fromString(objectId), objectType);
+        List<String> resultActions = new ArrayList<>();
+        if (actions.contains("@addLink")) {
+            resultActions.add("add");
         }
-        if (rolesForObject.contains("ROLE_LINK_DEL")) {
-            actions.add("del");
+        if (actions.contains("@deleteLink")) {
+            resultActions.add("del");
         }
-        if (rolesForObject.contains("ROLE_LINK_CONTENT")) {
-            actions.add("view");
+        if (actions.contains("@viewLink")) {
+            resultActions.add("view");
         }
-        return actions;
+        return resultActions;
     }
 
     @DeleteMapping(value = "/api/delete/links/{ids}")

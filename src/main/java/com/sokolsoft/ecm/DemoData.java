@@ -149,7 +149,7 @@ public class DemoData {
         d1.setDocumentType("Входящий");
         d1.setDocumentKind("Запрос");
         d1.setRegistrationDate(Instant.parse("2019-03-03T00:00:00.00Z"));
-        d1.setDocumentNumber("131");
+        d1.setDocumentNumber("13" + i);
         d1.setStatus("Черновик");
         d1.setAddressee(UUID.fromString("9bb42bab-8965-49d2-b134-cec0d1505cc3"));
         d1.setAddresseeTitle("Ивашова А. Е.");
@@ -190,8 +190,8 @@ public class DemoData {
         d1.setDocumentType("Входящий");
         d1.setDocumentKind("Запрос");
         d1.setRegistrationDate(Instant.parse("2019-03-03T00:00:00.00Z"));
-        d1.setDocumentNumber("131");
-        d1.setStatus("На рассмотрении");
+        d1.setDocumentNumber("123");
+        d1.setStatus("На исполнении");
         d1.setAddressee(UUID.fromString("9bb42bab-8965-49d2-b134-cec0d1505cc3"));
         d1.setAddresseeTitle("Ивашова А. Е.");
 
@@ -217,8 +217,10 @@ public class DemoData {
         d1.setExecutorTitle("Луков Б. П.");
         d1.setController(UUID.fromString("d259e840-0b34-4512-bc2e-5b5498dc4171"));
         d1.setControllerTitle("Карандашов К. Н.");
-        d1.setCreator(UUID.fromString("c90b9c9f-ca1a-4b7c-bc77-3557c908f8d7"));
-        d1.setCreatorTitle("Енотина А. В.");
+//        d1.setCreator(UUID.fromString("c90b9c9f-ca1a-4b7c-bc77-3557c908f8d7"));
+//        d1.setCreatorTitle("Енотина А. В.");
+        d1.setCreator(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"));
+        d1.setCreatorTitle("Admin");
         documents.add(d1);
 
         auditRecordRepository.save(AuditRecord.builder()
@@ -313,6 +315,7 @@ public class DemoData {
                 .description("Проверить и выполнить")
                 .author(UUID.fromString("5ca6d548-afa3-4c26-a72e-f0f19100e701"))
                 .authorTitle("Луков Б. П.")
+                .createDate(Instant.now())
                 .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
                 .type("execution")
                 .document(d3)
@@ -328,6 +331,7 @@ public class DemoData {
                 .description("Посмотреть")
                 .author(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"))
                 .authorTitle("Admin")
+                .createDate(Instant.now())
                 .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
                 .type("execution")
                 .document(d1)

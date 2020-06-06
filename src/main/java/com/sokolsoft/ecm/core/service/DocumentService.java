@@ -23,4 +23,6 @@ public interface DocumentService {
     void moveDocumentToState(UUID documentId, String title);
 
     Page<AuditRecord> getDocumentHistory(UUID documentId, Pageable pageable);
+
+    void fillTitles(Object document);
 }

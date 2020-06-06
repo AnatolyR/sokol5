@@ -4,7 +4,7 @@
             <div class="s-folder-buttons-bar">
                 <b-button v-if="buttons.pages !== false && pagesCount > 1" :disabled="!isPrevPage" size="sm" @click="prevPage"><font-awesome-icon icon="angle-left" /> Предыдущая</b-button>
 
-                <b-dropdown v-if="buttons.pages !== false && pagesCount > 2" id="dropdown-1" :text="currentPageItem" size="sm">
+                <b-dropdown v-if="buttons.pages !== false && pagesCount > 1" id="dropdown-1" :text="currentPageItem" size="sm">
                     <b-dropdown-item v-for="item in pageItems" :key="item.title"
                                      :active="activePage(item.page)"
                                      boundary="viewport"
@@ -22,7 +22,7 @@
                 <b-button v-if="buttons.add" variant="success" size="sm" @click="showAddModal">Добавить</b-button>
                 <b-button v-if="buttons.del" :disabled="toDeleteItems === ''" variant="danger" size="sm" @click="showDelModal">Удалить</b-button>
 
-                <b-modal id="add-modal" ref="add-modal" title="Добавление" ok="'Сохранить'" cancel="'Отмена'">
+                <b-modal :size="addType === 'task' ? 'lg' : ''" id="add-modal" ref="add-modal" title="Добавление" ok="'Сохранить'" cancel="'Отмена'">
                     <p class="my-4">
 
                         <s-dictionary-value v-if="addType === 'string'" v-model="toAddValue" ref="addForm"></s-dictionary-value>
@@ -36,9 +36,11 @@
                         <s-add-attach v-if="addType === 'attach'" v-model="toAddValue" ref="addForm"></s-add-attach>
 
                         <s-add-link v-if="addType === 'link'" v-model="toAddValue" ref="addForm"></s-add-link>
+
+                        <s-execution-form v-if="addType === 'task'" add-tasks="true" v-model="toAddValue" ref="addForm"></s-execution-form>
                     </p>
                     <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
-                        <b-form-checkbox v-model="addOneMore"
+                        <b-form-checkbox v-model="addOneMore" v-if="addType !== 'task'"
                         >
                             Добавить еще одно значение
                         </b-form-checkbox>
@@ -137,7 +139,7 @@
 
                     <b-button size="sm" variant="light" v-if="col.type === 'detailsRow'"
                                      :class="`s-table-cell-${col.id}`"
-                              :pressed.sync="item.selected" @click.native="(e) => e.preventDefault()">{{item.selected ? 'Скрыть' : 'Показать'}}</b-button>
+                              :pressed.sync="item.infoSelected" @click.native="(e) => e.preventDefault()">{{item.infoSelected ? 'Скрыть' : 'Показать'}}</b-button>
 
                     <s-select v-if="col.type === 'userSelect'"
                               :config="userSelectConfig"
@@ -155,7 +157,7 @@
                 </td>
             </tr>
             <tr :key="item.id + '_details'">
-                <td colspan="10" v-if="item.selected">
+                <td colspan="10" v-if="item.infoSelected">
                     <table>
                         <tr>
                             <th>Поле</th>
@@ -224,12 +226,14 @@
     import SAddLink from "./AddLinkForm";
     import SSelect from "./fields/Select";
     import datePicker from 'vue-bootstrap-datetimepicker';
+    import SExecutionForm from "../components/ExecutionForm";
     import uuid from '../uuid.js';
     import moment from 'moment';
 
     export default {
         name: 's-table',
-        components: {SAddAttach, SFilter, SDictionaryValue, SUserForm, SContragentForm, SSelect, datePicker, SAddLink},
+        components: {SAddAttach, SFilter, SDictionaryValue, SUserForm,
+            SContragentForm, SSelect, datePicker, SAddLink, SExecutionForm},
         mounted() {
             this.update();
         },
@@ -272,7 +276,7 @@
                 }
             },
             toDeleteItems() {
-                return this.deleteCallback ? (this.data.filter((i) => i.selected === true).length === 0 ? '' : null) : this.data.filter((i) => i.selected === true).map((i) => i.title).join(", ");
+                return this.deleteCallback ? (this.data.filter((i) => i.selected === true).length === 0 ? '' : null) : this.data.filter((i) => i.selected === true).map((i) => i[this.deleteInfoTitleField]).join(", ");
             }
         },
         props: {
@@ -299,7 +303,10 @@
                 type: Function
             },
             sortDirection: null,
-            sortProperty: null
+            sortProperty: null,
+            deleteInfoTitleField: {
+                default: 'title'
+            }
         },
         methods: {
             update() {
@@ -310,6 +317,7 @@
 
                     // if (this.buttons.del) {
                         fullData.content.forEach(i => i.selected = false);
+                        fullData.content.forEach(i => i.infoSelected = false);
                     // }
 
                     this.data = fullData.content;
@@ -458,7 +466,20 @@
 
                         this.update();
                     })
-                    .catch(errorHandler);
+                        .catch(errorHandler);
+                } else if (this.addType === 'task') {
+                    let executionData = this.$refs.addForm.getData();
+                    executionData.documentId = this.objectId;
+                    executionData.actionId = "addtasks";
+
+                    axios.post(`/api/document/${this.objectId}/actions`, executionData).then(() => {
+                        this.$bvToast.toast(`Статус обновлен`, {
+                            variant: 'success',
+                            solid: true,
+                            autoHideDelay: 2000
+                        });
+                        this.update();
+                    }).catch(errorHandler);
                 } else {
                     if (this.addType === 'role') {
                         this.toAddValue['userId'] = this.objectId;

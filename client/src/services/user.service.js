@@ -7,7 +7,7 @@ export const userService = {
     logout
 };
 
-function login(username, password) {
+function login(username, password, rememberMe) {
     // if (username === "admin" && password === "admin") {
     //     store.dispatch("setUser", {name: username}).then(() => {
     //         router.push({ path: '/' });
@@ -17,6 +17,7 @@ function login(username, password) {
     var bodyFormData = new FormData();
     bodyFormData.set('j_username', username);
     bodyFormData.set('j_password', password);
+    bodyFormData.set('remember-me', rememberMe);
         // '&remember-me=' +
         // credentials.rememberMe +
         bodyFormData.set('submit', 'Login');
