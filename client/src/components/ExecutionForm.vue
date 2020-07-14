@@ -67,6 +67,7 @@
                      :no-delete-confirmation="true"
                      :delete-callback="deleteUsers"
                      :add-callback="addUser"
+                     edit-prop="true"
             ></s-table>
 
 <!--            <h5>Вложения</h5>-->

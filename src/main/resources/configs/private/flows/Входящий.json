@@ -46,6 +46,11 @@
           "id": "executed",
           "title": "Исполнено",
           "state": "executed"
+        },
+        {
+          "id": "createExecutionReport",
+          "title": "Создать отчет об исполнении",
+          "form": "executionReport"
         }
       ]
     },

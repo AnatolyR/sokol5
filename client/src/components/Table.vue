@@ -22,6 +22,10 @@
                 <b-button v-if="buttons.add" variant="success" size="sm" @click="showAddModal">Добавить</b-button>
                 <b-button v-if="buttons.del" :disabled="toDeleteItems === ''" variant="danger" size="sm" @click="showDelModal">Удалить</b-button>
 
+                <b-button v-if="buttons.edit && !editMode" @click="edit" size="sm">Редактировать</b-button>
+                <b-button v-if="buttons.edit && editMode" variant="success" @click="save" size="sm">Сохранить</b-button>
+                <b-button v-if="buttons.edit && editMode" variant="danger" @click="cancel" size="sm">Отменить</b-button>
+
                 <b-modal :size="addType === 'task' ? 'lg' : ''" id="add-modal" ref="add-modal" title="Добавление" ok="'Сохранить'" cancel="'Отмена'">
                     <p class="my-4">
 
@@ -68,7 +72,7 @@
                 </b-modal>
 
                 <b-modal id="del-modal" ref="del-modal" title="Подтверждение удаления" modal-class="s-modal-confirm-delete">
-                    <p class="my-4">Будут удалены значения:
+                    <p class="my-4">{{deleteTitle}}:
                     {{toDeleteItems}}
                     </p>
                     <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
@@ -141,7 +145,9 @@
                                      :class="`s-table-cell-${col.id}`"
                               :pressed.sync="item.infoSelected" @click.native="(e) => e.preventDefault()">{{item.infoSelected ? 'Скрыть' : 'Показать'}}</b-button>
 
-                    <s-select v-if="col.type === 'userSelect'"
+                    <span v-if="col.type === 'userSelect' && !editMode"
+                          :class="`s-table-cell-${col.id}`">{{item[col.id + 'Title']}}</span>
+                    <s-select v-if="col.type === 'userSelect' && editMode"
                               :config="userSelectConfig"
                               :emit-with-title="true"
                               @value="(val) => selectUser(val, item, col.id)"
@@ -237,6 +243,7 @@
             SExecutionForm: () => import("../components/ExecutionForm")
         },
         mounted() {
+            this.editMode = this.editProp;
             this.update();
         },
         computed: {
@@ -286,6 +293,12 @@
                 type: Function
             },
             columns: {},
+            editProp: {
+                default: false
+            },
+            deleteTitle: {
+                default: "Будут удалены значения"
+            },
             buttons: {
                 default: function () {
                     return {}
@@ -544,6 +557,16 @@
             getDateTimeValue(item, id) {
                 let val = this.getItemValue(item, id);
                 return val ? moment(new Date(val)).format("DD.MM.YYYY HH:mm") : '';
+            },
+            edit() {
+                this.editMode = true;
+            },
+            cancel() {
+                
+                this.editMode = false;
+            },
+            save() {
+                this.editMode = false;
             }
         },
         watch: {
@@ -558,6 +581,7 @@
                 totalPages: null,
                 totalElements: null,
                 data: [],
+                editMode: false,
                 conditions: null,
                 displayFilter: false,
                 toAddValue: {},

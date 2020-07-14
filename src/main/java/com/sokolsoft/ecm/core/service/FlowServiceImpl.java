@@ -1,6 +1,7 @@
 package com.sokolsoft.ecm.core.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sokolsoft.ecm.core.SokolException;
 import com.sokolsoft.ecm.core.SokolSecurityException;
 import com.sokolsoft.ecm.core.model.Document;
 import com.sokolsoft.ecm.core.model.Task;
@@ -102,8 +103,36 @@ public class FlowServiceImpl implements FlowService {
             case "addtasks":
                 moveToExecution(action, flow, documentId);
                 break;
+            case "createExecutionReport":
+                createExecutionReport(action, flow, documentId);
+                break;
             default:
                 moveToState(actionObject.get("state").asText(), flow, documentId);
+        }
+    }
+
+    private Task getUserCurrentTask(UUID documentId, String taskType, String taskStatus) {
+        UUID userId = userService.getCurrentUser().getId();
+        return taskRepository.findAllByDocumentId(documentId).stream()
+                .filter(t -> (taskStatus == null || t.getType().equals(taskType))
+                        && t.getExecutorId().equals(userId)
+                        && t.getStatus().equals(taskStatus)).findFirst().orElse(null);
+    }
+
+    private void createExecutionReport(ExtendedAction action, JsonNode flow, UUID documentId) {
+        Task task = getUserCurrentTask(documentId, "execution", "execution");
+        if (task != null) {
+            task.setComment(action.getNote());
+            task.setStatus("done");
+            taskRepository.save(task);
+
+            if (taskRepository.findAllByDocumentId(documentId).stream()
+                    .noneMatch(t -> t.getType().equals("execution")
+                    && t.getStatus().equals("execution"))) {
+                documentService.moveDocumentToState(documentId, "Исполнено");
+            }
+        } else {
+            throw new SokolException("101", "Нет задачи для выполняемого действия");
         }
     }
 

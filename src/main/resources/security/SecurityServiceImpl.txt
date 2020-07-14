@@ -38,6 +38,8 @@
 Входящий/На согласовании/ROLE_USER/*=1
 
 Входящий/На исполнении/ROLE_USER/*=1
+Входящий/Исполнено/ROLE_USER/*=1
+Входящий/На исполнении/ROLE_EXECUTOR/@createExecutionReport=1
 
 Входящий/Черновик/ROLE_AUTHOR/@addAttach=1
 Входящий/Черновик/ROLE_AUTHOR/@deleteAttach=1
@@ -60,6 +62,6 @@
 Входящий/*/ROLE_AUTHOR/@viewtasks=1
 
 Входящий/На исполнении/ROLE_AUTHOR/@deleteTask=1
-Входящий/На исполнении/ROLE_AUTHOR/@editTask=1
+
 
 

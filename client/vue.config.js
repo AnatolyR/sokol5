@@ -6,6 +6,10 @@ module.exports = {
                 target: 'http://localhost:8080',
             }
         },
+        watchOptions: {
+            poll: 1000,
+            ignored: /node_modules/,
+        }
         // proxy: 'http://localhost:8080'
     }
 };

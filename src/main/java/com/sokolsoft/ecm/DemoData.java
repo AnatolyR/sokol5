@@ -340,23 +340,23 @@ public class DemoData {
                 .build();
         taskRepository.save(task2);
 
-        Task task3 = Task.builder()
-                .executorId(UUID.fromString("580f62b3-7b96-4109-a321-dc7d24109a1a"))
-                .status("execution")
-                .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
-                .type("execution")
-                .document(d1)
-                .build();
-        taskRepository.save(task3);
+//        Task task3 = Task.builder()
+//                .executorId(UUID.fromString("580f62b3-7b96-4109-a321-dc7d24109a1a"))
+//                .status("execution")
+//                .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
+//                .type("execution")
+//                .document(d1)
+//                .build();
+//        taskRepository.save(task3);
 
-        Task task4 = Task.builder()
-                .executorId(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"))
-                .status("execution")
-                .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
-                .type("execution")
-                .document(d3)
-                .build();
-        taskRepository.save(task4);
+//        Task task4 = Task.builder()
+//                .executorId(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"))
+//                .status("execution")
+//                .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
+//                .type("execution")
+//                .document(d3)
+//                .build();
+//        taskRepository.save(task4);
 
         for (int i = 0; i < 100; i++) {
             String type = new String[]{"Входящий", "Исходящий", "Внутренний"}[new Random().nextInt(3)];

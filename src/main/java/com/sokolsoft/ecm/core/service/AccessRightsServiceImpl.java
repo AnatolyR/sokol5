@@ -3,6 +3,7 @@ package com.sokolsoft.ecm.core.service;
 import com.sokolsoft.ecm.core.SokolException;
 import com.sokolsoft.ecm.core.model.Document;
 import com.sokolsoft.ecm.core.repository.DocumentRepository;
+import com.sokolsoft.ecm.core.repository.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,8 @@ public class AccessRightsServiceImpl implements AccessRightsService {
 
     private final DocumentRepository documentRepository;
 
+    private final TaskRepository taskRepository;
+
     @Override
     public List<String> getRolesForObject(UUID id, String objectType) {
         Set<String> roles = new HashSet<>();
@@ -31,6 +34,10 @@ public class AccessRightsServiceImpl implements AccessRightsService {
 
             if (userId.equals(document.getCreator())) {
                 roles.add("ROLE_AUTHOR");
+            }
+
+            if (isUserExecutor(userId, document.getId())) {
+                roles.add("ROLE_EXECUTOR");
             }
 
             if (userId.equals(document.getAddressee())
@@ -60,10 +67,17 @@ public class AccessRightsServiceImpl implements AccessRightsService {
 
             roles.add("ROLE_LINK_COUNT");
             roles.add("ROLE_LINK_LIST");
-            
+
         }
 
         return new ArrayList<>(roles);
+    }
+
+    private boolean isUserExecutor(UUID userId, UUID documentId) {
+        return taskRepository.findAllByDocumentId(documentId).stream()
+                .anyMatch(t -> t.getType().equals("execution")
+                        && t.getExecutorId().equals(userId)
+                        && t.getStatus().equals("execution"));
     }
 
     @Override

@@ -14,6 +14,7 @@
                      :object-id="objectId"
                      :object-type="objectType"
                      delete-info-title-field="executorTitle"
+                     delete-title="Будут удалены задачи для исполнителей"
             ></s-table>
         </div>
     </div>
@@ -44,7 +45,6 @@
                 axios.get(`/api/tasks/availableActions?objectId=${this.objectId}&objectType=${this.objectType}`)
                     .then((res) => {
                         res.data.forEach((a) => Vue.set(this.buttons, a, true));
-
                     });
             },
             loadData(spec) {

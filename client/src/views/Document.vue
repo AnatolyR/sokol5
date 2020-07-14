@@ -140,6 +140,20 @@
                 </template>
             </b-modal>
 
+            <b-modal id="executionReport-modal" size="lg" ref="executionReport-modal" title="Создание отчета об исполнении">
+                <p class="my-4">
+                    <s-execution-report-form ref="executionReport-form" :document-id="documentId" :action-id="form"></s-execution-report-form>
+                </p>
+                <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
+                    <b-button size="sm" variant="light" @click="cancel()">
+                        Отмена
+                    </b-button>
+                    <b-button size="sm" variant="success" @click="saveExecutionReportForm()">
+                        Сохранить
+                    </b-button>
+                </template>
+            </b-modal>
+
             <div v-if="tab === 'attaches'">
                 <s-attach-form :object-id="documentId" :object-type="'document'" @updateAttaches="updateAttachCount"></s-attach-form>
             </div>
@@ -206,6 +220,7 @@
     import SProcessForm from "../components/ProcessForm";
     import SLinkedDocumentsForm from "../components/LinkedDocumentsForm";
     import SExecutionForm from "../components/ExecutionForm";
+    import SExecutionReportForm from "../components/ExecutionReportForm";
     import STaskForm from '../components/TaskForm';
 
     import {UserSelectConfig} from "../configs/UserSelectConfig";
@@ -217,7 +232,10 @@
 
     export default {
         // components: {SSelect, SDocumentForm},
-        components: {SExecutionForm, SSelect, SDocumentIncomingForm, SDocumentInnerForm, SAttachForm, SHistoryForm, SProcessForm, STaskForm, SLinkedDocumentsForm},
+        components: {SExecutionForm, SSelect, SDocumentIncomingForm,
+            SDocumentInnerForm, SAttachForm, SHistoryForm,
+            SProcessForm, STaskForm, SExecutionReportForm,
+            SLinkedDocumentsForm},
         mounted() {
             if (this.$route.meta.openAsTask === true) {
                 this.tab = 'task';
@@ -269,6 +287,25 @@
                 this.$refs[`${form}-modal`].show();
             },
             saveExecutionForm() {
+                let executionData = this.$refs[`${this.form}-form`].getData();
+                executionData.actionId = this.actions.find(a => a.form === this.form).id;
+
+                axios.post(`/api/document/${this.documentId}/actions`, executionData).then(() => {
+                    this.$bvToast.toast(`Статус обновлен`, {
+                        variant: 'success',
+                        solid: true,
+                        autoHideDelay: 2000
+                    });
+                    this.loadDocument();
+                }).catch((err) => {
+                    console.log('err', err);
+                    this.errorMessage = 'Не удается изменить статус';
+                });
+
+                this.$refs[`${this.form}-modal`].hide();
+                this.form = null;
+            },
+            saveExecutionReportForm() {
                 let executionData = this.$refs[`${this.form}-form`].getData();
                 executionData.actionId = this.actions.find(a => a.form === this.form).id;
 
