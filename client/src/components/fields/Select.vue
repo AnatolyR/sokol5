@@ -50,6 +50,12 @@
                 created: false
             }
         },
+        methods: {
+            setValue(val) {
+                var selectize = this.$refs["select"].selectize;
+                setTimeout(() => selectize.setValue(val), 10);
+            }
+        },
         props: [
             'config',
             'value',

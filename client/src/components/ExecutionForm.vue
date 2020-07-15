@@ -23,11 +23,12 @@
             </b-form-group>
 
             <b-form-group
-                    v-if="!addTasks"
-                    label="Ответственный исполнитель"
+                    label="Исполнитель"
                     label-for="main-executor-input">
                 <s-select
-                          id="main-executor-input" :config="userSelectConfig"
+                          id="main-executor-input"
+                          ref="main-executor-input"
+                          :config="userSelectConfig"
                           @value="(val) => this.mainExecutor = val"
                           :value="mainExecutor"></s-select>
             </b-form-group>
@@ -56,19 +57,19 @@
                 </b-col>
             </b-row>
 
-            <h5>Исполнители</h5>
-            <s-table :buttons="buttons" :loadData="loadData" ref="executors-table"
-                     :columns="tableColumns"
-                     :delete-url="`delete/files`"
-                     :add-url="`${url}`"
-                     :add-type="`${addType}`"
-                     :object-id="documentId"
-                     :object-type="'executors'"
-                     :no-delete-confirmation="true"
-                     :delete-callback="deleteUsers"
-                     :add-callback="addUser"
-                     edit-prop="true"
-            ></s-table>
+<!--            <h5>Исполнители</h5>-->
+<!--            <s-table :buttons="buttons" :loadData="loadData" ref="executors-table"-->
+<!--                     :columns="tableColumns"-->
+<!--                     :delete-url="`delete/files`"-->
+<!--                     :add-url="`${url}`"-->
+<!--                     :add-type="`${addType}`"-->
+<!--                     :object-id="documentId"-->
+<!--                     :object-type="'executors'"-->
+<!--                     :no-delete-confirmation="true"-->
+<!--                     :delete-callback="deleteUsers"-->
+<!--                     :add-callback="addUser"-->
+<!--                     edit-prop="true"-->
+<!--            ></s-table>-->
 
 <!--            <h5>Вложения</h5>-->
 <!--            <s-attach-form :object-id="objectId" :object-type="'document'"></s-attach-form>-->
@@ -86,6 +87,7 @@
     import SAttachForm from "../components/AttachForm";
     import SSelect from "./fields/Select";
     import datePicker from 'vue-bootstrap-datetimepicker';
+    import moment from 'moment';
 
     export default {
         name: 's-execution-form',
@@ -128,10 +130,18 @@
                 })
             },
             getData() {
-                let executors = this.$refs['executors-table'].getData();
-                if (executors) {
-                    executors.forEach(e => e.executionDate = e.executionDate ? new Date(e.executionDate).toISOString() : null)
-                }
+                // let executors = this.$refs['executors-table'].getData();
+                let executors = [
+                    {
+                        controller: this.controller,
+                        controllerTitle: this.controllerTitle,
+                        executionDate: this.executionDate ? new Date(this.executionDate).toISOString() : null,
+                        executor: this.mainExecutor
+                    }
+                ];
+                // if (executors) {
+                //     executors.forEach(e => e.executionDate = e.executionDate ? new Date(e.executionDate).toISOString() : null)
+                // }
                 return {
                     documentId: this.documentId,
                     actionId: this.form,
@@ -145,6 +155,9 @@
             },
             getFormState() {
                 return null;
+            },
+            resetExecutor() {
+                this.$refs["main-executor-input"].setValue(null);
             }
         },
         data() {
@@ -222,7 +235,9 @@
                     }
                 },
                 dateConfig: {
-                    locale:'ru'
+                    locale:'ru',
+                    useCurrent: false,
+                    defaultDate: moment(new Date()).add(3, "day").hours(23).minutes(59).seconds(0).milliseconds(0)
                 }
             }
         }

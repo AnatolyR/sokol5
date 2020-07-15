@@ -131,7 +131,11 @@
                     <s-execution-form ref="execution-form" :document-id="documentId" :action-id="form"></s-execution-form>
                 </p>
                 <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
-                    <b-button size="sm" variant="light" @click="cancel()">
+                    <b-form-checkbox v-model="addOneMore"
+                    >
+                        Добавить еще одно поручение
+                    </b-form-checkbox>
+                    <b-button size="sm" variant="light" @click="saveExecutionForm(cancel)">
                         Отмена
                     </b-button>
                     <b-button size="sm" variant="success" @click="saveExecutionForm()">
@@ -286,24 +290,38 @@
                 this.form = form;
                 this.$refs[`${form}-modal`].show();
             },
-            saveExecutionForm() {
-                let executionData = this.$refs[`${this.form}-form`].getData();
+            saveExecutionForm(cancel) {
+                if (cancel) {
+                    cancel();
+                    if (this.doLoadDocument) {
+                        this.loadDocument();
+                        this.doLoadDocument = false;
+                    }
+                    return;
+                }
+                let executionForm = this.$refs[`${this.form}-form`];
+                let executionData = executionForm.getData();
                 executionData.actionId = this.actions.find(a => a.form === this.form).id;
-
+                executionForm.resetExecutor();
                 axios.post(`/api/document/${this.documentId}/actions`, executionData).then(() => {
                     this.$bvToast.toast(`Статус обновлен`, {
                         variant: 'success',
                         solid: true,
                         autoHideDelay: 2000
                     });
-                    this.loadDocument();
+                    this.doLoadDocument = true;
                 }).catch((err) => {
                     console.log('err', err);
                     this.errorMessage = 'Не удается изменить статус';
                 });
-
-                this.$refs[`${this.form}-modal`].hide();
-                this.form = null;
+                if (!this.addOneMore) {
+                    this.$refs[`${this.form}-modal`].hide();
+                    this.form = null;
+                    if (this.doLoadDocument) {
+                        this.loadDocument();
+                        this.doLoadDocument = false;
+                    }
+                }
             },
             saveExecutionReportForm() {
                 let executionData = this.$refs[`${this.form}-form`].getData();
@@ -468,6 +486,7 @@
 
                 tab: 'attributes',
                 editMode: false,
+                doLoadDocument: false,
 
                 attachesCount: "",
                 processCount: "",
@@ -479,6 +498,7 @@
                 form: null,
 
                 canEdit: false,
+                addOneMore: false,
 
                 dictionariesConfigs: {
                     userSelectConfig: UserSelectConfig(),

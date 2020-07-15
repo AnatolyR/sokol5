@@ -198,22 +198,32 @@ public class FlowServiceImpl implements FlowService {
 
         //todo check mandatory fields
 
-        if (!"addtasks".equals(action.getActionId())) {
-            Task mainExecutorTask = new Task();
-            mainExecutorTask.setType("execution");
-            mainExecutorTask.setAuthor(userService.getCurrentUser().getId());
-            mainExecutorTask.setCreateDate(Instant.now());
-            mainExecutorTask.setDescription(action.getNote());
-            mainExecutorTask.setDocument(documentRepository.getOne(action.getDocumentId()));
-            mainExecutorTask.setDueDate(action.getExecutionDate());
-            mainExecutorTask.setExecutorId(action.getMainExecutor());
-            mainExecutorTask.setStatus("execution");
-            mainExecutorTask.setControllerId(action.getController());
-            mainExecutorTask.setPrimal(true);
-            tasks.add(mainExecutorTask);
-        }
+//        if (!"addtasks".equals(action.getActionId())) {
+//            Task mainExecutorTask = new Task();
+//            mainExecutorTask.setType("execution");
+//            mainExecutorTask.setAuthor(userService.getCurrentUser().getId());
+//            mainExecutorTask.setCreateDate(Instant.now());
+//            mainExecutorTask.setDescription(action.getNote());
+//            mainExecutorTask.setDocument(documentRepository.getOne(action.getDocumentId()));
+//            mainExecutorTask.setDueDate(action.getExecutionDate());
+//            mainExecutorTask.setExecutorId(action.getMainExecutor());
+//            mainExecutorTask.setStatus("execution");
+//            mainExecutorTask.setControllerId(action.getController());
+//            mainExecutorTask.setPrimal(true);
+//            tasks.add(mainExecutorTask);
+//        }
+        List<Task> currentTasks = taskRepository.findAllByDocumentId(documentId).stream()
+                .filter(t -> t.getType().equals("execution"))
+                .collect(Collectors.toList());
 
         action.getExecutors().forEach(e -> {
+            if (currentTasks.stream().anyMatch(t -> t.getExecutorId().equals(e.getExecutor()))) {
+                throw new SokolException("102", "Исполнитель с ИД '" + e.getExecutor() + "' уже есть в спике исполнителей");
+            }
+            if (e.getExecutor() == null) {
+                throw new SokolException("103", "Не указан исполнитель");
+            }
+
             Task task = new Task();
             task.setType("execution");
             task.setAuthor(userService.getCurrentUser().getId());

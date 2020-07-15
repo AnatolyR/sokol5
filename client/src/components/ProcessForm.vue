@@ -14,6 +14,7 @@
                      :object-id="objectId"
                      :object-type="objectType"
                      delete-info-title-field="executorTitle"
+                     add-more-title="Добавить еще одно поручение"
                      delete-title="Будут удалены задачи для исполнителей"
             ></s-table>
         </div>

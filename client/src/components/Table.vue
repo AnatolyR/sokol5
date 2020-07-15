@@ -44,9 +44,9 @@
                         <s-execution-form v-if="addType === 'task'" add-tasks="true" v-model="toAddValue" ref="addForm"></s-execution-form>
                     </p>
                     <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
-                        <b-form-checkbox v-model="addOneMore" v-if="addType !== 'task'"
+                        <b-form-checkbox v-model="addOneMore"
                         >
-                            Добавить еще одно значение
+                            {{addMoreTitle}}
                         </b-form-checkbox>
                         <b-button size="sm" variant="light" @click="cancel()">
                             Отмена
@@ -162,7 +162,7 @@
                             :config="dateConfig"/>
                 </td>
             </tr>
-            <tr :key="item.id + '_details'">
+            <tr :key="item.id + '_details'" v-if="item.infoSelected">
                 <td colspan="10" v-if="item.infoSelected">
                     <table>
                         <tr>
@@ -298,6 +298,9 @@
             },
             deleteTitle: {
                 default: "Будут удалены значения"
+            },
+            addMoreTitle: {
+                default: "Добавить еще одно значение"
             },
             buttons: {
                 default: function () {
@@ -486,7 +489,7 @@
                     let executionData = this.$refs.addForm.getData();
                     executionData.documentId = this.objectId;
                     executionData.actionId = "addtasks";
-
+                    this.$refs.addForm.resetExecutor();
                     axios.post(`/api/document/${this.objectId}/actions`, executionData).then(() => {
                         this.$bvToast.toast(`Статус обновлен`, {
                             variant: 'success',
