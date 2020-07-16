@@ -124,6 +124,7 @@ public class FlowServiceImpl implements FlowService {
         if (task != null) {
             task.setComment(action.getNote());
             task.setStatus("done");
+            task.setExecutedDate(Instant.now());
             taskRepository.save(task);
 
             if (taskRepository.findAllByDocumentId(documentId).stream()

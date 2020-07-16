@@ -141,7 +141,7 @@
                                      :class="`s-table-cell-${col.id}`"
                                      v-model="item.selected" @click.native="(e) => e.preventDefault()"></b-form-checkbox>
 
-                    <b-button size="sm" variant="light" v-if="col.type === 'detailsRow'"
+                    <b-button size="sm" variant="light" v-if="col.type === 'detailsRow' && (infoType !== 'report' || item.comment)"
                                      :class="`s-table-cell-${col.id}`"
                               :pressed.sync="item.infoSelected" @click.native="(e) => e.preventDefault()">{{item.infoSelected ? 'Скрыть' : 'Показать'}}</b-button>
 
@@ -163,7 +163,7 @@
                 </td>
             </tr>
             <tr :key="item.id + '_details'" v-if="item.infoSelected">
-                <td colspan="10" v-if="item.infoSelected">
+                <td colspan="10" v-if="item.infoSelected && infoType === 'history'">
                     <table>
                         <tr>
                             <th>Поле</th>
@@ -176,6 +176,13 @@
                             <td>{{f.current}}</td>
                         </tr>
                     </table>
+                </td>
+                <td colspan="10" v-if="item.infoSelected && infoType === 'report'">
+                        <div>
+<!--                            <div>{{item.statusTitle}}</div>-->
+<!--                            <div>{{item.executedDate}}</div>-->
+                            <div>{{item.comment}}</div>
+                        </div>
                 </td>
             </tr>
             </template>
@@ -309,6 +316,7 @@
             },
             deleteUrl: {},
             addUrl: {},
+            infoType: {},
             addType: {
                 default: 'default'
             },

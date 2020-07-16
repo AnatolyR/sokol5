@@ -14,6 +14,7 @@
                      :object-id="objectId"
                      :object-type="objectType"
                      delete-info-title-field="executorTitle"
+                     info-type="report"
                      add-more-title="Добавить еще одно поручение"
                      delete-title="Будут удалены задачи для исполнителей"
             ></s-table>
@@ -87,7 +88,7 @@
                 errorMessage: null,
                 buttons: {
                     refresh: false,
-                    columns: false
+                    columns: true
                 },
                 tableColumns: [
                     {
@@ -125,7 +126,7 @@
                     },
                     {
                         id: "dueDate",
-                        title: "Дата исполнения",
+                        title: "Срок исполнения",
                         visible: true,
                         type: 'datetime'
                     },
@@ -137,6 +138,18 @@
                     {
                         id: "statusTitle",
                         title: "Статус",
+                        visible: true
+                    },
+                    {
+                        id: "executedDate",
+                        title: "Исполнено",
+                        visible: true,
+                        type: 'datetime'
+                    },
+                    {
+                        id: "data",
+                        title: "Отчет",
+                        type: "detailsRow",
                         visible: true
                     }
                 ]
