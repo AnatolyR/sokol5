@@ -61,6 +61,8 @@ public class Task {
 
     private String comment;
 
+    private String controllerComment;
+
     private String result;
 
     private UUID controllerId;
@@ -69,4 +71,10 @@ public class Task {
     private String controllerTitle;
 
     private Boolean primal;
+
+    @Transient
+    private Boolean isControlled;
+
+    @Transient
+    private Boolean isCurrentUserTask;
 }

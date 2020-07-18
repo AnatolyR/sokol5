@@ -13,9 +13,9 @@
             <!-- BUTTONS -->
             <div class="s-document-button-bar">
                 <b-button v-if="openedFromFolder" size="sm" variant="light" @click="back"><font-awesome-icon icon="angle-left" /> Назад</b-button>
-                <b-button v-if="!editMode && canEdit" @click="edit" size="sm">Редактировать</b-button>
-                <b-button v-if="editMode" variant="success" @click="save" size="sm">Сохранить</b-button>
-                <b-button v-if="editMode" variant="danger" @click="cancel" size="sm">Отменить</b-button>
+                <b-button v-if="!editMode && canEdit" :disabled="tab !== 'attributes'" @click="edit" size="sm">Редактировать</b-button>
+                <b-button v-if="editMode" :disabled="tab !== 'attributes'" variant="success" @click="save" size="sm">Сохранить</b-button>
+                <b-button v-if="editMode" :disabled="tab !== 'attributes'" variant="danger" @click="cancel" size="sm">Отменить</b-button>
 
                 <b-button v-if="!editMode" v-for="a in actions" @click="execute(a)" size="sm">{{a.title}}</b-button>
             </div>
@@ -115,17 +115,6 @@
                                    :dictionariesConfigs="dictionariesConfigs"
                                    :fieldsLevels="fieldsLevels"/>
 
-            <b-modal id="info-modal" ref="info-modal" modal-class="s-modal-incorrect-fields" title="Некорректно заполненные поля">
-                <p class="my-4">
-                    {{uncorrectFields}}
-                </p>
-                <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
-                    <b-button size="sm" variant="info" @click="cancel()">
-                        Ок
-                    </b-button>
-                </template>
-            </b-modal>
-
             <b-modal id="execution-modal" size="lg" ref="execution-modal" title="Создание поручения">
                 <p class="my-4">
                     <s-execution-form ref="execution-form" :document-id="documentId" :action-id="form"></s-execution-form>
@@ -154,6 +143,17 @@
                     </b-button>
                     <b-button size="sm" variant="success" @click="saveExecutionReportForm()">
                         Сохранить
+                    </b-button>
+                </template>
+            </b-modal>
+
+            <b-modal id="document-info-modal" ref="document-info-modal" modal-class="s-modal-incorrect-fields" title="Некорректно заполненные поля">
+                <p class="my-4">
+                    {{uncorrectFields}}
+                </p>
+                <template slot="modal-footer" slot-scope="{ ok, cancel, hide }">
+                    <b-button size="sm" variant="info" @click="cancel()">
+                        Ок
                     </b-button>
                 </template>
             </b-modal>
@@ -359,6 +359,9 @@
                 this.editMode = true;
             },
             cancel() {
+                if (this.$route && this.$route.params && this.$route.params.isNew === true) {
+                    this.$route.params.isNew = false;
+                }
                 this.errorMessage = null;
                 this.document = JSON.parse(this.documentBackup);
                 this.editMode = false;
@@ -374,7 +377,7 @@
                 let fields = this.$refs.attributesForm && this.$refs.attributesForm.getFormState();
                 if (fields && fields.length > 0) {
                     this.uncorrectFields = fields.join(", ");
-                    this.$refs['info-modal'].show();
+                    this.$refs['document-info-modal'].show();
                     // this.errorMessage = "Некорректно заполненные поля";
                     return;
                 } else {

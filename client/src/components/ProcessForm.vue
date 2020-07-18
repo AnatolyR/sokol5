@@ -15,6 +15,7 @@
                      :object-type="objectType"
                      delete-info-title-field="executorTitle"
                      info-type="report"
+                     highlight-indicator-field="isCurrentUserTask"
                      add-more-title="Добавить еще одно поручение"
                      delete-title="Будут удалены задачи для исполнителей"
             ></s-table>
@@ -70,6 +71,7 @@
                     })
                         .then((res) => {
                             // this.$emit("updateAttaches");
+                            res.data.content.forEach((task) => {task.loading = false});
                             resolve(res);
                         })
                         .catch((error) => {

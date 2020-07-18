@@ -106,6 +106,12 @@ public class FlowServiceImpl implements FlowService {
             case "createExecutionReport":
                 createExecutionReport(action, flow, documentId);
                 break;
+            case "acceptExecutionReport":
+                controlExecutionReport(action, flow, documentId);
+                break;
+            case "rejectExecutionReport":
+                controlExecutionReport(action, flow, documentId);
+                break;
             default:
                 moveToState(actionObject.get("state").asText(), flow, documentId);
         }
@@ -119,21 +125,63 @@ public class FlowServiceImpl implements FlowService {
                         && t.getStatus().equals(taskStatus)).findFirst().orElse(null);
     }
 
+    private Task getUserControlTask(UUID documentId, String taskType, String taskStatus) {
+        UUID userId = userService.getCurrentUser().getId();
+        return taskRepository.findAllByDocumentId(documentId).stream()
+                .filter(t -> (taskStatus == null || t.getType().equals(taskType))
+                        && t.getControllerId().equals(userId)
+                        && t.getStatus().equals(taskStatus)).findFirst().orElse(null);
+    }
+
     private void createExecutionReport(ExtendedAction action, JsonNode flow, UUID documentId) {
         Task task = getUserCurrentTask(documentId, "execution", "execution");
         if (task != null) {
-            task.setComment(action.getNote());
-            task.setStatus("done");
+            if (task.getComment() == null) {
+                task.setComment(action.getNote());
+            } else {
+                task.setComment(task.getComment() + "\n\n###\n\n" + action.getNote());
+            }
+            if (task.getControllerId() == null) {
+                task.setStatus("done");
+            } else {
+                task.setStatus("control");
+            }
             task.setExecutedDate(Instant.now());
             taskRepository.save(task);
 
             if (taskRepository.findAllByDocumentId(documentId).stream()
-                    .noneMatch(t -> t.getType().equals("execution")
-                    && t.getStatus().equals("execution"))) {
+                    .filter(t -> t.getType().equals("execution"))
+                    .allMatch(t -> t.getStatus().equals("done"))) {
                 documentService.moveDocumentToState(documentId, "Исполнено");
             }
         } else {
             throw new SokolException("101", "Нет задачи для выполняемого действия");
+        }
+    }
+
+    private void controlExecutionReport(ExtendedAction action, JsonNode flow, UUID documentId) {
+        Task task = getUserControlTask(documentId, "execution", "control");
+        if (task != null) {
+            if (task.getControllerComment() == null) {
+                task.setControllerComment(action.getNote());
+            } else {
+                task.setControllerComment(task.getControllerComment() + "\n\n###\n\n" + action.getNote());
+            }
+            if (action.getActionId().equals("acceptExecutionReport")) {
+                task.setStatus("done");
+            } else {
+                task.setStatus("execution");
+            }
+            task.setExecutedDate(null);
+            taskRepository.save(task);
+
+            if (taskRepository.findAllByDocumentId(documentId).stream()
+                    .filter(t -> t.getType().equals("execution"))
+                    .allMatch(t -> t.getStatus().equals("done"))) {
+                documentService.moveDocumentToState(documentId, "Исполнено");
+            }
+        } else {
+            throw new SokolException("104", "Нет задачи для выполняемого действия");
         }
     }
 
@@ -143,17 +191,47 @@ public class FlowServiceImpl implements FlowService {
             throw new SokolSecurityException("Нет прав на выполнение действия");
         }
         Page<Task> tasks = new PageImpl<>(taskRepository.findAllByDocumentId(documentId));
+
+        UUID currentUserId = userService.getCurrentUser().getId();
         tasks.forEach(t -> {
-            switch (t.getStatus()) {
-                case "execution":
-                    t.setStatusTitle("Исполнение");
-                    break;
-                case "done":
-                    t.setStatusTitle("Исполнено");
-                    break;
+            if (currentUserId.equals(t.getControllerId()) && t.getStatus().equals("control")) {
+                if (accessRightsService.isActionAvailable(t.getDocument().getId(), "document", "@controlTask")) {
+                    t.setIsControlled(true);
+                    t.setIsCurrentUserTask(true);
+                }
+            }
+            if (currentUserId.equals(t.getExecutorId()) && t.getStatus().equals("execution")) {
+                t.setIsCurrentUserTask(true);
             }
         });
+
+        tasks.forEach(this::fillStatusTitle);
         return tasks;
+    }
+
+    private void fillStatusTitle(Task task) {
+        switch (task.getStatus()) {
+            case "execution":
+                task.setStatusTitle("Исполнение");
+                break;
+            case "control":
+                task.setStatusTitle("Контроль");
+                break;
+            case "done":
+                task.setStatusTitle("Исполнено");
+                break;
+        }
+    }
+
+    @Override
+    public Task getTask(UUID documentId, UUID taskId) {
+        if (!accessRightsService.isActionAvailable(documentId, "document", "@viewtasks")) {
+            throw new SokolSecurityException("Нет прав на выполнение действия");
+        }
+        Task task = taskRepository.findOneByDocumentIdAndId(documentId, taskId);
+        fillStatusTitle(task);
+
+        return task;
     }
 
     @Override

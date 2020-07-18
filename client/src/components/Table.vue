@@ -104,7 +104,7 @@
 
             <!-- ========================== -->
             <template v-for="item in data">
-            <tr :key="item.id">
+            <tr :key="item.id" v-bind:class="{active: highlightIndicatorField && item[highlightIndicatorField]}">
                 <td v-for="col in visibleColumns" :style="{width: col.width ? col.width : ''}"
                     @click="() => {if (col.type === 'checkbox') item.selected = !item.selected}">
                     <span v-if="col.type !== 'link'
@@ -181,7 +181,41 @@
                         <div>
 <!--                            <div>{{item.statusTitle}}</div>-->
 <!--                            <div>{{item.executedDate}}</div>-->
-                            <div>{{item.comment}}</div>
+<!--                            <div>{{item.comment}}</div>-->
+                            <b-form class="s-report-form">
+                                <b-form-group
+                                        label="Отчет"
+                                >
+                                    <div style="margin-bottom: 0.5em;" v-for="line in getLines(item.comment)">{{line}}</div>
+                                </b-form-group>
+                            </b-form>
+                            <b-form v-if="item.controllerComment" class="s-report-form">
+                                <b-form-group
+                                        label="Комментарий контроллера"
+                                >
+                                    <div style="margin-bottom: 0.5em;" v-for="line in getLines(item.controllerComment)">{{line}}</div>
+                                </b-form-group>
+                            </b-form>
+                            <div v-if="item.isControlled">
+                                <b-form class="s-report-form">
+                                    <b-form-group
+                                            label="Комментарий"
+                                    >
+                                        <b-form-textarea
+                                                style="margin-bottom: 0.5em;"
+                                                id="note-input"
+                                                :ref="'report_control_note_' + item.id"
+                                        />
+                                    </b-form-group>
+                                </b-form>
+                                <b-spinner variant="primary" style="margin-right: 0.5em; margin-left: 0.5em;" v-if="item.loading" small></b-spinner>
+                                <b-button :disabled="item.loading" style="margin-right: 0.5em;" variant="success" @click="() => controlReport(item, 'acceptExecutionReport')" size="sm">
+                                    Принять
+                                </b-button>
+                                <b-button :disabled="item.loading" variant="danger" @click="() => controlReport(item, 'rejectExecutionReport')" size="sm">
+                                    Отклонить
+                                </b-button>
+                            </div>
                         </div>
                 </td>
             </tr>
@@ -226,6 +260,15 @@
         min-width: unset;
         max-height: 400px;
         overflow: scroll;
+    }
+
+    .s-report-form legend {
+        margin-bottom: 0;
+        font-weight: bold;
+    }
+
+    tr.active {
+        font-weight: bold;
     }
 </style>
 
@@ -309,6 +352,7 @@
             addMoreTitle: {
                 default: "Добавить еще одно значение"
             },
+            highlightIndicatorField: {},
             buttons: {
                 default: function () {
                     return {}
@@ -578,6 +622,42 @@
             },
             save() {
                 this.editMode = false;
+            },
+            controlReport(item, action) {
+                let itemId = item.id;
+                let val = this.$refs["report_control_note_" + itemId][0].$el.value;
+                let executionData = {
+                    documentId: this.objectId,
+                    note: val
+                };
+                executionData.actionId = action;
+                item.loading = true;
+                axios.post(`/api/document/${this.objectId}/actions`, executionData).then(() => {
+                    this.$bvToast.toast(`Статус задачи обновлен`, {
+                        variant: 'success',
+                        solid: true,
+                        autoHideDelay: 2000
+                    });
+
+                    axios.get(`/api/document/${this.objectId}/task/${itemId}`)
+                        .then((res) => {
+                            let task = res.data;
+                            item.status = task.status;
+                            item.statusTitle = task.statusTitle;
+                            item.isControlled = task.isControlled;
+                            item.controllerComment = task.controllerComment;
+                            item.loading = false;
+                        });
+                }).catch((err) => {
+                    this.$bvToast.toast(`Не удалось обновить статус задачи`, {
+                        variant: 'danger',
+                        solid: true,
+                        autoHideDelay: 4000
+                    });
+                });
+            },
+            getLines(text) {
+                return text.split("###");
             }
         },
         watch: {

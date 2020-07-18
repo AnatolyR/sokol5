@@ -335,8 +335,10 @@ public class DemoData {
                 .dueDate(Instant.parse("2019-10-14T00:00:00.00Z"))
                 .type("execution")
                 .document(d1)
-                .controllerId(UUID.fromString("d259e840-0b34-4512-bc2e-5b5498dc4171"))
-                .controllerTitle("Карандашов К. Н.")
+//                .controllerId(UUID.fromString("d259e840-0b34-4512-bc2e-5b5498dc4171"))
+//                .controllerTitle("Карандашов К. Н.")
+                .controllerId(UUID.fromString("52cc85b5-fab7-4365-a9cd-94afac1f0e8d"))
+                .controllerTitle("Admin")
                 .build();
         taskRepository.save(task2);
 

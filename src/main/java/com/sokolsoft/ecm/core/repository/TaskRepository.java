@@ -40,4 +40,7 @@ public interface TaskRepository extends JpaRepository<Task, UUID>, JpaSpecificat
 
     @Secured({"ROLE_USER", "ROLE_SYSTEM"})
     List<Task> findAllByDocumentId(UUID documentId);
+
+    @Secured({"ROLE_USER", "ROLE_SYSTEM"})
+    Task findOneByDocumentIdAndId(UUID documentId, UUID taskId);
 }

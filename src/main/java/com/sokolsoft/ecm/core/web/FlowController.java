@@ -42,6 +42,12 @@ public class FlowController {
         return flowService.getTasks(documentId);
     }
 
+    @GetMapping("/api/document/{documentId}/task/{taskId}")
+    public Task getTask(@PathVariable("documentId") UUID documentId,
+                               @PathVariable("taskId") UUID taskId) {
+        return flowService.getTask(documentId, taskId);
+    }
+
     @GetMapping(path = "/api/tasks/availableActions")
     @ResponseBody
     public List<String> getAvailableActions(@Param("objectId") String objectId, @Param("objectType") String objectType) {

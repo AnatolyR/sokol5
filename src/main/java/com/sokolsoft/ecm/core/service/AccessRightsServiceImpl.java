@@ -40,6 +40,10 @@ public class AccessRightsServiceImpl implements AccessRightsService {
                 roles.add("ROLE_EXECUTOR");
             }
 
+            if (isUserController(userId, document.getId())) {
+                roles.add("ROLE_CONTROLLER");
+            }
+
             if (userId.equals(document.getAddressee())
                     || (document.getAddresseeCopies() != null && document.getAddresseeCopies().contains(userId))
                     || userId.equals(document.getExecutor())
@@ -73,8 +77,17 @@ public class AccessRightsServiceImpl implements AccessRightsService {
         return new ArrayList<>(roles);
     }
 
+    private boolean isUserController(UUID userId, UUID documentId) {
+        return documentRepository.getOne(documentId).getStatus().equals("На исполнении")
+                && taskRepository.findAllByDocumentId(documentId).stream()
+                .anyMatch(t -> t.getType().equals("execution")
+                        && t.getControllerId().equals(userId)
+                        && t.getStatus().equals("control"));
+    }
+
     private boolean isUserExecutor(UUID userId, UUID documentId) {
-        return taskRepository.findAllByDocumentId(documentId).stream()
+        return documentRepository.getOne(documentId).getStatus().equals("На исполнении")
+                && taskRepository.findAllByDocumentId(documentId).stream()
                 .anyMatch(t -> t.getType().equals("execution")
                         && t.getExecutorId().equals(userId)
                         && t.getStatus().equals("execution"));

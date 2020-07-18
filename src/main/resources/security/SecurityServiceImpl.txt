@@ -60,6 +60,9 @@
 
 Входящий/*/ROLE_AUTHOR/@addtasks=1
 Входящий/*/ROLE_AUTHOR/@viewtasks=1
+Входящий/*/ROLE_CONTROLLER/@controlTask=1
+Входящий/*/ROLE_CONTROLLER/@acceptExecutionReport=1
+Входящий/*/ROLE_CONTROLLER/@rejectExecutionReport=1
 
 Входящий/На исполнении/ROLE_AUTHOR/@deleteTask=1
 

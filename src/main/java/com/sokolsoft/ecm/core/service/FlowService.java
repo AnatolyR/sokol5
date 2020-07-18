@@ -17,6 +17,8 @@ public interface FlowService {
 
     Page<Task> getTasks(UUID documentId);
 
+    Task getTask(UUID documentId, UUID taskId);
+
     List<String> getAvailableActions(String objectId, String objectType);
 
     void deleteTasks(List<String> ids);
